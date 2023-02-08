@@ -23,7 +23,7 @@ const Page: React.FC = () => {
               style={{ marginLeft: "auto" }}
               onClick={sessionData ? () => void signOut() : () => void signIn()}
             >
-              {sessionData ? "Log out" : "Sign in"}
+              {sessionData ? "Sign out" : "Sign in"}
             </Button>
           </Header>
         }
