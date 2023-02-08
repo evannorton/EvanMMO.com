@@ -1,10 +1,9 @@
 import Head from "next/head";
+import { AppShell, Button, Header } from "@mantine/core";
 import { signIn, signOut, useSession } from "next-auth/react";
-import { Button } from "@mantine/core";
 
 const Page: React.FC = () => {
   const { data: sessionData } = useSession();
-
   return (
     <>
       <Head>
@@ -15,14 +14,22 @@ const Page: React.FC = () => {
         />
         <link rel="icon" href="/favicon.png" />
       </Head>
-      <header>
-        <Button
-          onClick={sessionData ? () => void signOut() : () => void signIn()}
-        >
-          {sessionData ? "Sign out" : "Sign in"}
-        </Button>
-      </header>
-      <main></main>
+      <AppShell
+        fixed
+        padding="md"
+        header={
+          <Header display="flex" height={60} p="xs">
+            <Button
+              style={{ marginLeft: "auto" }}
+              onClick={sessionData ? () => void signOut() : () => void signIn()}
+            >
+              {sessionData ? "Log out" : "Sign in"}
+            </Button>
+          </Header>
+        }
+      >
+        <main></main>
+      </AppShell>
     </>
   );
 };
