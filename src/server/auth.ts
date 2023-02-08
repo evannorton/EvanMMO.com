@@ -52,12 +52,12 @@ export const authOptions: NextAuthOptions = {
   providers: [
     DiscordProvider({
       clientId: env.DISCORD_CLIENT_ID,
-      clientSecret: env.DISCORD_CLIENT_SECRET
+      clientSecret: env.DISCORD_CLIENT_SECRET,
     }),
     TwitchProvider({
       clientId: env.TWITCH_CLIENT_ID,
-      clientSecret: env.TWITCH_CLIENT_SECRET
-    })
+      clientSecret: env.TWITCH_CLIENT_SECRET,
+    }),
     /**
      * ...add more providers here
      *

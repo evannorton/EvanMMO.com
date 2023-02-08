@@ -7,7 +7,10 @@ const Home: NextPage = () => {
     <>
       <Head>
         <title>EvanMMO</title>
-        <meta name="description" content="A hub for EvanMMO's content creation and game development" />
+        <meta
+          name="description"
+          content="A hub for EvanMMO's content creation and game development"
+        />
         <link rel="icon" href="/favicon.png" />
       </Head>
       <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
