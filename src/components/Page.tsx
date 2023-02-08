@@ -27,7 +27,7 @@ const Page: React.FC = () => {
             <Anchor
               sx={{
                 "&:hover": {
-                  opacity: ".7",
+                  opacity: ".75",
                 },
               }}
               href="/"
