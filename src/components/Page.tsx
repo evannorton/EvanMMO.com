@@ -20,6 +20,7 @@ const Page: React.FC = () => {
         header={
           <Header display="flex" height={60} p="xs">
             <Button
+              color={sessionData ? "red" : "green"}
               style={{ marginLeft: "auto" }}
               onClick={sessionData ? () => void signOut() : () => void signIn()}
             >
