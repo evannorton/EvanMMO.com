@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { AppShell, Button, Header } from "@mantine/core";
+import { AppShell, Anchor, Button, Header } from "@mantine/core";
 import { signIn, signOut, useSession } from "next-auth/react";
 
 const Page: React.FC = () => {
@@ -18,7 +18,26 @@ const Page: React.FC = () => {
         fixed
         padding="md"
         header={
-          <Header display="flex" height={60} p="xs">
+          <Header
+            style={{ alignItems: "center" }}
+            display="flex"
+            height={60}
+            p="xs"
+          >
+            <Anchor
+              sx={{
+                "&:hover": {
+                  opacity: ".7",
+                },
+              }}
+              href="/"
+              color="gray.0"
+              size={32}
+              weight="bold"
+              underline={false}
+            >
+              EvanMMO
+            </Anchor>
             <Button
               color={sessionData ? "red" : "green"}
               style={{ marginLeft: "auto" }}
