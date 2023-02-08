@@ -2,7 +2,11 @@ import Head from "next/head";
 import { AppShell, Anchor, Button, Header } from "@mantine/core";
 import { signIn, signOut, useSession } from "next-auth/react";
 
-const Page: React.FC = () => {
+interface PageProps {
+  readonly children: React.ReactNode;
+}
+
+const Page: React.FC<PageProps> = ({ children }) => {
   const { data: sessionData } = useSession();
   return (
     <>
@@ -32,7 +36,7 @@ const Page: React.FC = () => {
               }}
               href="/"
               color="gray.0"
-              size={32}
+              size={24}
               weight="bold"
               underline={false}
             >
@@ -48,7 +52,7 @@ const Page: React.FC = () => {
           </Header>
         }
       >
-        <main></main>
+        <main>{children}</main>
       </AppShell>
     </>
   );
