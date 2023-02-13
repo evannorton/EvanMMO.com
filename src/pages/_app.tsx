@@ -4,8 +4,18 @@ import { SessionProvider } from "next-auth/react";
 
 import { api } from "../utils/api";
 import { MantineProvider } from "@mantine/core";
+import App from "../components/App";
+import streamIsLive from "../server/streamIsLive";
 
-const MyApp: AppType<{ session: Session | null }> = ({
+interface ServerSideProps {
+  readonly streamIsLive: boolean;
+}
+
+interface Props extends ServerSideProps {
+  readonly session: Session | null;
+}
+
+const MyApp: AppType<Props> = ({
   Component,
   pageProps: { session, ...pageProps },
 }) => {
@@ -19,10 +29,18 @@ const MyApp: AppType<{ session: Session | null }> = ({
           colorScheme: "dark",
         }}
       >
-        <Component {...pageProps} />
+        <App streamIsLive={pageProps.streamIsLive}>
+          <Component {...pageProps} />
+        </App>
       </MantineProvider>
     </SessionProvider>
   );
+};
+
+export const getServerSideProps = async (): Promise<{
+  readonly props: ServerSideProps;
+}> => {
+  return { props: { streamIsLive: await streamIsLive() } };
 };
 
 export default api.withTRPC(MyApp);

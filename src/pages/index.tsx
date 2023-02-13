@@ -1,10 +1,9 @@
 import { type NextPage } from "next";
-import Page from "../components/Page";
 import { Title } from "@mantine/core";
 import { TwitchEmbed } from "react-twitch-embed";
-import fetchHelix from "../server/fetchHelix";
 import twitchUsername from "../constants/twitchUsername";
-import type StreamsResponse from "../types/twitch/StreamsResponse";
+import Head from "../components/Head";
+import streamIsLive from "../server/streamIsLive";
 
 interface ServerSideProps {
   readonly streamIsLive: boolean;
@@ -12,23 +11,24 @@ interface ServerSideProps {
 
 const Home: NextPage<ServerSideProps> = ({ streamIsLive }) => {
   return (
-    <Page>
+    <>
+      <Head description="A hub for EvanMMO's content creation and game development" />
       {streamIsLive && (
         <>
-          <Title mb="md">Livestream</Title>
+          <Title id="livestream" color="gray.0" mb="md">
+            Livestream
+          </Title>
           <TwitchEmbed channel={twitchUsername} width="100%" height="75vh" />
         </>
       )}
-    </Page>
+    </>
   );
 };
 
 export const getServerSideProps = async (): Promise<{
   readonly props: ServerSideProps;
 }> => {
-  const streamsRes = await fetchHelix(`streams?user_login=${twitchUsername}`);
-  const streams: StreamsResponse = (await streamsRes.json()) as StreamsResponse;
-  return { props: { streamIsLive: streams.data.length > 0 } };
+  return { props: { streamIsLive: await streamIsLive() } };
 };
 
 export default Home;
