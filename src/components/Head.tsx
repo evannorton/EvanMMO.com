@@ -1,10 +1,10 @@
 import NextHead from "next/head";
 
-interface HeadProps {
+interface Props {
   readonly description: string;
 }
 
-const Head: React.FC<HeadProps> = ({ description }) => {
+const Head: React.FC<Props> = ({ description }) => {
   return (
     <NextHead>
       <title>EvanMMO</title>

@@ -1,12 +1,12 @@
 import { AppShell, Anchor, Button, Header } from "@mantine/core";
 import { signIn, signOut, useSession } from "next-auth/react";
 
-interface AppProps {
+interface Props {
   readonly children: JSX.Element;
   readonly streamIsLive: boolean;
 }
 
-const App: React.FC<AppProps> = ({ children, streamIsLive }) => {
+const App: React.FC<Props> = ({ children, streamIsLive }) => {
   const { data: sessionData } = useSession();
   return (
     <AppShell
@@ -30,25 +30,43 @@ const App: React.FC<AppProps> = ({ children, streamIsLive }) => {
             size={24}
             weight="bold"
             underline={false}
+            mr="lg"
           >
             EvanMMO
           </Anchor>
           {streamIsLive && (
-            <Anchor
-              sx={{
-                "&:hover": {
-                  opacity: ".75",
-                },
-              }}
-              href="/#livestream"
-              color="gray.4"
-              size={20}
-              weight="bold"
-              ml="sm"
-              underline={false}
-            >
-              Livestream
-            </Anchor>
+            <>
+              <Anchor
+                sx={{
+                  "&:hover": {
+                    opacity: ".75",
+                  },
+                }}
+                href="/#livestream"
+                color="gray.4"
+                size={20}
+                weight="bold"
+                mr="xs"
+                underline={false}
+              >
+                Livestream
+              </Anchor>
+              <Anchor
+                sx={{
+                  "&:hover": {
+                    opacity: ".75",
+                  },
+                }}
+                href="/#videos"
+                color="gray.4"
+                size={20}
+                weight="bold"
+                mr="xs"
+                underline={false}
+              >
+                Videos
+              </Anchor>
+            </>
           )}
           <Button
             color={sessionData ? "red" : "green"}
