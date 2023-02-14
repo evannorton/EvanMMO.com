@@ -45,6 +45,7 @@ const YouTubeCarousel: React.FC<Props> = ({ videos }) => {
                   <Image
                     alt={video.snippet.title}
                     src={video.snippet.thumbnails.maxres.url}
+                    style={{ opacity: videoID === video.id ? 1 : 0.75 }}
                   />
                   {videoID === video.id && (
                     <div
