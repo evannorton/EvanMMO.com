@@ -72,13 +72,13 @@ export const getServerSideProps = async (): Promise<{
       (
         await youtubeAPI.playlistItems.list({
           playlistId: playlistID,
-          part: ["contentDetails"],
+          part: ["contentDetails", "status"],
           maxResults: 50,
         })
       ).data.items || [];
     const videoIDs: string[] = [];
     playlistItems.forEach((playlistItem) => {
-      if (playlistItem.contentDetails?.videoId) {
+      if (playlistItem.contentDetails?.videoId && playlistItem) {
         videoIDs.push(playlistItem.contentDetails.videoId);
       }
     });
@@ -87,7 +87,9 @@ export const getServerSideProps = async (): Promise<{
         id: videoIDs,
         part: ["snippet"],
       })
-    ).data.items;
+    ).data.items?.filter(
+      (video) => video.snippet?.liveBroadcastContent === "none"
+    );
     if (videos) {
       youtubeVideos.push(videos);
     }

@@ -12,7 +12,6 @@ interface Props {
 
 const YouTubeCarousel: React.FC<Props> = ({ videos }) => {
   const { videoID, setVideoID } = useContext(context);
-  console.log(videoID);
   return (
     <Carousel
       mb="md"
