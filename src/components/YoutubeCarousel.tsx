@@ -69,6 +69,8 @@ const YouTubeCarousel: React.FC<Props> = ({ videos }) => {
                       margin: "auto",
                       width: "20%",
                       height: "auto",
+                      boxShadow: "5px 5px 50px 5px #000000",
+                      borderRadius: "50%",
                     }}
                     icon={videoID !== video.id ? faPlayCircle : faStopCircle}
                   />
