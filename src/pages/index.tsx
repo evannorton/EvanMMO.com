@@ -41,9 +41,12 @@ const Home: NextPage<Props> = ({ streamIsLive, youtubeVideos }) => {
           {videoID && (
             <Box mb="md">
               <iframe
-                style={{ border: "none", display: "block", height: "75vh" }}
-                width="100%"
-                height="100%"
+                style={{
+                  border: "none",
+                  display: "block",
+                  width: "100%",
+                  height: "75vh",
+                }}
                 src={`https://www.youtube.com/embed/${videoID}?autoplay=1`}
                 title="YouTube video player"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
