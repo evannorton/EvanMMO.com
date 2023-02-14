@@ -35,39 +35,37 @@ const App: React.FC<Props> = ({ children, streamIsLive }) => {
             EvanMMO
           </Anchor>
           {streamIsLive && (
-            <>
-              <Anchor
-                sx={{
-                  "&:hover": {
-                    opacity: ".75",
-                  },
-                }}
-                href="/#livestream"
-                color="gray.4"
-                size={20}
-                weight="bold"
-                mr="xs"
-                underline={false}
-              >
-                Livestream
-              </Anchor>
-              <Anchor
-                sx={{
-                  "&:hover": {
-                    opacity: ".75",
-                  },
-                }}
-                href="/#videos"
-                color="gray.4"
-                size={20}
-                weight="bold"
-                mr="xs"
-                underline={false}
-              >
-                Videos
-              </Anchor>
-            </>
+            <Anchor
+              sx={{
+                "&:hover": {
+                  opacity: ".75",
+                },
+              }}
+              href="/#livestream"
+              color="gray.4"
+              size={20}
+              weight="bold"
+              mr="xs"
+              underline={false}
+            >
+              Livestream
+            </Anchor>
           )}
+          <Anchor
+            sx={{
+              "&:hover": {
+                opacity: ".75",
+              },
+            }}
+            href="/#videos"
+            color="gray.4"
+            size={20}
+            weight="bold"
+            mr="xs"
+            underline={false}
+          >
+            Videos
+          </Anchor>
           <Button
             color={sessionData ? "red" : "green"}
             style={{ marginLeft: "auto" }}

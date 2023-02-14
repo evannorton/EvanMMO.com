@@ -6,6 +6,8 @@ import { api } from "../utils/api";
 import { MantineProvider } from "@mantine/core";
 import App from "../components/App";
 import streamIsLive from "../server/streamIsLive";
+import context from "../context";
+import { useState } from "react";
 
 interface ServerSideProps {
   readonly streamIsLive: boolean;
@@ -19,6 +21,7 @@ const MyApp: AppType<Props> = ({
   Component,
   pageProps: { session, ...pageProps },
 }) => {
+  const [videoID, setVideoID] = useState<string | null>(null);
   return (
     <SessionProvider session={session}>
       <MantineProvider
@@ -29,9 +32,11 @@ const MyApp: AppType<Props> = ({
           colorScheme: "dark",
         }}
       >
-        <App streamIsLive={pageProps.streamIsLive}>
-          <Component {...pageProps} />
-        </App>
+        <context.Provider value={{ videoID, setVideoID }}>
+          <App streamIsLive={pageProps.streamIsLive}>
+            <Component {...pageProps} />
+          </App>
+        </context.Provider>
       </MantineProvider>
     </SessionProvider>
   );

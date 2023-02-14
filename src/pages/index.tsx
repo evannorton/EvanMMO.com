@@ -7,7 +7,7 @@ import streamIsLive from "../server/streamIsLive";
 import Section from "../components/Section";
 import youtubeAPI from "../server/youtubeAPI";
 import { type youtube_v3 } from "googleapis";
-import YoutubeCarousel from "../components/YoutubeCarousel";
+import YouTubeCarousel from "../components/YouTubeCarousel";
 
 interface ServerSideProps {
   readonly streamIsLive: boolean;
@@ -35,8 +35,8 @@ const Home: NextPage<Props> = ({ streamIsLive, youtubeVideos }) => {
           <Title id="videos" color="gray.0" mb="md">
             Videos
           </Title>
-          {youtubeVideos.map((channelYoutubeVideos, key) => (
-            <YoutubeCarousel videos={channelYoutubeVideos} key={key} />
+          {youtubeVideos.map((channelYouTubeVideos, key) => (
+            <YouTubeCarousel videos={channelYouTubeVideos} key={key} />
           ))}
         </>
       </Section>
