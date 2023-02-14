@@ -1,6 +1,6 @@
 import type { youtube_v3 } from "googleapis";
 import { Carousel } from "@mantine/carousel";
-import { Image } from "@mantine/core";
+import { Image, Text } from "@mantine/core";
 import { useContext } from "react";
 import context from "../context";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -30,7 +30,7 @@ const YouTubeCarousel: React.FC<Props> = ({ videos }) => {
             return (
               <Carousel.Slide key={video.id}>
                 <div
-                  style={{ position: "relative", cursor: "pointer" }}
+                  style={{ cursor: "pointer" }}
                   onClick={() => {
                     if (video.id) {
                       if (videoID !== video.id) {
@@ -41,11 +41,28 @@ const YouTubeCarousel: React.FC<Props> = ({ videos }) => {
                     }
                   }}
                 >
-                  <Image
-                    alt={video.snippet.title}
-                    src={video.snippet.thumbnails.maxres.url}
-                    style={{ opacity: videoID === video.id ? 1 : 0.75 }}
-                  />
+                  <div style={{ position: "relative" }}>
+                    <Image
+                      alt={video.snippet.title}
+                      src={video.snippet.thumbnails.maxres.url}
+                      style={{ opacity: videoID === video.id ? 1 : 0.75 }}
+                    />
+                    <FontAwesomeIcon
+                      style={{
+                        position: "absolute",
+                        left: 0,
+                        top: 0,
+                        bottom: 0,
+                        right: 0,
+                        margin: "auto",
+                        width: "20%",
+                        height: "auto",
+                        boxShadow: "5px 5px 50px 5px #000000",
+                        borderRadius: "50%",
+                      }}
+                      icon={videoID !== video.id ? faPlayCircle : faStopCircle}
+                    />
+                  </div>
                   {videoID === video.id && (
                     <div
                       style={{
@@ -58,21 +75,9 @@ const YouTubeCarousel: React.FC<Props> = ({ videos }) => {
                       }}
                     />
                   )}
-                  <FontAwesomeIcon
-                    style={{
-                      position: "absolute",
-                      left: 0,
-                      top: 0,
-                      bottom: 0,
-                      right: 0,
-                      margin: "auto",
-                      width: "20%",
-                      height: "auto",
-                      boxShadow: "5px 5px 50px 5px #000000",
-                      borderRadius: "50%",
-                    }}
-                    icon={videoID !== video.id ? faPlayCircle : faStopCircle}
-                  />
+                  <Text px="md" pt="xs" pb="md" align="center">
+                    {video.snippet.title}
+                  </Text>
                 </div>
               </Carousel.Slide>
             );
