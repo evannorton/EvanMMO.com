@@ -1,13 +1,13 @@
 import { type AppType } from "next/app";
 import { type Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
-
 import { api } from "../utils/api";
 import { MantineProvider } from "@mantine/core";
 import App from "../components/App";
 import streamIsLive from "../server/streamIsLive";
 import context from "../context";
 import { useState } from "react";
+import "../style.css";
 
 interface ServerSideProps {
   readonly streamIsLive: boolean;

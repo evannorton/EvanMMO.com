@@ -11,7 +11,6 @@ const App: React.FC<Props> = ({ children, streamIsLive }) => {
   return (
     <AppShell
       fixed
-      padding="md"
       header={
         <Header
           style={{ alignItems: "center" }}
