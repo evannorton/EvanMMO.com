@@ -64,3 +64,14 @@ model VerificationToken {
 
     @@unique([identifier, token])
 }
+
+model Game {
+    id            String    @id @default(cuid())
+    embedURL      String
+    title         String
+    description   String    @db.Text
+    thumbnailURL  String
+    releaseDate   DateTime
+    width         Int
+    height        Int
+}

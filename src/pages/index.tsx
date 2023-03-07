@@ -1,25 +1,33 @@
 import { type NextPage } from "next";
-import { Box, Title } from "@mantine/core";
+import { Box, Image, MediaQuery, Text, Title } from "@mantine/core";
 import { TwitchEmbed } from "react-twitch-embed";
 import twitchUsername from "../constants/twitchUsername";
 import Head from "../components/Head";
 import streamIsLive from "../server/streamIsLive";
 import Section from "../components/Section";
 import youtubeAPI from "../server/youtubeAPI";
-import { type youtube_v3 } from "googleapis";
 import YouTubeCarousel from "../components/YouTubeCarousel";
-import { useContext } from "react";
+import { useContext, useRef } from "react";
 import context from "../context";
+import type YouTubeVideo from "../types/YouTubeVideo";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlayCircle, faStopCircle } from "@fortawesome/free-solid-svg-icons";
+import { useQuery } from "@tanstack/react-query";
+import { api } from "../utils/api";
 
 interface ServerSideProps {
   readonly streamIsLive: boolean;
-  readonly youtubeVideos: youtube_v3.Schema$Video[][];
+  readonly youtubeVideos: YouTubeVideo[][];
 }
 
 interface Props extends ServerSideProps {}
 
 const Home: NextPage<Props> = ({ streamIsLive, youtubeVideos }) => {
-  const { videoID } = useContext(context);
+  const { videoID, gameID, setGameID } = useContext(context);
+  const gameRef = useRef<HTMLIFrameElement>(null);
+  const { data: games } = api.game.getAll.useQuery();
+  const game = games?.find((game) => game.id === gameID);
+  useQuery({});
   return (
     <>
       <Head description="A hub for EvanMMO's content creation and game development" />
@@ -45,7 +53,8 @@ const Home: NextPage<Props> = ({ streamIsLive, youtubeVideos }) => {
                   border: "none",
                   display: "block",
                   width: "100%",
-                  height: "75vh",
+                  height: "auto",
+                  aspectRatio: 16 / 9,
                 }}
                 src={`https://www.youtube.com/embed/${videoID}?autoplay=1`}
                 title="YouTube video player"
@@ -59,6 +68,120 @@ const Home: NextPage<Props> = ({ streamIsLive, youtubeVideos }) => {
           ))}
         </>
       </Section>
+      <Section>
+        <>
+          <Title id="games" color="gray.0" mb="md">
+            Games
+          </Title>
+          {game && (
+            <>
+              <Box
+                style={{
+                  width: "100%",
+                  overflow: "auto",
+                }}
+                mb="md"
+              >
+                <iframe
+                  style={{
+                    border: "none",
+                    display: "block",
+                    width: `${game.width}px`,
+                    height: `${game.height}px`,
+                    margin: "0 auto",
+                  }}
+                  src={game.embedURL}
+                  allowFullScreen={false}
+                  ref={gameRef}
+                />
+              </Box>
+              <Box mb="md">
+                <Text style={{ width: "90%", margin: "0 auto" }} align="center">
+                  {game.description}
+                </Text>
+              </Box>
+            </>
+          )}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              flexWrap: "wrap",
+              marginRight: "-16px",
+            }}
+          >
+            {games?.map((game) => (
+              <MediaQuery
+                largerThan="md"
+                styles={{
+                  width: "calc(25% - 16px)",
+                }}
+                key={game.id}
+              >
+                <MediaQuery
+                  smallerThan="md"
+                  styles={{
+                    width: "calc(50% - 16px)",
+                  }}
+                  key={game.id}
+                >
+                  <Box style={{ marginRight: "16px" }}>
+                    <div
+                      style={{ cursor: "pointer", position: "relative" }}
+                      onClick={() => {
+                        if (gameID !== game.id) {
+                          setGameID(game.id);
+                        } else {
+                          setGameID(null);
+                        }
+                      }}
+                    >
+                      <div style={{ position: "relative" }}>
+                        <Image
+                          alt={game.title}
+                          src={game.thumbnailURL}
+                          style={{ opacity: gameID === game.id ? 1 : 0.75 }}
+                        />
+                        <FontAwesomeIcon
+                          style={{
+                            position: "absolute",
+                            left: 0,
+                            top: 0,
+                            bottom: 0,
+                            right: 0,
+                            margin: "auto",
+                            width: "20%",
+                            height: "auto",
+                            boxShadow: "5px 5px 50px 5px #000000",
+                            borderRadius: "50%",
+                          }}
+                          icon={
+                            gameID !== game.id ? faPlayCircle : faStopCircle
+                          }
+                        />
+                        {gameID === game.id && (
+                          <div
+                            style={{
+                              border: "4px solid white",
+                              position: "absolute",
+                              top: 0,
+                              width: "100%",
+                              height: "100%",
+                            }}
+                          />
+                        )}
+                      </div>
+                      <Text px="md" pt="xs" pb="md" align="center">
+                        {game.title}
+                      </Text>
+                    </div>
+                  </Box>
+                </MediaQuery>
+              </MediaQuery>
+            ))}
+          </div>
+        </>
+      </Section>
     </>
   );
 };
@@ -66,7 +189,8 @@ const Home: NextPage<Props> = ({ streamIsLive, youtubeVideos }) => {
 export const getServerSideProps = async (): Promise<{
   readonly props: ServerSideProps;
 }> => {
-  const youtubeVideos: youtube_v3.Schema$Video[][] = [];
+  // YouTube videos
+  const youtubeVideos: YouTubeVideo[][] = [];
   for (const playlistID of [
     "UULF3yvezJgR4p42q7XxKCY5SA",
     "UULFqxh53Dp_hb-Pxlc5ge1kCg",
@@ -90,15 +214,22 @@ export const getServerSideProps = async (): Promise<{
         id: videoIDs,
         part: ["snippet"],
       })
-    ).data.items?.filter(
-      (video) => video.snippet?.liveBroadcastContent === "none"
-    );
+    ).data.items
+      ?.filter((video) => video.snippet?.liveBroadcastContent === "none")
+      .map((video) => ({
+        id: video?.id || null,
+        title: video?.snippet?.title || null,
+        thumbnailURL: video?.snippet?.thumbnails?.maxres?.url || null,
+      }));
     if (videos) {
       youtubeVideos.push(videos);
     }
   }
   return {
-    props: { streamIsLive: await streamIsLive(), youtubeVideos },
+    props: {
+      streamIsLive: await streamIsLive(),
+      youtubeVideos,
+    },
   };
 };
 

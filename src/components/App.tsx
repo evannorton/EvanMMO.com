@@ -65,6 +65,21 @@ const App: React.FC<Props> = ({ children, streamIsLive }) => {
           >
             Videos
           </Anchor>
+          <Anchor
+            sx={{
+              "&:hover": {
+                opacity: ".75",
+              },
+            }}
+            href="/#games"
+            color="gray.4"
+            size={20}
+            weight="bold"
+            mr="xs"
+            underline={false}
+          >
+            Games
+          </Anchor>
           <Button
             color={sessionData ? "red" : "green"}
             style={{ marginLeft: "auto" }}

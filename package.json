@@ -3,9 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "prisma db push && next build",
-    "dev": "prisma db push && next dev",
-    "postinstall": "prisma generate",
+    "build": "prisma db push && prisma generate && next build",
+    "dev": "prisma db push && prisma generate && next dev",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
     "start": "next start"

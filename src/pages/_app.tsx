@@ -22,6 +22,7 @@ const MyApp: AppType<Props> = ({
   pageProps: { session, ...pageProps },
 }) => {
   const [videoID, setVideoID] = useState<string | null>(null);
+  const [gameID, setGameID] = useState<string | null>(null);
   return (
     <SessionProvider session={session}>
       <MantineProvider
@@ -32,7 +33,7 @@ const MyApp: AppType<Props> = ({
           colorScheme: "dark",
         }}
       >
-        <context.Provider value={{ videoID, setVideoID }}>
+        <context.Provider value={{ videoID, setVideoID, gameID, setGameID }}>
           <App streamIsLive={pageProps.streamIsLive}>
             <Component {...pageProps} />
           </App>

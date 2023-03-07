@@ -25,6 +25,7 @@ const server = z.object({
   TWITCH_CLIENT_ID: z.string().min(1),
   TWITCH_CLIENT_SECRET: z.string().min(1),
   GOOGLE_API_KEY: z.string().min(1),
+  ITCH_API_KEY: z.string().min(1)
 });
 
 /**
@@ -51,6 +52,7 @@ const processEnv = {
   TWITCH_CLIENT_ID: process.env.TWITCH_CLIENT_ID,
   TWITCH_CLIENT_SECRET: process.env.TWITCH_CLIENT_SECRET,
   GOOGLE_API_KEY: process.env.GOOGLE_API_KEY,
+  ITCH_API_KEY: process.env.ITCH_API_KEY
   // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
 };
 
