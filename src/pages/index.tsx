@@ -7,7 +7,7 @@ import { useContext, useRef } from "react";
 import { TwitchEmbed } from "react-twitch-embed";
 import Head from "../components/Head";
 import Section from "../components/Section";
-import YouTubeCarousel from "../components/test";
+import YouTubeCarousel from "../components/YouTubeCarousel";
 import twitchUsername from "../constants/twitchUsername";
 import context from "../context";
 import streamIsLive from "../server/streamIsLive";
