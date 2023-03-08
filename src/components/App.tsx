@@ -131,7 +131,7 @@ const App: React.FC<Props> = ({ children, streamIsLive }) => {
         </Header>
       }
     >
-      {children}
+      <Box px="md">{children}</Box>
     </AppShell>
   );
 };
