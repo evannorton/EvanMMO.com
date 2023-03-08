@@ -1,11 +1,18 @@
 import {
-  AppShell,
+  faDiscord,
+  faTwitch,
+  faTwitter,
+  faYoutube,
+} from "@fortawesome/free-brands-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
   Anchor,
+  AppShell,
+  Box,
   Button,
+  Footer,
   Header,
   MediaQuery,
-  Box,
-  Footer,
 } from "@mantine/core";
 import { signIn, signOut, useSession } from "next-auth/react";
 
@@ -16,7 +23,7 @@ interface Props {
 
 const App: React.FC<Props> = ({ children, streamIsLive }) => {
   const { data: sessionData } = useSession();
-  const links = [
+  const headerLinks = [
     {
       text: "Livestream",
       href: "/#livestream",
@@ -31,6 +38,24 @@ const App: React.FC<Props> = ({ children, streamIsLive }) => {
       text: "Games",
       href: "/#games",
       isShown: true,
+    },
+  ];
+  const footerSocialMediaLinks = [
+    {
+      icon: faTwitch,
+      href: "https://twitch.tv/evanmmo",
+    },
+    {
+      icon: faYoutube,
+      href: "https://youtube.com/@evanmmo",
+    },
+    {
+      icon: faTwitter,
+      href: "https://twitter.com/evan_mmo",
+    },
+    {
+      icon: faDiscord,
+      href: "https://discord.gg/evanmmo",
     },
   ];
   return (
@@ -68,7 +93,7 @@ const App: React.FC<Props> = ({ children, streamIsLive }) => {
               >
                 EvanMMO
               </Anchor>
-              {links
+              {headerLinks
                 .filter((link) => link.isShown)
                 .map((link) => (
                   <Anchor
@@ -138,12 +163,32 @@ const App: React.FC<Props> = ({ children, streamIsLive }) => {
       footer={
         <Footer
           fixed={false}
-          style={{ alignItems: "center" }}
+          style={{ alignItems: "center", justifyContent: "center" }}
           height={60}
           p="md"
           display="flex"
         >
-          <></>
+          {footerSocialMediaLinks.map((link, key) => (
+            <Anchor
+              display="block"
+              style={{ display: "block", height: "100%" }}
+              sx={{
+                "&:hover": {
+                  opacity: ".75",
+                },
+              }}
+              target="_blank"
+              color="gray.4"
+              ml={key > 0 ? "lg" : undefined}
+              href={link.href}
+              key={link.href}
+            >
+              <FontAwesomeIcon
+                style={{ display: "block", height: "100%" }}
+                icon={link.icon}
+              />
+            </Anchor>
+          ))}
         </Footer>
       }
     >
