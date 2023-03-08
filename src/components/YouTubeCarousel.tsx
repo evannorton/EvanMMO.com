@@ -1,9 +1,14 @@
+import {
+  faChevronLeft,
+  faChevronRight,
+  faPlayCircle,
+  faStopCircle,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Carousel } from "@mantine/carousel";
 import { Image, Text } from "@mantine/core";
 import { useContext } from "react";
 import context from "../context";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlayCircle, faStopCircle } from "@fortawesome/free-solid-svg-icons";
 import type YouTubeVideo from "../types/YouTubeVideo";
 
 interface Props {
@@ -15,14 +20,22 @@ const YouTubeCarousel: React.FC<Props> = ({ videos }) => {
   return (
     <Carousel
       mb="md"
-      slideSize="33.333333%"
+      slideSize={`${100 / 4}%`}
       slideGap="md"
       align="start"
       loop
       breakpoints={[
-        { maxWidth: "md", slideSize: "50%" },
-        { maxWidth: "sm", slideSize: "100%", slideGap: 0 },
+        { maxWidth: "md", slideSize: `${100 / 3}%` },
+        { maxWidth: "sm", slideSize: `${100 / 2}%` },
+        { maxWidth: "xs", slideSize: "100%", slideGap: 0 },
       ]}
+      controlSize={40}
+      previousControlIcon={
+        <FontAwesomeIcon style={{ width: "1em" }} icon={faChevronLeft} />
+      }
+      nextControlIcon={
+        <FontAwesomeIcon style={{ width: "1em" }} icon={faChevronRight} />
+      }
     >
       {videos.map((video) => {
         if (video.title && video.thumbnailURL) {
