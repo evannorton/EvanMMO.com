@@ -7,7 +7,7 @@ import { useContext, useRef } from "react";
 import { TwitchEmbed } from "react-twitch-embed";
 import Head from "../components/Head";
 import Section from "../components/Section";
-import YouTubeCarousel from "../components/YouTubeCarousel";
+// import YouTubeCarousel from "../components/YouTubeCarousel";
 import twitchUsername from "../constants/twitchUsername";
 import context from "../context";
 import streamIsLive from "../server/streamIsLive";
@@ -63,9 +63,9 @@ const Home: NextPage<Props> = ({ streamIsLive, youtubeVideos }) => {
               />
             </Box>
           )}
-          {youtubeVideos.map((channelYouTubeVideos, key) => (
+          {/* {youtubeVideos.map((channelYouTubeVideos, key) => (
             <YouTubeCarousel videos={channelYouTubeVideos} key={key} />
-          ))}
+          ))} */}
         </>
       </Section>
       <Section>
