@@ -5,6 +5,7 @@ import {
   Header,
   MediaQuery,
   Box,
+  Footer,
 } from "@mantine/core";
 import { signIn, signOut, useSession } from "next-auth/react";
 
@@ -34,9 +35,10 @@ const App: React.FC<Props> = ({ children, streamIsLive }) => {
   ];
   return (
     <AppShell
-      fixed
+      fixed={false}
       header={
         <Header
+          fixed
           style={{ alignItems: "center" }}
           height={60}
           p="md"
@@ -53,6 +55,7 @@ const App: React.FC<Props> = ({ children, streamIsLive }) => {
                 sx={{
                   "&:hover": {
                     opacity: ".75",
+                    textDecoration: "none",
                   },
                 }}
                 href="/"
@@ -71,6 +74,7 @@ const App: React.FC<Props> = ({ children, streamIsLive }) => {
                     sx={{
                       "&:hover": {
                         opacity: ".75",
+                        textDecoration: "none",
                       },
                     }}
                     href={link.href}
@@ -130,8 +134,19 @@ const App: React.FC<Props> = ({ children, streamIsLive }) => {
           </MediaQuery>
         </Header>
       }
+      footer={
+        <Footer
+          fixed={false}
+          style={{ alignItems: "center" }}
+          height={60}
+          p="md"
+          display="flex"
+        >
+          <></>
+        </Footer>
+      }
     >
-      <Box px="md">{children}</Box>
+      {children}
     </AppShell>
   );
 };
