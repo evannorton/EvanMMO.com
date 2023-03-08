@@ -37,7 +37,14 @@ const Home: NextPage<Props> = ({ streamIsLive, youtubeVideos }) => {
             <Title id="livestream" color="gray.0" mb="md">
               Livestream
             </Title>
-            <TwitchEmbed channel={twitchUsername} width="100%" height="75vh" />
+            <Box style={{ aspectRatio: 16 / 9, width: "100%" }}>
+              <TwitchEmbed
+                channel={twitchUsername}
+                width="100%"
+                height="100%"
+                withChat={false}
+              />
+            </Box>
           </>
         </Section>
       )}
