@@ -35,6 +35,7 @@ const App: React.FC<Props> = ({ children, streamIsLive }) => {
   ];
   return (
     <AppShell
+      style={{ paddingTop: "3.75rem" }}
       fixed={false}
       header={
         <Header
