@@ -1,18 +1,18 @@
-import { type NextPage } from "next";
-import { Box, Image, MediaQuery, Text, Title } from "@mantine/core";
-import { TwitchEmbed } from "react-twitch-embed";
-import twitchUsername from "../constants/twitchUsername";
-import Head from "../components/Head";
-import streamIsLive from "../server/streamIsLive";
-import Section from "../components/Section";
-import youtubeAPI from "../server/youtubeAPI";
-import YouTubeCarousel from "../components/YouTubeCarousel";
-import { useContext, useRef } from "react";
-import context from "../context";
-import type YouTubeVideo from "../types/YouTubeVideo";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlayCircle, faStopCircle } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Box, Image, MediaQuery, Text, Title } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
+import { type NextPage } from "next";
+import { useContext, useRef } from "react";
+import { TwitchEmbed } from "react-twitch-embed";
+import Head from "../components/Head";
+import Section from "../components/Section";
+import YouTubeCarousel from "../components/YouTubeCarousel";
+import twitchUsername from "../constants/twitchUsername";
+import context from "../context";
+import streamIsLive from "../server/streamIsLive";
+import youtubeAPI from "../server/youtubeAPI";
+import type YouTubeVideo from "../types/YouTubeVideo";
 import { api } from "../utils/api";
 
 interface ServerSideProps {
