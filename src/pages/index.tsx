@@ -11,21 +11,16 @@ import Section from "../components/Section";
 import YouTubeCarousel from "../components/YouTubeCarousel";
 import context from "../context";
 import twitchUsername from "../constants/twitchUsername";
-import youtubeAPI from "../server/youtubeAPI";
-import type YouTubeVideo from "../types/YouTubeVideo";
 
-interface ServerSideProps {
-  readonly youtubeVideos: YouTubeVideo[][];
-}
+interface Props {}
 
-interface Props extends ServerSideProps {}
-
-const Home: NextPage<Props> = ({ youtubeVideos }) => {
+const Home: NextPage<Props> = () => {
   const { videoID, gameID, setGameID } = useContext(context);
   const gameRef = useRef<HTMLIFrameElement>(null);
   const { data: games } = api.game.getAll.useQuery();
   const game = games?.find((game) => game.id === gameID);
   const { data: streamIsLive } = api.twitch.isLive.useQuery();
+  const { data: youtubeVideos } = api.youtube.videos.useQuery();
   useQuery({});
   return (
     <>
@@ -69,7 +64,7 @@ const Home: NextPage<Props> = ({ youtubeVideos }) => {
               />
             </Box>
           )}
-          {youtubeVideos.map((channelYouTubeVideos, key) => (
+          {youtubeVideos?.map((channelYouTubeVideos, key) => (
             <YouTubeCarousel videos={channelYouTubeVideos} key={key} />
           ))}
         </>
@@ -190,52 +185,6 @@ const Home: NextPage<Props> = ({ youtubeVideos }) => {
       </Section>
     </>
   );
-};
-
-export const getServerSideProps = async (): Promise<{
-  readonly props: ServerSideProps;
-}> => {
-  // YouTube videos
-  const youtubeVideos: YouTubeVideo[][] = [];
-  for (const playlistID of [
-    "UULF3yvezJgR4p42q7XxKCY5SA",
-    "UULFqxh53Dp_hb-Pxlc5ge1kCg",
-  ]) {
-    const playlistItems =
-      (
-        await youtubeAPI.playlistItems.list({
-          playlistId: playlistID,
-          part: ["contentDetails", "status"],
-          maxResults: 50,
-        })
-      ).data.items || [];
-    const videoIDs: string[] = [];
-    playlistItems.forEach((playlistItem) => {
-      if (playlistItem.contentDetails?.videoId && playlistItem) {
-        videoIDs.push(playlistItem.contentDetails.videoId);
-      }
-    });
-    const videos = (
-      await youtubeAPI.videos.list({
-        id: videoIDs,
-        part: ["snippet"],
-      })
-    ).data.items
-      ?.filter((video) => video.snippet?.liveBroadcastContent === "none")
-      .map((video) => ({
-        id: video?.id || null,
-        title: video?.snippet?.title || null,
-        thumbnailURL: video?.snippet?.thumbnails?.maxres?.url || null,
-      }));
-    if (videos) {
-      youtubeVideos.push(videos);
-    }
-  }
-  return {
-    props: {
-      youtubeVideos,
-    },
-  };
 };
 
 export default Home;
