@@ -119,15 +119,17 @@ const App: React.FC<Props> = ({ children }) => {
                     ))}
                 </Box>
               </MediaQuery>
-              <Button
-                color={sessionData ? "red" : "green"}
-                style={{ marginLeft: "auto" }}
-                onClick={
-                  sessionData ? () => void signOut() : () => void signIn()
-                }
-              >
-                {sessionData ? "Sign out" : "Sign in"}
-              </Button>
+              {typeof sessionData !== "undefined" && (
+                <Button
+                  color={sessionData ? "red" : "green"}
+                  style={{ marginLeft: "auto" }}
+                  onClick={
+                    sessionData ? () => void signOut() : () => void signIn()
+                  }
+                >
+                  {sessionData ? "Sign out" : "Sign in"}
+                </Button>
+              )}
             </Box>
           </Header>
         }
