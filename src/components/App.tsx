@@ -59,141 +59,149 @@ const App: React.FC<Props> = ({ children, streamIsLive }) => {
     },
   ];
   return (
-    <AppShell
-      style={{ paddingTop: "3.75rem" }}
-      fixed={false}
-      header={
-        <Header
-          fixed
-          style={{ alignItems: "center" }}
-          height={60}
-          p="md"
-          display="flex"
-        >
-          <MediaQuery
-            smallerThan="sm"
-            styles={{
-              display: "none",
-            }}
+    <Box style={{ maxWidth: 1280, margin: "0 auto" }}>
+      <AppShell
+        style={{ paddingTop: "3.75rem" }}
+        fixed={false}
+        header={
+          <Header
+            fixed
+            style={{ alignItems: "center", maxWidth: 1280, margin: "0 auto" }}
+            height={60}
+            p="md"
+            display="flex"
           >
-            <Box style={{ width: "100%", alignItems: "center" }} display="flex">
-              <Anchor
-                sx={{
-                  "&:hover": {
-                    opacity: ".75",
-                    textDecoration: "none",
-                  },
-                }}
-                href="/"
-                color="gray.0"
-                size={24}
-                weight="bold"
-                underline={false}
-                mr="lg"
-              >
-                EvanMMO
-              </Anchor>
-              {headerLinks
-                .filter((link) => link.isShown)
-                .map((link) => (
-                  <Anchor
-                    sx={{
-                      "&:hover": {
-                        opacity: ".75",
-                        textDecoration: "none",
-                      },
-                    }}
-                    href={link.href}
-                    color="gray.4"
-                    size={20}
-                    weight="bold"
-                    mr="xs"
-                    underline={false}
-                    key={link.href}
-                  >
-                    {link.text}
-                  </Anchor>
-                ))}
-              <Button
-                color={sessionData ? "red" : "green"}
-                style={{ marginLeft: "auto" }}
-                onClick={
-                  sessionData ? () => void signOut() : () => void signIn()
-                }
-              >
-                {sessionData ? "Sign out" : "Sign in"}
-              </Button>
-            </Box>
-          </MediaQuery>
-          <MediaQuery
-            largerThan="sm"
-            styles={{
-              display: "none",
-            }}
-          >
-            <Box style={{ width: "100%", alignItems: "center" }} display="flex">
-              <Anchor
-                sx={{
-                  "&:hover": {
-                    opacity: ".75",
-                  },
-                }}
-                href="/"
-                color="gray.0"
-                size={24}
-                weight="bold"
-                underline={false}
-                mr="lg"
-              >
-                EvanMMO
-              </Anchor>
-              <Button
-                color={sessionData ? "red" : "green"}
-                style={{ marginLeft: "auto" }}
-                onClick={
-                  sessionData ? () => void signOut() : () => void signIn()
-                }
-              >
-                {sessionData ? "Sign out" : "Sign in"}
-              </Button>
-            </Box>
-          </MediaQuery>
-        </Header>
-      }
-      footer={
-        <Footer
-          fixed={false}
-          style={{ alignItems: "center", justifyContent: "center" }}
-          height={60}
-          p="md"
-          display="flex"
-        >
-          {footerSocialMediaLinks.map((link, key) => (
-            <Anchor
-              display="block"
-              style={{ display: "block", height: "100%" }}
-              sx={{
-                "&:hover": {
-                  opacity: ".75",
-                },
+            <MediaQuery
+              smallerThan="sm"
+              styles={{
+                display: "none",
               }}
-              target="_blank"
-              color="gray.4"
-              ml={key > 0 ? "lg" : undefined}
-              href={link.href}
-              key={link.href}
             >
-              <FontAwesomeIcon
+              <Box
+                style={{ width: "100%", alignItems: "center" }}
+                display="flex"
+              >
+                <Anchor
+                  sx={{
+                    "&:hover": {
+                      opacity: ".75",
+                      textDecoration: "none",
+                    },
+                  }}
+                  href="/"
+                  color="gray.0"
+                  size={24}
+                  weight="bold"
+                  underline={false}
+                  mr="lg"
+                >
+                  EvanMMO
+                </Anchor>
+                {headerLinks
+                  .filter((link) => link.isShown)
+                  .map((link) => (
+                    <Anchor
+                      sx={{
+                        "&:hover": {
+                          opacity: ".75",
+                          textDecoration: "none",
+                        },
+                      }}
+                      href={link.href}
+                      color="gray.4"
+                      size={20}
+                      weight="bold"
+                      mr="xs"
+                      underline={false}
+                      key={link.href}
+                    >
+                      {link.text}
+                    </Anchor>
+                  ))}
+                <Button
+                  color={sessionData ? "red" : "green"}
+                  style={{ marginLeft: "auto" }}
+                  onClick={
+                    sessionData ? () => void signOut() : () => void signIn()
+                  }
+                >
+                  {sessionData ? "Sign out" : "Sign in"}
+                </Button>
+              </Box>
+            </MediaQuery>
+            <MediaQuery
+              largerThan="sm"
+              styles={{
+                display: "none",
+              }}
+            >
+              <Box
+                style={{ width: "100%", alignItems: "center" }}
+                display="flex"
+              >
+                <Anchor
+                  sx={{
+                    "&:hover": {
+                      opacity: ".75",
+                    },
+                  }}
+                  href="/"
+                  color="gray.0"
+                  size={24}
+                  weight="bold"
+                  underline={false}
+                  mr="lg"
+                >
+                  EvanMMO
+                </Anchor>
+                <Button
+                  color={sessionData ? "red" : "green"}
+                  style={{ marginLeft: "auto" }}
+                  onClick={
+                    sessionData ? () => void signOut() : () => void signIn()
+                  }
+                >
+                  {sessionData ? "Sign out" : "Sign in"}
+                </Button>
+              </Box>
+            </MediaQuery>
+          </Header>
+        }
+        footer={
+          <Footer
+            fixed={false}
+            style={{ alignItems: "center", justifyContent: "center" }}
+            height={60}
+            p="md"
+            display="flex"
+          >
+            {footerSocialMediaLinks.map((link, key) => (
+              <Anchor
+                display="block"
                 style={{ display: "block", height: "100%" }}
-                icon={link.icon}
-              />
-            </Anchor>
-          ))}
-        </Footer>
-      }
-    >
-      {children}
-    </AppShell>
+                sx={{
+                  "&:hover": {
+                    opacity: ".75",
+                  },
+                }}
+                target="_blank"
+                color="gray.4"
+                ml={key > 0 ? "lg" : undefined}
+                href={link.href}
+                key={link.href}
+              >
+                <FontAwesomeIcon
+                  style={{ display: "block", height: "100%" }}
+                  icon={link.icon}
+                />
+              </Anchor>
+            ))}
+          </Footer>
+        }
+      >
+        {children}
+      </AppShell>
+    </Box>
   );
 };
 
