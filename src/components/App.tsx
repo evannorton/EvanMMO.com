@@ -72,100 +72,63 @@ const App: React.FC<Props> = ({ children }) => {
             p="md"
             display="flex"
           >
-            <MediaQuery
-              smallerThan="sm"
-              styles={{
-                display: "none",
-              }}
-            >
-              <Box
-                style={{ width: "100%", alignItems: "center" }}
-                display="flex"
+            <Box style={{ width: "100%", alignItems: "center" }} display="flex">
+              <Anchor
+                sx={{
+                  "&:hover": {
+                    opacity: ".75",
+                    textDecoration: "none",
+                  },
+                }}
+                href="/"
+                color="gray.0"
+                size={24}
+                weight="bold"
+                underline={false}
+                mr="lg"
               >
-                <Anchor
-                  sx={{
-                    "&:hover": {
-                      opacity: ".75",
-                      textDecoration: "none",
-                    },
-                  }}
-                  href="/"
-                  color="gray.0"
-                  size={24}
-                  weight="bold"
-                  underline={false}
-                  mr="lg"
-                >
-                  EvanMMO
-                </Anchor>
-                {headerLinks
-                  .filter((link) => link.isShown)
-                  .map((link) => (
-                    <Anchor
-                      sx={{
-                        "&:hover": {
-                          opacity: ".75",
-                          textDecoration: "none",
-                        },
-                      }}
-                      href={link.href}
-                      color="gray.4"
-                      size={20}
-                      weight="bold"
-                      mr="xs"
-                      underline={false}
-                      key={link.href}
-                    >
-                      {link.text}
-                    </Anchor>
-                  ))}
-                <Button
-                  color={sessionData ? "red" : "green"}
-                  style={{ marginLeft: "auto" }}
-                  onClick={
-                    sessionData ? () => void signOut() : () => void signIn()
-                  }
-                >
-                  {sessionData ? "Sign out" : "Sign in"}
-                </Button>
-              </Box>
-            </MediaQuery>
-            <MediaQuery
-              largerThan="sm"
-              styles={{
-                display: "none",
-              }}
-            >
-              <Box
-                style={{ width: "100%", alignItems: "center" }}
-                display="flex"
+                EvanMMO
+              </Anchor>
+              <MediaQuery
+                smallerThan="sm"
+                styles={{
+                  display: "none",
+                }}
               >
-                <Anchor
-                  sx={{
-                    "&:hover": {
-                      opacity: ".75",
-                    },
-                  }}
-                  href="/"
-                  color="gray.0"
-                  size={24}
-                  weight="bold"
-                  underline={false}
-                  mr="lg"
-                >
-                  EvanMMO
-                </Anchor>
-                <Button
-                  color={sessionData ? "red" : "green"}
-                  style={{ marginLeft: "auto" }}
-                  onClick={
-                    sessionData ? () => void signOut() : () => void signIn()
-                  }
-                >
-                  {sessionData ? "Sign out" : "Sign in"}
-                </Button>
-              </Box>
-            </MediaQuery>
+                <Box>
+                  {headerLinks
+                    .filter((link) => link.isShown)
+                    .map((link) => (
+                      <Anchor
+                        sx={{
+                          "&:hover": {
+                            opacity: ".75",
+                            textDecoration: "none",
+                          },
+                        }}
+                        href={link.href}
+                        color="gray.4"
+                        size={20}
+                        weight="bold"
+                        mr="xs"
+                        underline={false}
+                        key={link.href}
+                      >
+                        {link.text}
+                      </Anchor>
+                    ))}
+                </Box>
+              </MediaQuery>
+              <Button
+                color={sessionData ? "red" : "green"}
+                style={{ marginLeft: "auto" }}
+                onClick={
+                  sessionData ? () => void signOut() : () => void signIn()
+                }
+              >
+                {sessionData ? "Sign out" : "Sign in"}
+              </Button>
+            </Box>
           </Header>
         }
         footer={
