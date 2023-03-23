@@ -59,14 +59,14 @@ const App: React.FC<Props> = ({ children, streamIsLive }) => {
     },
   ];
   return (
-    <Box style={{ maxWidth: 1280, margin: "0 auto" }}>
+    <Box style={{ maxWidth: 1440, margin: "0 auto" }}>
       <AppShell
         style={{ paddingTop: "3.75rem" }}
         fixed={false}
         header={
           <Header
             fixed
-            style={{ alignItems: "center", maxWidth: 1280, margin: "0 auto" }}
+            style={{ alignItems: "center", maxWidth: 1440, margin: "0 auto" }}
             height={60}
             p="md"
             display="flex"
