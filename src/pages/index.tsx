@@ -1,32 +1,31 @@
-import { faPlayCircle, faStopCircle } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Box, Image, MediaQuery, Text, Title } from "@mantine/core";
-import { useQuery } from "@tanstack/react-query";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { type NextPage } from "next";
-import { useContext, useRef } from "react";
 import { TwitchEmbed } from "react-twitch-embed";
+import { api } from "../utils/api";
+import { faPlayCircle, faStopCircle } from "@fortawesome/free-solid-svg-icons";
+import { useContext, useRef } from "react";
+import { useQuery } from "@tanstack/react-query";
 import Head from "../components/Head";
 import Section from "../components/Section";
 import YouTubeCarousel from "../components/YouTubeCarousel";
-import twitchUsername from "../constants/twitchUsername";
 import context from "../context";
-import streamIsLive from "../server/streamIsLive";
+import twitchUsername from "../constants/twitchUsername";
 import youtubeAPI from "../server/youtubeAPI";
 import type YouTubeVideo from "../types/YouTubeVideo";
-import { api } from "../utils/api";
 
 interface ServerSideProps {
-  readonly streamIsLive: boolean;
   readonly youtubeVideos: YouTubeVideo[][];
 }
 
 interface Props extends ServerSideProps {}
 
-const Home: NextPage<Props> = ({ streamIsLive, youtubeVideos }) => {
+const Home: NextPage<Props> = ({ youtubeVideos }) => {
   const { videoID, gameID, setGameID } = useContext(context);
   const gameRef = useRef<HTMLIFrameElement>(null);
   const { data: games } = api.game.getAll.useQuery();
   const game = games?.find((game) => game.id === gameID);
+  const { data: streamIsLive } = api.twitch.isLive.useQuery();
   useQuery({});
   return (
     <>
@@ -234,7 +233,6 @@ export const getServerSideProps = async (): Promise<{
   }
   return {
     props: {
-      streamIsLive: await streamIsLive(),
       youtubeVideos,
     },
   };

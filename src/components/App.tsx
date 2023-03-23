@@ -1,11 +1,4 @@
 import {
-  faDiscord,
-  faTwitch,
-  faTwitter,
-  faYoutube,
-} from "@fortawesome/free-brands-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
   Anchor,
   AppShell,
   Box,
@@ -14,15 +7,23 @@ import {
   Header,
   MediaQuery,
 } from "@mantine/core";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { api } from "../utils/api";
+import {
+  faDiscord,
+  faTwitch,
+  faTwitter,
+  faYoutube,
+} from "@fortawesome/free-brands-svg-icons";
 import { signIn, signOut, useSession } from "next-auth/react";
 
 interface Props {
   readonly children: JSX.Element;
-  readonly streamIsLive: boolean;
 }
 
-const App: React.FC<Props> = ({ children, streamIsLive }) => {
+const App: React.FC<Props> = ({ children }) => {
   const { data: sessionData } = useSession();
+  const { data: streamIsLive } = api.twitch.isLive.useQuery();
   const headerLinks = [
     {
       text: "Livestream",

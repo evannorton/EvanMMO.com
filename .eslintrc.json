@@ -16,11 +16,16 @@
   "parserOptions": {
     "project": "./tsconfig.json"
   },
-  "plugins": ["@typescript-eslint"],
+  "plugins": ["@typescript-eslint", "sort-imports-es6-autofix"],
   "extends": ["next/core-web-vitals", "plugin:@typescript-eslint/recommended"],
   "rules": {
     "@typescript-eslint/consistent-type-imports": "warn",
     "@typescript-eslint/no-empty-interface": "off",
-    "@typescript-eslint/no-empty-function": "off"
+    "@typescript-eslint/no-empty-function": "off",
+    "sort-imports-es6-autofix/sort-imports-es6": [2, {
+      "ignoreCase": false,
+      "ignoreMemberSort": false,
+      "memberSyntaxSortOrder": ["none", "all", "multiple", "single"]
+    }]
   }
 }

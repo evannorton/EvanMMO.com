@@ -1,12 +1,12 @@
+import { Carousel } from "@mantine/carousel";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Image, Text } from "@mantine/core";
 import {
   faChevronLeft,
   faChevronRight,
   faPlayCircle,
   faStopCircle,
 } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Carousel } from "@mantine/carousel";
-import { Image, Text } from "@mantine/core";
 import { useContext } from "react";
 import context from "../context";
 import type YouTubeVideo from "../types/YouTubeVideo";

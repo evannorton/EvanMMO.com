@@ -1,19 +1,14 @@
+import "../style.css";
+import { type AppType } from "next/app";
 import { MantineProvider } from "@mantine/core";
 import { type Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
-import { type AppType } from "next/app";
+import { api } from "../utils/api";
 import { useState } from "react";
 import App from "../components/App";
 import context from "../context";
-import streamIsLive from "../server/streamIsLive";
-import "../style.css";
-import { api } from "../utils/api";
 
-interface ServerSideProps {
-  readonly streamIsLive: boolean;
-}
-
-interface Props extends ServerSideProps {
+interface Props {
   readonly session: Session | null;
 }
 
@@ -34,19 +29,13 @@ const MyApp: AppType<Props> = ({
         }}
       >
         <context.Provider value={{ videoID, setVideoID, gameID, setGameID }}>
-          <App streamIsLive={pageProps.streamIsLive}>
+          <App>
             <Component {...pageProps} />
           </App>
         </context.Provider>
       </MantineProvider>
     </SessionProvider>
   );
-};
-
-export const getServerSideProps = async (): Promise<{
-  readonly props: ServerSideProps;
-}> => {
-  return { props: { streamIsLive: await streamIsLive() } };
 };
 
 export default api.withTRPC(MyApp);

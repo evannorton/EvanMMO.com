@@ -1,14 +1,14 @@
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import type { GetServerSidePropsContext } from "next";
 import {
-  getServerSession,
   type DefaultSession,
   type NextAuthOptions,
+  getServerSession,
 } from "next-auth";
-import DiscordProvider from "next-auth/providers/discord";
-import TwitchProvider from "next-auth/providers/twitch";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { env } from "../env.mjs";
 import { prisma } from "./db";
+import DiscordProvider from "next-auth/providers/discord";
+import TwitchProvider from "next-auth/providers/twitch";
+import type { GetServerSidePropsContext } from "next";
 
 /**
  * Module augmentation for `next-auth` types.
