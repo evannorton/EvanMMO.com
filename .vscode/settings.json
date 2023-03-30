@@ -14,5 +14,6 @@
     "powermode.combo.timerEnabled": "hide",
     "editor.tabSize": 2,
     "editor.defaultFormatter": "dbaeumer.vscode-eslint",
-    "eslint.format.enable": true
+    "eslint.format.enable": true,
+    "files.eol": "\n"
 }
