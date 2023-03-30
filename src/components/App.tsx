@@ -120,15 +120,37 @@ const App: React.FC<Props> = ({ children }) => {
                 </Box>
               </MediaQuery>
               {typeof sessionData !== "undefined" && (
-                <Button
-                  color={sessionData ? "red" : "green"}
-                  style={{ marginLeft: "auto" }}
-                  onClick={
-                    sessionData ? () => void signOut() : () => void signIn()
-                  }
+                <Box
+                  display="flex"
+                  style={{ alignItems: "center", marginLeft: "auto" }}
                 >
-                  {sessionData ? "Sign out" : "Sign in"}
-                </Button>
+                  {sessionData?.user.role === "ADMIN" && (
+                    <Anchor
+                      sx={{
+                        "&:hover": {
+                          opacity: ".75",
+                          textDecoration: "none",
+                        },
+                      }}
+                      href="/dashboard"
+                      color="gray.4"
+                      size={20}
+                      weight="bold"
+                      mr="xs"
+                      underline={false}
+                    >
+                      Dashboard
+                    </Anchor>
+                  )}
+                  <Button
+                    color={sessionData ? "red" : "green"}
+                    onClick={
+                      sessionData ? () => void signOut() : () => void signIn()
+                    }
+                  >
+                    {sessionData ? "Sign out" : "Sign in"}
+                  </Button>
+                </Box>
               )}
             </Box>
           </Header>
