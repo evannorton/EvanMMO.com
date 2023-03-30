@@ -1,4 +1,4 @@
-import { Box, Image, MediaQuery, Text, Title } from "@mantine/core";
+import { Box, Image, Loader, MediaQuery, Text, Title } from "@mantine/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { type NextPage } from "next";
 import { TwitchEmbed } from "react-twitch-embed";
@@ -15,10 +15,11 @@ import twitchUsername from "../constants/twitchUsername";
 const Home: NextPage = () => {
   const { videoID, gameID, setGameID } = useContext(context);
   const gameRef = useRef<HTMLIFrameElement>(null);
-  const { data: games } = api.game.getAll.useQuery();
+  const { data: games, isLoading: isLoadingGames } = api.game.getAll.useQuery();
   const game = games?.find((game) => game.id === gameID);
   const { data: streamIsLive } = api.twitch.isLive.useQuery();
-  const { data: youtubeVideos } = api.youtube.videos.useQuery();
+  const { data: youtubeVideos, isLoading: isLoadingVideos } =
+    api.youtube.videos.useQuery();
   useQuery({});
   return (
     <>
@@ -45,6 +46,7 @@ const Home: NextPage = () => {
           <Title id="videos" color="gray.0" mb="md">
             Videos
           </Title>
+          {isLoadingVideos && <Loader />}
           {videoID && (
             <Box mb="md">
               <iframe
@@ -72,6 +74,7 @@ const Home: NextPage = () => {
           <Title id="games" color="gray.0" mb="md">
             Games
           </Title>
+          {isLoadingGames && <Loader />}
           {game && (
             <>
               <Box
