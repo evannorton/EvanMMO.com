@@ -12,9 +12,7 @@ import YouTubeCarousel from "../components/YouTubeCarousel";
 import context from "../context";
 import twitchUsername from "../constants/twitchUsername";
 
-interface Props {}
-
-const Home: NextPage<Props> = () => {
+const Home: NextPage = () => {
   const { videoID, gameID, setGameID } = useContext(context);
   const gameRef = useRef<HTMLIFrameElement>(null);
   const { data: games } = api.game.getAll.useQuery();

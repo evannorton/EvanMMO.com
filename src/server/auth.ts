@@ -9,6 +9,7 @@ import { prisma } from "./db";
 import DiscordProvider from "next-auth/providers/discord";
 import TwitchProvider from "next-auth/providers/twitch";
 import type { GetServerSidePropsContext } from "next";
+import type { User as PrismaUser, UserRole } from "@prisma/client";
 
 /**
  * Module augmentation for `next-auth` types.
@@ -21,15 +22,11 @@ declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
       id: string;
-      // ...other properties
-      // role: UserRole;
+      role: UserRole;
     } & DefaultSession["user"];
   }
 
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
+  interface User extends PrismaUser {}
 }
 
 /**
@@ -43,7 +40,7 @@ export const authOptions: NextAuthOptions = {
     session({ session, user }) {
       if (session.user) {
         session.user.id = user.id;
-        // session.user.role = user.role; <-- put other properties on the session here
+        session.user.role = user.role;
       }
       return session;
     },
