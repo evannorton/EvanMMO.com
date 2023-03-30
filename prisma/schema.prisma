@@ -81,3 +81,17 @@ model Game {
     width         Int
     height        Int
 }
+
+model Vod {
+    id            String    @id @default(cuid())
+    streamDate    DateTime
+    pieces        VodPiece[]
+}
+
+model VodPiece {
+    id            String    @id @default(cuid())
+    mp4URL        String
+    jsonURL       String
+    vodId         String
+    vod           Vod       @relation(fields: [vodId], references: [id])
+}

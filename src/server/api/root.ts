@@ -2,6 +2,7 @@ import { createTRPCRouter } from "./trpc";
 import { exampleRouter } from "./routers/example";
 import { gameRouter } from "./routers/game";
 import { twitchRouter } from "./routers/twitch";
+import { vodRouter } from "./routers/vod";
 import { youtubeRouter } from "./routers/youtube";
 
 /**
@@ -13,6 +14,7 @@ export const appRouter = createTRPCRouter({
   example: exampleRouter,
   game: gameRouter,
   twitch: twitchRouter,
+  vod: vodRouter,
   youtube: youtubeRouter,
 });
 
