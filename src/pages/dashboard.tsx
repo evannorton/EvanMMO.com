@@ -9,6 +9,7 @@ import {
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { UserRole } from "@prisma/client";
+import { api } from "../utils/api";
 import { authOptions } from "../server/auth";
 import { getServerSession } from "next-auth";
 import { useForm } from "@mantine/form";
@@ -36,13 +37,12 @@ const Dashboard: NextPage = () => {
       streamDate: (value) =>
         value === null ? "You must specify a stream date" : null,
       pieces: {
-        jsonURL: (value) =>
-          value.length === 0 ? "You must specify a JSON URL" : null,
         mp4URL: (value) =>
           value.length === 0 ? "You must specify an MP4 URL" : null,
       },
     },
   });
+  const insertVODMutation = api.vod.insertVOD.useMutation();
   return (
     <>
       <Title id="videos" color="gray.0" mb="md">
@@ -65,7 +65,13 @@ const Dashboard: NextPage = () => {
           onSubmit={vodForm.onSubmit((values) => {
             setIsAddingVOD(false);
             vodForm.reset();
-            console.log(values);
+            insertVODMutation.mutate({
+              streamDate: values.streamDate as Date,
+              pieces: values.pieces.map((piece) => ({
+                jsonURL: piece.jsonURL.length > 0 ? piece.jsonURL : null,
+                mp4URL: piece.mp4URL,
+              })),
+            });
           })}
         >
           <Tabs defaultValue="data" mb="md">
@@ -93,7 +99,6 @@ const Dashboard: NextPage = () => {
                     {...vodForm.getInputProps(`pieces.${index}.mp4URL`)}
                   />
                   <TextInput
-                    withAsterisk
                     label="JSON URL"
                     {...vodForm.getInputProps(`pieces.${index}.jsonURL`)}
                     mb="sm"

@@ -91,7 +91,7 @@ model Vod {
 model VodPiece {
     id            String    @id @default(cuid())
     mp4URL        String
-    jsonURL       String
+    jsonURL       String?
     vodId         String
     vod           Vod       @relation(fields: [vodId], references: [id])
 }

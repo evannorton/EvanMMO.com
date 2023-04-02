@@ -8,13 +8,13 @@ export const vodRouter = createTRPCRouter({
         streamDate: z.date(),
         pieces: z.array(
           z.object({
-            jsonURL: z.string(),
+            jsonURL: z.string().nullable(),
             mp4URL: z.string(),
           })
         ),
       })
     )
-    .query(async ({ ctx, input }) => {
+    .mutation(async ({ ctx, input }) => {
       const vod = await ctx.prisma.vod.create({
         data: {
           streamDate: input.streamDate,
