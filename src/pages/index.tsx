@@ -5,7 +5,6 @@ import { TwitchEmbed } from "react-twitch-embed";
 import { api } from "../utils/api";
 import { faPlayCircle, faStopCircle } from "@fortawesome/free-solid-svg-icons";
 import { useContext, useRef } from "react";
-import { useQuery } from "@tanstack/react-query";
 import Head from "../components/Head";
 import Section from "../components/Section";
 import YouTubeCarousel from "../components/YouTubeCarousel";
@@ -20,7 +19,6 @@ const Home: NextPage = () => {
   const { data: streamIsLive } = api.twitch.isLive.useQuery();
   const { data: youtubeVideos, isLoading: isLoadingVideos } =
     api.youtube.videos.useQuery();
-  useQuery({});
   return (
     <>
       <Head description="A hub for EvanMMO's content creation and game development" />
