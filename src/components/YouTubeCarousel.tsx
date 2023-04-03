@@ -1,6 +1,6 @@
+import { Box, Image, Text } from "@mantine/core";
 import { Carousel } from "@mantine/carousel";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Image, Text } from "@mantine/core";
 import {
   faChevronLeft,
   faChevronRight,
@@ -41,7 +41,7 @@ const YouTubeCarousel: React.FC<Props> = ({ videos }) => {
         if (video.title && video.thumbnailURL) {
           return (
             <Carousel.Slide key={video.id}>
-              <div
+              <Box
                 style={{ cursor: "pointer" }}
                 onClick={() => {
                   if (video.id) {
@@ -53,7 +53,7 @@ const YouTubeCarousel: React.FC<Props> = ({ videos }) => {
                   }
                 }}
               >
-                <div style={{ position: "relative" }}>
+                <Box style={{ position: "relative" }}>
                   <Image
                     alt={video.title}
                     src={video.thumbnailURL}
@@ -75,7 +75,7 @@ const YouTubeCarousel: React.FC<Props> = ({ videos }) => {
                     icon={videoID !== video.id ? faPlayCircle : faStopCircle}
                   />
                   {videoID === video.id && (
-                    <div
+                    <Box
                       style={{
                         border: "4px solid white",
                         position: "absolute",
@@ -86,11 +86,11 @@ const YouTubeCarousel: React.FC<Props> = ({ videos }) => {
                       }}
                     />
                   )}
-                </div>
+                </Box>
                 <Text px="md" pt="xs" pb="md" align="center">
                   {video.title}
                 </Text>
-              </div>
+              </Box>
             </Carousel.Slide>
           );
         }

@@ -1,7 +1,11 @@
 import {
   Box,
   Button,
+  Card,
+  Loader,
   Modal,
+  Pagination,
+  SimpleGrid,
   Tabs,
   Text,
   TextInput,
@@ -14,6 +18,8 @@ import { authOptions } from "../server/auth";
 import { getServerSession } from "next-auth";
 import { useForm } from "@mantine/form";
 import { useState } from "react";
+import Head from "../components/Head";
+import vodsPerPage from "../constants/vodsPerPage";
 import type { GetServerSideProps, NextPage } from "next";
 
 interface VODPieceCreationInput {
@@ -43,8 +49,22 @@ const Dashboard: NextPage = () => {
     },
   });
   const insertVODMutation = api.vod.insertVOD.useMutation();
+  const [vodsPage, setVODsPage] = useState(1);
+  const {
+    data: vods,
+    isLoading: isLoadingVODs,
+    refetch: refetchVODs,
+  } = api.vod.getAll.useQuery({
+    page: vodsPage - 1,
+  });
+  const {
+    data: vodsCount,
+    isLoading: isLoadingVODsCount,
+    refetch: refetchVODsCount,
+  } = api.vod.getCount.useQuery();
   return (
     <>
+      <Head description="Admin dashboard for EvanMMO's content creation and game development site" />
       <Title id="videos" color="gray.0" mb="md">
         VODs
       </Title>
@@ -65,16 +85,28 @@ const Dashboard: NextPage = () => {
           onSubmit={vodForm.onSubmit((values) => {
             setIsAddingVOD(false);
             vodForm.reset();
-            insertVODMutation.mutate({
-              streamDate: values.streamDate as Date,
-              pieces: values.pieces.map((piece) => ({
-                jsonURL: piece.jsonURL.length > 0 ? piece.jsonURL : null,
-                mp4URL: piece.mp4URL,
-              })),
-            });
+            insertVODMutation
+              .mutateAsync({
+                streamDate: values.streamDate as Date,
+                pieces: values.pieces.map((piece) => ({
+                  jsonURL: piece.jsonURL.length > 0 ? piece.jsonURL : null,
+                  mp4URL: piece.mp4URL,
+                })),
+              })
+              .then(() => {
+                refetchVODs().catch((e) => {
+                  throw e;
+                });
+                refetchVODsCount().catch((e) => {
+                  throw e;
+                });
+              })
+              .catch((e) => {
+                throw e;
+              });
           })}
         >
-          <Tabs defaultValue="data" mb="md">
+          <Tabs defaultValue="data" mb="lg">
             <Tabs.List>
               <Tabs.Tab value="data">Data</Tabs.Tab>
               <Tabs.Tab value="pieces">Pieces</Tabs.Tab>
@@ -82,6 +114,7 @@ const Dashboard: NextPage = () => {
             <Tabs.Panel value="data" pt="xs">
               <DateInput
                 withAsterisk
+                weekendDays={[]}
                 label="Stream date"
                 valueFormat="YYYY-MM-DD"
                 mb="sm"
@@ -129,12 +162,54 @@ const Dashboard: NextPage = () => {
         </form>
       </Modal>
       <Button
+        display="block"
         onClick={() => {
           setIsAddingVOD(true);
         }}
+        mb="md"
       >
         Add VOD
       </Button>
+      {(isLoadingVODs || isLoadingVODsCount) && <Loader />}
+      {vods && typeof vodsCount !== "undefined" && (
+        <>
+          <Pagination
+            value={vodsPage}
+            onChange={setVODsPage}
+            mb="md"
+            total={Math.ceil(vodsCount / vodsPerPage)}
+            withEdges
+          />
+          <SimpleGrid
+            cols={4}
+            spacing="md"
+            breakpoints={[{ maxWidth: "sm", cols: 2 }]}
+          >
+            {vods.map((vod) => (
+              <Card key={vod.id}>
+                <Text size="lg">
+                  {vod.streamDate.getFullYear()}-
+                  {`${vod.streamDate.getMonth() + 1}`.padStart(2, "0")}-
+                  {`${vod.streamDate.getDate()}`.padStart(2, "0")}
+                </Text>
+                <Button mr="sm" mt="sm">
+                  Edit
+                </Button>
+                <Button color="red" mt="xs">
+                  Delete
+                </Button>
+              </Card>
+            ))}
+          </SimpleGrid>
+          <Pagination
+            value={vodsPage}
+            onChange={setVODsPage}
+            total={Math.ceil(vodsCount / vodsPerPage)}
+            withEdges
+            mt="sm"
+          />
+        </>
+      )}
     </>
   );
 };

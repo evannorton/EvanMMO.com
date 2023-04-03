@@ -1,4 +1,4 @@
-import { Box, Image, Loader, MediaQuery, Text, Title } from "@mantine/core";
+import { Box, Image, Loader, SimpleGrid, Text, Title } from "@mantine/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { type NextPage } from "next";
 import { TwitchEmbed } from "react-twitch-embed";
@@ -102,84 +102,63 @@ const Home: NextPage = () => {
               </Box>
             </>
           )}
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              flexWrap: "wrap",
-              marginRight: "-16px",
-            }}
+          <SimpleGrid
+            cols={4}
+            spacing="md"
+            breakpoints={[{ maxWidth: "sm", cols: 2 }]}
           >
             {games?.map((game) => (
-              <MediaQuery
-                largerThan="md"
-                styles={{
-                  width: "calc(25% - 16px)",
-                }}
-                key={game.id}
-              >
-                <MediaQuery
-                  smallerThan="md"
-                  styles={{
-                    width: "calc(50% - 16px)",
+              <Box key={game.id}>
+                <Box
+                  style={{ cursor: "pointer", position: "relative" }}
+                  onClick={() => {
+                    if (gameID !== game.id) {
+                      setGameID(game.id);
+                    } else {
+                      setGameID(null);
+                    }
                   }}
-                  key={game.id}
                 >
-                  <Box style={{ marginRight: "16px" }}>
-                    <div
-                      style={{ cursor: "pointer", position: "relative" }}
-                      onClick={() => {
-                        if (gameID !== game.id) {
-                          setGameID(game.id);
-                        } else {
-                          setGameID(null);
-                        }
+                  <Box style={{ position: "relative" }}>
+                    <Image
+                      alt={game.title}
+                      src={game.thumbnailURL}
+                      style={{ opacity: gameID === game.id ? 1 : 0.75 }}
+                    />
+                    <FontAwesomeIcon
+                      style={{
+                        position: "absolute",
+                        left: 0,
+                        top: 0,
+                        bottom: 0,
+                        right: 0,
+                        margin: "auto",
+                        width: "20%",
+                        height: "auto",
+                        boxShadow: "5px 5px 50px 5px #000000",
+                        borderRadius: "50%",
                       }}
-                    >
-                      <div style={{ position: "relative" }}>
-                        <Image
-                          alt={game.title}
-                          src={game.thumbnailURL}
-                          style={{ opacity: gameID === game.id ? 1 : 0.75 }}
-                        />
-                        <FontAwesomeIcon
-                          style={{
-                            position: "absolute",
-                            left: 0,
-                            top: 0,
-                            bottom: 0,
-                            right: 0,
-                            margin: "auto",
-                            width: "20%",
-                            height: "auto",
-                            boxShadow: "5px 5px 50px 5px #000000",
-                            borderRadius: "50%",
-                          }}
-                          icon={
-                            gameID !== game.id ? faPlayCircle : faStopCircle
-                          }
-                        />
-                        {gameID === game.id && (
-                          <div
-                            style={{
-                              border: "4px solid white",
-                              position: "absolute",
-                              top: 0,
-                              width: "100%",
-                              height: "100%",
-                            }}
-                          />
-                        )}
-                      </div>
-                      <Text px="md" pt="xs" pb="md" align="center">
-                        {game.title}
-                      </Text>
-                    </div>
+                      icon={gameID !== game.id ? faPlayCircle : faStopCircle}
+                    />
+                    {gameID === game.id && (
+                      <Box
+                        style={{
+                          border: "4px solid white",
+                          position: "absolute",
+                          top: 0,
+                          width: "100%",
+                          height: "100%",
+                        }}
+                      />
+                    )}
                   </Box>
-                </MediaQuery>
-              </MediaQuery>
+                  <Text px="md" pt="xs" pb="md" align="center">
+                    {game.title}
+                  </Text>
+                </Box>
+              </Box>
             ))}
-          </div>
+          </SimpleGrid>
         </>
       </Section>
     </>
