@@ -63,4 +63,36 @@ export const vodRouter = createTRPCRouter({
         });
       }
     }),
+  deleteVOD: adminProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const vod = await ctx.prisma.vod.findUnique({
+        select: {
+          pieces: {
+            select: {
+              id: true,
+            },
+          },
+        },
+        where: {
+          id: input.id,
+        },
+      });
+      for (const piece of vod?.pieces || []) {
+        await ctx.prisma.vodPiece.delete({
+          where: {
+            id: piece.id,
+          },
+        });
+      }
+      await ctx.prisma.vod.delete({
+        where: {
+          id: input.id,
+        },
+      });
+    }),
 });

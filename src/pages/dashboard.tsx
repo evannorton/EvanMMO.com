@@ -15,6 +15,7 @@ import { DateInput } from "@mantine/dates";
 import { UserRole } from "@prisma/client";
 import { api } from "../utils/api";
 import { authOptions } from "../server/auth";
+import { getFormattedDateString } from "../utils/date";
 import { getServerSession } from "next-auth";
 import { useForm } from "@mantine/form";
 import { useState } from "react";
@@ -33,6 +34,19 @@ interface VODCreationFormValues {
 }
 
 const Dashboard: NextPage = () => {
+  const [vodsPage, setVODsPage] = useState(1);
+  const {
+    data: vods,
+    isLoading: isLoadingVODs,
+    refetch: refetchVODs,
+  } = api.vod.getAll.useQuery({
+    page: vodsPage - 1,
+  });
+  const {
+    data: vodsCount,
+    isLoading: isLoadingVODsCount,
+    refetch: refetchVODsCount,
+  } = api.vod.getCount.useQuery();
   const [isAddingVOD, setIsAddingVOD] = useState(false);
   const vodForm = useForm<VODCreationFormValues>({
     initialValues: {
@@ -49,25 +63,69 @@ const Dashboard: NextPage = () => {
     },
   });
   const insertVODMutation = api.vod.insertVOD.useMutation();
-  const [vodsPage, setVODsPage] = useState(1);
-  const {
-    data: vods,
-    isLoading: isLoadingVODs,
-    refetch: refetchVODs,
-  } = api.vod.getAll.useQuery({
-    page: vodsPage - 1,
-  });
-  const {
-    data: vodsCount,
-    isLoading: isLoadingVODsCount,
-    refetch: refetchVODsCount,
-  } = api.vod.getCount.useQuery();
+  const [vodIDToDelete, setVODIDToDelete] = useState<string | null>(null);
+  const vodToDelete =
+    vodIDToDelete !== null
+      ? vods?.find((vod) => vod.id === vodIDToDelete) ?? null
+      : null;
+  const deleteVODMUtation = api.vod.deleteVOD.useMutation();
   return (
     <>
       <Head description="Admin dashboard for EvanMMO's content creation and game development site" />
       <Title id="videos" color="gray.0" mb="md">
         VODs
       </Title>
+      <Button
+        display="block"
+        onClick={() => {
+          setIsAddingVOD(true);
+        }}
+        mb="md"
+      >
+        Add VOD
+      </Button>
+      {(isLoadingVODs || isLoadingVODsCount) && <Loader />}
+      {vods && typeof vodsCount !== "undefined" && (
+        <>
+          <Pagination
+            value={vodsPage}
+            onChange={setVODsPage}
+            mb="md"
+            total={Math.ceil(vodsCount / vodsPerPage)}
+            withEdges
+          />
+          <SimpleGrid
+            cols={4}
+            spacing="md"
+            breakpoints={[{ maxWidth: "sm", cols: 2 }]}
+          >
+            {vods.map((vod) => (
+              <Card key={vod.id}>
+                <Text size="lg">{getFormattedDateString(vod.streamDate)}</Text>
+                <Button mr="sm" mt="sm">
+                  Edit
+                </Button>
+                <Button
+                  color="red"
+                  mt="xs"
+                  onClick={() => {
+                    setVODIDToDelete(vod.id);
+                  }}
+                >
+                  Delete
+                </Button>
+              </Card>
+            ))}
+          </SimpleGrid>
+          <Pagination
+            value={vodsPage}
+            onChange={setVODsPage}
+            total={Math.ceil(vodsCount / vodsPerPage)}
+            withEdges
+            mt="sm"
+          />
+        </>
+      )}
       <Modal
         opened={isAddingVOD}
         onClose={() => {
@@ -161,55 +219,52 @@ const Dashboard: NextPage = () => {
           <Button type="submit">Submit</Button>
         </form>
       </Modal>
-      <Button
-        display="block"
-        onClick={() => {
-          setIsAddingVOD(true);
+      <Modal
+        opened={vodToDelete !== null}
+        onClose={() => {
+          setVODIDToDelete(null);
         }}
-        mb="md"
+        title="Delete VOD"
       >
-        Add VOD
-      </Button>
-      {(isLoadingVODs || isLoadingVODsCount) && <Loader />}
-      {vods && typeof vodsCount !== "undefined" && (
-        <>
-          <Pagination
-            value={vodsPage}
-            onChange={setVODsPage}
-            mb="md"
-            total={Math.ceil(vodsCount / vodsPerPage)}
-            withEdges
-          />
-          <SimpleGrid
-            cols={4}
-            spacing="md"
-            breakpoints={[{ maxWidth: "sm", cols: 2 }]}
-          >
-            {vods.map((vod) => (
-              <Card key={vod.id}>
-                <Text size="lg">
-                  {vod.streamDate.getFullYear()}-
-                  {`${vod.streamDate.getMonth() + 1}`.padStart(2, "0")}-
-                  {`${vod.streamDate.getDate()}`.padStart(2, "0")}
-                </Text>
-                <Button mr="sm" mt="sm">
-                  Edit
-                </Button>
-                <Button color="red" mt="xs">
-                  Delete
-                </Button>
-              </Card>
-            ))}
-          </SimpleGrid>
-          <Pagination
-            value={vodsPage}
-            onChange={setVODsPage}
-            total={Math.ceil(vodsCount / vodsPerPage)}
-            withEdges
-            mt="sm"
-          />
-        </>
-      )}
+        {vodToDelete && (
+          <>
+            <Text>
+              Are you sure that you would like delete VOD{" "}
+              {getFormattedDateString(vodToDelete?.streamDate)}?
+            </Text>
+            <Button
+              color="red"
+              mr="sm"
+              mt="sm"
+              onClick={() => {
+                deleteVODMUtation
+                  .mutateAsync({ id: vodToDelete.id })
+                  .then(() => {
+                    refetchVODs().catch((e) => {
+                      throw e;
+                    });
+                    refetchVODsCount().catch((e) => {
+                      throw e;
+                    });
+                  })
+                  .catch((e) => {
+                    throw e;
+                  });
+              }}
+            >
+              Delete
+            </Button>
+            <Button
+              mt="xs"
+              onClick={() => {
+                setVODIDToDelete(null);
+              }}
+            >
+              Cancel
+            </Button>
+          </>
+        )}
+      </Modal>
     </>
   );
 };
