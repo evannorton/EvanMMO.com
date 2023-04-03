@@ -1,8 +1,8 @@
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { adminProcedure, createTRPCRouter } from "../trpc";
 import { z } from "zod";
 
 export const vodRouter = createTRPCRouter({
-  insertVOD: publicProcedure
+  insertVOD: adminProcedure
     .input(
       z.object({
         streamDate: z.date(),
