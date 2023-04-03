@@ -153,7 +153,4 @@ const enforceUserIsAdmin = t.middleware(({ ctx, next }) => {
  *
  * @see https://trpc.io/docs/procedures
  */
-export const adminProcedure = t.procedure.use(
-  enforceUserIsAuthed,
-  enforceUserIsAdmin
-);
+export const adminProcedure = t.procedure.use(enforceUserIsAdmin);
