@@ -24,15 +24,26 @@ import Head from "../components/Head";
 import vodsPerPage from "../constants/vodsPerPage";
 import type { GetServerSideProps, NextPage } from "next";
 
-interface VODPieceCreationInput {
+interface InsertVODFormPieceValues {
   readonly jsonURL: string;
   readonly mp4URL: string;
 }
 
-interface VODCreationFormValues {
+interface InsertVODFormValues {
   readonly streamDate: Date | null;
   readonly description: string;
-  readonly pieces: VODPieceCreationInput[];
+  readonly pieces: InsertVODFormPieceValues[];
+}
+
+interface UpdateVODFormPieceValues {
+  readonly jsonURL: string;
+  readonly mp4URL: string;
+}
+
+interface UpdateVODFormValues {
+  readonly streamDate: Date | null;
+  readonly description: string;
+  readonly pieces: UpdateVODFormPieceValues[];
 }
 
 const Dashboard: NextPage = () => {
@@ -50,7 +61,22 @@ const Dashboard: NextPage = () => {
     refetch: refetchVODsCount,
   } = api.vod.getCount.useQuery();
   const [isAddingVOD, setIsAddingVOD] = useState(false);
-  const vodForm = useForm<VODCreationFormValues>({
+  const insertVODForm = useForm<InsertVODFormValues>({
+    initialValues: {
+      streamDate: null,
+      description: "",
+      pieces: [],
+    },
+    validate: {
+      streamDate: (value) =>
+        value === null ? "You must specify a stream date" : null,
+      pieces: {
+        mp4URL: (value) =>
+          value.length === 0 ? "You must specify an MP4 URL" : null,
+      },
+    },
+  });
+  const updateVODForm = useForm<UpdateVODFormValues>({
     initialValues: {
       streamDate: null,
       description: "",
@@ -66,6 +92,12 @@ const Dashboard: NextPage = () => {
     },
   });
   const insertVODMutation = api.vod.insertVOD.useMutation();
+  const [vodIDToUpdate, setVODIDToUpdate] = useState<string | null>(null);
+  const vodToUpdate =
+    vodIDToUpdate !== null
+      ? vods?.find((vod) => vod.id === vodIDToUpdate) ?? null
+      : null;
+  const updateVODMutation = api.vod.updateVOD.useMutation();
   const [vodIDToDelete, setVODIDToDelete] = useState<string | null>(null);
   const vodToDelete =
     vodIDToDelete !== null
@@ -138,7 +170,21 @@ const Dashboard: NextPage = () => {
                     <Text key={key}>{line}</Text>
                   ))}
                   <Box mt="auto">
-                    <Button mr="sm" mt="sm">
+                    <Button
+                      mr="sm"
+                      mt="sm"
+                      onClick={() => {
+                        updateVODForm.setValues({
+                          streamDate: vod.streamDate,
+                          description: vod.description,
+                          pieces: vod.pieces.map((piece) => ({
+                            jsonURL: piece.jsonURL || "",
+                            mp4URL: piece.mp4URL,
+                          })),
+                        });
+                        setVODIDToUpdate(vod.id);
+                      }}
+                    >
                       Edit
                     </Button>
                     <Button
@@ -168,20 +214,20 @@ const Dashboard: NextPage = () => {
         opened={isAddingVOD}
         onClose={() => {
           setIsAddingVOD(false);
-          vodForm.reset();
+          insertVODForm.reset();
         }}
         title="Add VOD"
         fullScreen
       >
-        {Object.keys(vodForm.errors).length > 0 && (
+        {Object.keys(insertVODForm.errors).length > 0 && (
           <Text color="red" mb="xs">
             There are invalid field(s).
           </Text>
         )}
         <form
-          onSubmit={vodForm.onSubmit((values) => {
+          onSubmit={insertVODForm.onSubmit((values) => {
             setIsAddingVOD(false);
-            vodForm.reset();
+            insertVODForm.reset();
             insertVODMutation
               .mutateAsync({
                 streamDate: values.streamDate as Date,
@@ -217,32 +263,32 @@ const Dashboard: NextPage = () => {
                 valueFormat="YYYY-MM-DD"
                 mb="sm"
                 firstDayOfWeek={0}
-                {...vodForm.getInputProps("streamDate")}
+                {...insertVODForm.getInputProps("streamDate")}
               />
               <Textarea
                 label="Description"
                 mb="sm"
-                {...vodForm.getInputProps("description")}
+                {...insertVODForm.getInputProps("description")}
               />
             </Tabs.Panel>
             <Tabs.Panel value="pieces" pt="xs">
-              {vodForm.values.pieces.map((piece, index) => (
+              {insertVODForm.values.pieces.map((piece, index) => (
                 <Box key={index} mb="sm">
                   <Text>Piece {index + 1}</Text>
                   <TextInput
                     withAsterisk
                     label="MP4 URL"
-                    {...vodForm.getInputProps(`pieces.${index}.mp4URL`)}
+                    {...insertVODForm.getInputProps(`pieces.${index}.mp4URL`)}
                   />
                   <TextInput
                     label="JSON URL"
-                    {...vodForm.getInputProps(`pieces.${index}.jsonURL`)}
+                    {...insertVODForm.getInputProps(`pieces.${index}.jsonURL`)}
                     mb="sm"
                   />
                   <Button
                     color="red"
                     onClick={() => {
-                      vodForm.removeListItem("pieces", index);
+                      insertVODForm.removeListItem("pieces", index);
                     }}
                   >
                     Delete
@@ -251,7 +297,110 @@ const Dashboard: NextPage = () => {
               ))}
               <Button
                 onClick={() => {
-                  vodForm.insertListItem("pieces", {
+                  insertVODForm.insertListItem("pieces", {
+                    jsonURL: "",
+                    mp4URL: "",
+                  });
+                }}
+              >
+                Add piece
+              </Button>
+            </Tabs.Panel>
+          </Tabs>
+          <Button type="submit">Submit</Button>
+        </form>
+      </Modal>
+      <Modal
+        opened={vodToUpdate !== null}
+        onClose={() => {
+          setVODIDToUpdate(null);
+          updateVODForm.reset();
+        }}
+        title="Edit VOD"
+        fullScreen
+      >
+        {Object.keys(updateVODForm.errors).length > 0 && (
+          <Text color="red" mb="xs">
+            There are invalid field(s).
+          </Text>
+        )}
+        <form
+          onSubmit={updateVODForm.onSubmit((values) => {
+            if (vodToUpdate !== null) {
+              setVODIDToUpdate(null);
+              updateVODForm.reset();
+              updateVODMutation
+                .mutateAsync({
+                  id: vodToUpdate.id,
+                  streamDate: values.streamDate as Date,
+                  description: values.description,
+                  pieces: values.pieces.map((piece) => ({
+                    jsonURL: piece.jsonURL.length > 0 ? piece.jsonURL : null,
+                    mp4URL: piece.mp4URL,
+                  })),
+                })
+                .then(() => {
+                  refetchVODs().catch((e) => {
+                    throw e;
+                  });
+                  refetchVODsCount().catch((e) => {
+                    throw e;
+                  });
+                })
+                .catch((e) => {
+                  throw e;
+                });
+            }
+          })}
+        >
+          <Tabs defaultValue="data" mb="lg">
+            <Tabs.List>
+              <Tabs.Tab value="data">Data</Tabs.Tab>
+              <Tabs.Tab value="pieces">Pieces</Tabs.Tab>
+            </Tabs.List>
+            <Tabs.Panel value="data" pt="xs">
+              <DateInput
+                withAsterisk
+                weekendDays={[]}
+                label="Stream date"
+                valueFormat="YYYY-MM-DD"
+                mb="sm"
+                firstDayOfWeek={0}
+                {...updateVODForm.getInputProps("streamDate")}
+              />
+              <Textarea
+                label="Description"
+                mb="sm"
+                {...updateVODForm.getInputProps("description")}
+              />
+            </Tabs.Panel>
+            <Tabs.Panel value="pieces" pt="xs">
+              {updateVODForm.values.pieces.map((piece, index) => (
+                <Box key={index} mb="sm">
+                  <Text>Piece {index + 1}</Text>
+                  <TextInput
+                    withAsterisk
+                    label="MP4 URL"
+                    {...updateVODForm.getInputProps(`pieces.${index}.mp4URL`)}
+                  />
+                  <TextInput
+                    label="JSON URL"
+                    {...updateVODForm.getInputProps(`pieces.${index}.jsonURL`)}
+                    mb="sm"
+                  />
+                  <Button
+                    color="red"
+                    onClick={() => {
+                      updateVODForm.removeListItem("pieces", index);
+                    }}
+                  >
+                    Delete
+                  </Button>
+                </Box>
+              ))}
+              <Button
+                onClick={() => {
+                  updateVODForm.insertListItem("pieces", {
                     jsonURL: "",
                     mp4URL: "",
                   });

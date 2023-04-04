@@ -66,6 +66,58 @@ export const vodRouter = createTRPCRouter({
         });
       }
     }),
+  updateVOD: adminProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        streamDate: z.date(),
+        description: z.string(),
+        pieces: z.array(
+          z.object({
+            jsonURL: z.string().nullable(),
+            mp4URL: z.string(),
+          })
+        ),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const vod = await ctx.prisma.vod.update({
+        select: {
+          pieces: {
+            select: {
+              id: true,
+            },
+          },
+        },
+        where: {
+          id: input.id,
+        },
+        data: {
+          streamDate: input.streamDate,
+          description: input.description,
+        },
+      });
+      for (const piece of vod?.pieces || []) {
+        await ctx.prisma.vodPiece.delete({
+          where: {
+            id: piece.id,
+          },
+        });
+      }
+      for (const piece of input.pieces) {
+        await ctx.prisma.vodPiece.create({
+          data: {
+            jsonURL: piece.jsonURL,
+            mp4URL: piece.mp4URL,
+            vod: {
+              connect: {
+                id: input.id,
+              },
+            },
+          },
+        });
+      }
+    }),
   deleteVOD: adminProcedure
     .input(
       z.object({
