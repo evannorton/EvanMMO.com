@@ -1,3 +1,7 @@
+body {
+  background-color: #1A1B1E !important;
+}
+
 .mantine-AppShell-main {
   width: 100%;
 }
