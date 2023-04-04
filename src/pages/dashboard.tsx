@@ -168,6 +168,7 @@ const Dashboard: NextPage = () => {
         opened={isAddingVOD}
         onClose={() => {
           setIsAddingVOD(false);
+          vodForm.reset();
         }}
         title="Add VOD"
         fullScreen
