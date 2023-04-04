@@ -16,7 +16,19 @@ const VODPlayer: React.FC<Props> = ({ pieces }) => {
     return (
       <>
         <Box>
-          <video width="100%" src={piece.mp4URL} controls autoPlay />
+          <video
+            width="100%"
+            src={piece.mp4URL}
+            controls
+            autoPlay
+            onEnded={() => {
+              const index = pieces.findIndex((piece) => piece.id === pieceID);
+              const nextPiece = pieces[index + 1];
+              if (nextPiece) {
+                setPieceID(nextPiece.id);
+              }
+            }}
+          />
         </Box>
         {pieces.length > 1 && (
           <>
