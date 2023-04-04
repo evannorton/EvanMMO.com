@@ -1,5 +1,5 @@
 import { Box, Button } from "@mantine/core";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface Props {
   readonly pieces: {
@@ -12,6 +12,9 @@ interface Props {
 const VODPlayer: React.FC<Props> = ({ pieces }) => {
   const [pieceID, setPieceID] = useState<string | null>(pieces[0]?.id ?? null);
   const piece = pieces.find((piece) => piece.id === pieceID);
+  useEffect(() => {
+    setPieceID(pieces[0]?.id ?? null);
+  }, [pieces]);
   if (piece) {
     return (
       <>
