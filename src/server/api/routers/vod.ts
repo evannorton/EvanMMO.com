@@ -15,6 +15,7 @@ export const vodRouter = createTRPCRouter({
         select: {
           id: true,
           streamDate: true,
+          description: true,
           pieces: {
             select: {
               id: true,
@@ -35,6 +36,7 @@ export const vodRouter = createTRPCRouter({
     .input(
       z.object({
         streamDate: z.date(),
+        description: z.string(),
         pieces: z.array(
           z.object({
             jsonURL: z.string().nullable(),
@@ -47,6 +49,7 @@ export const vodRouter = createTRPCRouter({
       const vod = await ctx.prisma.vod.create({
         data: {
           streamDate: input.streamDate,
+          description: input.description,
         },
       });
       for (const piece of input.pieces) {

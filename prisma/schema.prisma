@@ -84,6 +84,7 @@ model Game {
 
 model Vod {
     id            String    @id @default(cuid())
+    description   String    @db.Text @default("")
     streamDate    DateTime
     pieces        VodPiece[]
 }

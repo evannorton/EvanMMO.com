@@ -9,6 +9,7 @@ import {
   Tabs,
   Text,
   TextInput,
+  Textarea,
   Title,
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
@@ -30,6 +31,7 @@ interface VODPieceCreationInput {
 
 interface VODCreationFormValues {
   readonly streamDate: Date | null;
+  readonly description: string;
   readonly pieces: VODPieceCreationInput[];
 }
 
@@ -51,6 +53,7 @@ const Dashboard: NextPage = () => {
   const vodForm = useForm<VODCreationFormValues>({
     initialValues: {
       streamDate: null,
+      description: "",
       pieces: [],
     },
     validate: {
@@ -99,23 +102,58 @@ const Dashboard: NextPage = () => {
             spacing="md"
             breakpoints={[{ maxWidth: "sm", cols: 2 }]}
           >
-            {vods.map((vod) => (
-              <Card key={vod.id}>
-                <Text size="lg">{getFormattedDateString(vod.streamDate)}</Text>
-                <Button mr="sm" mt="sm">
-                  Edit
-                </Button>
-                <Button
-                  color="red"
-                  mt="xs"
-                  onClick={() => {
-                    setVODIDToDelete(vod.id);
-                  }}
+            {vods.map((vod) => {
+              let formattedDescription = vod.description;
+              const descriptionPreviewLength = 250;
+              if (formattedDescription.length > descriptionPreviewLength) {
+                formattedDescription = formattedDescription.substring(
+                  0,
+                  descriptionPreviewLength
+                );
+                const endCharacters = [".", ",", " ", "\n"];
+                while (
+                  endCharacters.includes(
+                    formattedDescription.substring(
+                      formattedDescription.length - 1
+                    )
+                  )
+                ) {
+                  formattedDescription = formattedDescription.substring(
+                    0,
+                    formattedDescription.length - 1
+                  );
+                }
+                formattedDescription += "...";
+              }
+              return (
+                <Card
+                  style={{ flexDirection: "column" }}
+                  display="flex"
+                  key={vod.id}
                 >
-                  Delete
-                </Button>
-              </Card>
-            ))}
+                  <Text size="lg" mb="sm">
+                    {getFormattedDateString(vod.streamDate)}
+                  </Text>
+                  {formattedDescription.split("\n").map((line, key) => (
+                    <Text key={key}>{line}</Text>
+                  ))}
+                  <Box mt="auto">
+                    <Button mr="sm" mt="sm">
+                      Edit
+                    </Button>
+                    <Button
+                      color="red"
+                      mt="xs"
+                      onClick={() => {
+                        setVODIDToDelete(vod.id);
+                      }}
+                    >
+                      Delete
+                    </Button>
+                  </Box>
+                </Card>
+              );
+            })}
           </SimpleGrid>
           <Pagination
             value={vodsPage}
@@ -146,6 +184,7 @@ const Dashboard: NextPage = () => {
             insertVODMutation
               .mutateAsync({
                 streamDate: values.streamDate as Date,
+                description: values.description,
                 pieces: values.pieces.map((piece) => ({
                   jsonURL: piece.jsonURL.length > 0 ? piece.jsonURL : null,
                   mp4URL: piece.mp4URL,
@@ -178,6 +217,11 @@ const Dashboard: NextPage = () => {
                 mb="sm"
                 firstDayOfWeek={0}
                 {...vodForm.getInputProps("streamDate")}
+              />
+              <Textarea
+                label="Description"
+                mb="sm"
+                {...vodForm.getInputProps("description")}
               />
             </Tabs.Panel>
             <Tabs.Panel value="pieces" pt="xs">
