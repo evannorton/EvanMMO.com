@@ -1,24 +1,45 @@
-import { Box, Image, Loader, SimpleGrid, Text, Title } from "@mantine/core";
+import {
+  Box,
+  Button,
+  Card,
+  Image,
+  Loader,
+  Pagination,
+  SimpleGrid,
+  Text,
+  Title,
+} from "@mantine/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { type NextPage } from "next";
 import { TwitchEmbed } from "react-twitch-embed";
 import { api } from "../utils/api";
 import { faPlayCircle, faStopCircle } from "@fortawesome/free-solid-svg-icons";
-import { useContext, useRef } from "react";
+import { getDescriptionPreview } from "../utils/description";
+import { getFormattedDateString } from "../utils/date";
+import { useContext, useRef, useState } from "react";
 import Head from "../components/Head";
 import Section from "../components/Section";
+import VODPlayer from "../components/VODPlayer";
 import YouTubeCarousel from "../components/YouTubeCarousel";
 import context from "../context";
 import twitchUsername from "../constants/twitchUsername";
+import vodsPerPage from "../constants/vodsPerPage";
 
 const Home: NextPage = () => {
-  const { videoID, gameID, setGameID } = useContext(context);
-  const gameRef = useRef<HTMLIFrameElement>(null);
-  const { data: games, isLoading: isLoadingGames } = api.game.getAll.useQuery();
-  const game = games?.find((game) => game.id === gameID);
   const { data: streamIsLive } = api.twitch.isLive.useQuery();
   const { data: youtubeVideos, isLoading: isLoadingVideos } =
     api.youtube.videos.useQuery();
+  const [vodsPage, setVODsPage] = useState(1);
+  const { data: vods, isLoading: isLoadingVODs } = api.vod.getAll.useQuery({
+    page: vodsPage - 1,
+  });
+  const { data: vodsCount, isLoading: isLoadingVODsCount } =
+    api.vod.getCount.useQuery();
+  const { vodID, setVODID, videoID, gameID, setGameID } = useContext(context);
+  const vod = vods?.find((vod) => vod.id === vodID);
+  const gameRef = useRef<HTMLIFrameElement>(null);
+  const { data: games, isLoading: isLoadingGames } = api.game.getAll.useQuery();
+  const game = games?.find((game) => game.id === gameID);
   return (
     <>
       <Head description="A hub for EvanMMO's content creation and game development" />
@@ -33,7 +54,6 @@ const Home: NextPage = () => {
                 channel={twitchUsername}
                 width="100%"
                 height="100%"
-                withChat={false}
               />
             </Box>
           </>
@@ -65,6 +85,98 @@ const Home: NextPage = () => {
           {youtubeVideos?.map((channelYouTubeVideos, key) => (
             <YouTubeCarousel videos={channelYouTubeVideos} key={key} />
           ))}
+        </>
+      </Section>
+      <Section>
+        <>
+          <Title id="broadcasts" color="gray.0" mb="md">
+            Broadcasts
+          </Title>
+          {(isLoadingVODs || isLoadingVODsCount) && <Loader />}
+          {vod && (
+            <>
+              <Box style={{ aspectRatio: 16 / 9, width: "100%" }} mb="md">
+                <VODPlayer
+                  pieces={vod.pieces.map((piece) => ({
+                    id: piece.id,
+                    mp4URL: piece.mp4URL,
+                    jsonURL: piece.jsonURL,
+                  }))}
+                />
+              </Box>
+              <Box mb="md">
+                <Text style={{ width: "90%", margin: "0 auto" }} align="center">
+                  {vod.description}
+                </Text>
+              </Box>
+            </>
+          )}
+          {vods && typeof vodsCount !== "undefined" && (
+            <>
+              <Pagination
+                value={vodsPage}
+                onChange={setVODsPage}
+                mb="md"
+                total={Math.ceil(vodsCount / vodsPerPage)}
+                withEdges
+              />
+              <SimpleGrid
+                cols={4}
+                spacing="md"
+                breakpoints={[{ maxWidth: "sm", cols: 2 }]}
+              >
+                {vods.map((vod) => {
+                  return (
+                    <Card
+                      style={{ flexDirection: "column" }}
+                      display="flex"
+                      key={vod.id}
+                    >
+                      <Text size="lg" mb="sm">
+                        {getFormattedDateString(vod.streamDate)}
+                      </Text>
+                      {getDescriptionPreview(vod.description)
+                        .split("\n")
+                        .map((line, key) => (
+                          <Text key={key}>{line}</Text>
+                        ))}
+                      <Box mt="auto">
+                        {vodID !== vod.id && (
+                          <Button
+                            color="green"
+                            mt="sm"
+                            onClick={() => {
+                              setVODID(vod.id);
+                            }}
+                          >
+                            Play
+                          </Button>
+                        )}
+                        {vodID === vod.id && (
+                          <Button
+                            color="red"
+                            mt="sm"
+                            onClick={() => {
+                              setVODID(null);
+                            }}
+                          >
+                            Stop
+                          </Button>
+                        )}
+                      </Box>
+                    </Card>
+                  );
+                })}
+              </SimpleGrid>
+              <Pagination
+                value={vodsPage}
+                onChange={setVODsPage}
+                total={Math.ceil(vodsCount / vodsPerPage)}
+                withEdges
+                mt="sm"
+              />
+            </>
+          )}
         </>
       </Section>
       <Section>

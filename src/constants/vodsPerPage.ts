@@ -1,3 +1,3 @@
-const vodsPerPage = 16;
+const vodsPerPage = 8;
 
 export default vodsPerPage;

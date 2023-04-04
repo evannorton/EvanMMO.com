@@ -16,6 +16,7 @@ import { DateInput } from "@mantine/dates";
 import { UserRole } from "@prisma/client";
 import { api } from "../utils/api";
 import { authOptions } from "../server/auth";
+import { getDescriptionPreview } from "../utils/description";
 import { getFormattedDateString } from "../utils/date";
 import { getServerSession } from "next-auth";
 import { useForm } from "@mantine/form";
@@ -135,28 +136,6 @@ const Dashboard: NextPage = () => {
             breakpoints={[{ maxWidth: "sm", cols: 2 }]}
           >
             {vods.map((vod) => {
-              let formattedDescription = vod.description;
-              const descriptionPreviewLength = 250;
-              if (formattedDescription.length > descriptionPreviewLength) {
-                formattedDescription = formattedDescription.substring(
-                  0,
-                  descriptionPreviewLength
-                );
-                const endCharacters = [".", ",", " ", "\n"];
-                while (
-                  endCharacters.includes(
-                    formattedDescription.substring(
-                      formattedDescription.length - 1
-                    )
-                  )
-                ) {
-                  formattedDescription = formattedDescription.substring(
-                    0,
-                    formattedDescription.length - 1
-                  );
-                }
-                formattedDescription += "...";
-              }
               return (
                 <Card
                   style={{ flexDirection: "column" }}
@@ -166,9 +145,11 @@ const Dashboard: NextPage = () => {
                   <Text size="lg" mb="sm">
                     {getFormattedDateString(vod.streamDate)}
                   </Text>
-                  {formattedDescription.split("\n").map((line, key) => (
-                    <Text key={key}>{line}</Text>
-                  ))}
+                  {getDescriptionPreview(vod.description)
+                    .split("\n")
+                    .map((line, key) => (
+                      <Text key={key}>{line}</Text>
+                    ))}
                   <Box mt="auto">
                     <Button
                       mr="sm"

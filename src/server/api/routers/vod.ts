@@ -22,6 +22,9 @@ export const vodRouter = createTRPCRouter({
               mp4URL: true,
               jsonURL: true,
             },
+            orderBy: {
+              createdAt: Prisma.SortOrder.asc,
+            },
           },
         },
         orderBy: {

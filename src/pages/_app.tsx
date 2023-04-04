@@ -16,6 +16,7 @@ const MyApp: AppType<Props> = ({
   Component,
   pageProps: { session, ...pageProps },
 }) => {
+  const [vodID, setVODID] = useState<string | null>(null);
   const [videoID, setVideoID] = useState<string | null>(null);
   const [gameID, setGameID] = useState<string | null>(null);
   return (
@@ -28,7 +29,9 @@ const MyApp: AppType<Props> = ({
           colorScheme: "dark",
         }}
       >
-        <context.Provider value={{ videoID, setVideoID, gameID, setGameID }}>
+        <context.Provider
+          value={{ vodID, setVODID, videoID, setVideoID, gameID, setGameID }}
+        >
           <App>
             <Component {...pageProps} />
           </App>

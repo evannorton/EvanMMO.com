@@ -36,6 +36,11 @@ const App: React.FC<Props> = ({ children }) => {
       isShown: true,
     },
     {
+      text: "Broadcasts",
+      href: "/#broadcasts",
+      isShown: true,
+    },
+    {
       text: "Games",
       href: "/#games",
       isShown: true,
