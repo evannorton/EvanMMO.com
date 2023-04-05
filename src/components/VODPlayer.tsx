@@ -66,7 +66,7 @@ const VODPlayer: React.FC<Props> = ({ pieces }) => {
               bottom={0}
               px="sm"
             >
-              No chat is available for this part of this broadcast.
+              No chat logs are available for this part of this broadcast.
             </Text>
           )}
         </Box>
