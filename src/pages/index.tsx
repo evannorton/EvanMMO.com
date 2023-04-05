@@ -72,10 +72,9 @@ const Home: NextPage = () => {
             Community
           </Title>
           <iframe
-            style={{ border: "none", borderRadius: "0.5rem" }}
+            style={{ border: "none", borderRadius: "0.5rem", height: "25rem" }}
             src="https://discordapp.com/widget?id=543159733821898773&theme=dark"
             width="100%"
-            height="500"
             sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
           />
         </>
