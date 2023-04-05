@@ -111,71 +111,73 @@ const Home: NextPage = () => {
               </Box>
             </>
           )}
+          {typeof vodsCount !== "undefined" && (
+            <Pagination
+              value={vodsPage}
+              onChange={setVODsPage}
+              mb="md"
+              total={Math.ceil(vodsCount / vodsPerPage)}
+              withEdges
+            />
+          )}
           {vods && typeof vodsCount !== "undefined" && (
-            <>
-              <Pagination
-                value={vodsPage}
-                onChange={setVODsPage}
-                mb="md"
-                total={Math.ceil(vodsCount / vodsPerPage)}
-                withEdges
-              />
-              <SimpleGrid
-                cols={4}
-                spacing="md"
-                breakpoints={[{ maxWidth: "sm", cols: 2 }]}
-              >
-                {vods.map((vod) => {
-                  return (
-                    <Card
-                      style={{ flexDirection: "column" }}
-                      display="flex"
-                      key={vod.id}
-                    >
-                      <Text size="lg" mb="sm">
-                        {getFormattedDateString(vod.streamDate)}
-                      </Text>
-                      {getDescriptionPreview(vod.description)
-                        .split("\n")
-                        .map((line, key) => (
-                          <Text key={key}>{line}</Text>
-                        ))}
-                      <Box mt="auto">
-                        {vodID !== vod.id && (
-                          <Button
-                            color="green"
-                            mt="sm"
-                            onClick={() => {
-                              setVODID(vod.id);
-                            }}
-                          >
-                            Play
-                          </Button>
-                        )}
-                        {vodID === vod.id && (
-                          <Button
-                            color="red"
-                            mt="sm"
-                            onClick={() => {
-                              setVODID(null);
-                            }}
-                          >
-                            Stop
-                          </Button>
-                        )}
-                      </Box>
-                    </Card>
-                  );
-                })}
-              </SimpleGrid>
-              <Pagination
-                value={vodsPage}
-                onChange={setVODsPage}
-                total={Math.ceil(vodsCount / vodsPerPage)}
-                withEdges
-                mt="sm"
-              />
-            </>
+            <SimpleGrid
+              cols={4}
+              spacing="md"
+              breakpoints={[{ maxWidth: "sm", cols: 2 }]}
+            >
+              {vods.map((vod) => {
+                return (
+                  <Card
+                    style={{ flexDirection: "column" }}
+                    display="flex"
+                    key={vod.id}
+                  >
+                    <Text size="lg" mb="sm">
+                      {getFormattedDateString(vod.streamDate)}
+                    </Text>
+                    {getDescriptionPreview(vod.description)
+                      .split("\n")
+                      .map((line, key) => (
+                        <Text key={key}>{line}</Text>
+                      ))}
+                    <Box mt="auto">
+                      {vodID !== vod.id && (
+                        <Button
+                          color="green"
+                          mt="sm"
+                          onClick={() => {
+                            setVODID(vod.id);
+                          }}
+                        >
+                          Play
+                        </Button>
+                      )}
+                      {vodID === vod.id && (
+                        <Button
+                          color="red"
+                          mt="sm"
+                          onClick={() => {
+                            setVODID(null);
+                          }}
+                        >
+                          Stop
+                        </Button>
+                      )}
+                    </Box>
+                  </Card>
+                );
+              })}
+            </SimpleGrid>
+          )}
+          {typeof vodsCount !== "undefined" && (
+            <Pagination
+              value={vodsPage}
+              onChange={setVODsPage}
+              total={Math.ceil(vodsCount / vodsPerPage)}
+              withEdges
+              mt="sm"
+            />
           )}
         </>
       </Section>

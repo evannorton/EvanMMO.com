@@ -121,75 +121,77 @@ const Dashboard: NextPage = () => {
         Add VOD
       </Button>
       {(isLoadingVODs || isLoadingVODsCount) && <Loader />}
+      {typeof vodsCount !== "undefined" && (
+        <Pagination
+          value={vodsPage}
+          onChange={setVODsPage}
+          mb="md"
+          total={Math.ceil(vodsCount / vodsPerPage)}
+          withEdges
+        />
+      )}
       {vods && typeof vodsCount !== "undefined" && (
-        <>
-          <Pagination
-            value={vodsPage}
-            onChange={setVODsPage}
-            mb="md"
-            total={Math.ceil(vodsCount / vodsPerPage)}
-            withEdges
-          />
-          <SimpleGrid
-            cols={4}
-            spacing="md"
-            breakpoints={[{ maxWidth: "sm", cols: 2 }]}
-          >
-            {vods.map((vod) => {
-              return (
-                <Card
-                  style={{ flexDirection: "column" }}
-                  display="flex"
-                  key={vod.id}
-                >
-                  <Text size="lg" mb="sm">
-                    {getFormattedDateString(vod.streamDate)}
-                  </Text>
-                  {getDescriptionPreview(vod.description)
-                    .split("\n")
-                    .map((line, key) => (
-                      <Text key={key}>{line}</Text>
-                    ))}
-                  <Box mt="auto">
-                    <Button
-                      mr="sm"
-                      mt="sm"
-                      onClick={() => {
-                        updateVODForm.setValues({
-                          streamDate: vod.streamDate,
-                          description: vod.description,
-                          pieces: vod.pieces.map((piece) => ({
-                            jsonURL: piece.jsonURL || "",
-                            mp4URL: piece.mp4URL,
-                          })),
-                        });
-                        setVODIDToUpdate(vod.id);
-                      }}
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      color="red"
-                      mt="xs"
-                      onClick={() => {
-                        setVODIDToDelete(vod.id);
-                      }}
-                    >
-                      Delete
-                    </Button>
-                  </Box>
-                </Card>
-              );
-            })}
-          </SimpleGrid>
-          <Pagination
-            value={vodsPage}
-            onChange={setVODsPage}
-            total={Math.ceil(vodsCount / vodsPerPage)}
-            withEdges
-            mt="sm"
-          />
-        </>
+        <SimpleGrid
+          cols={4}
+          spacing="md"
+          breakpoints={[{ maxWidth: "sm", cols: 2 }]}
+        >
+          {vods.map((vod) => {
+            return (
+              <Card
+                style={{ flexDirection: "column" }}
+                display="flex"
+                key={vod.id}
+              >
+                <Text size="lg" mb="sm">
+                  {getFormattedDateString(vod.streamDate)}
+                </Text>
+                {getDescriptionPreview(vod.description)
+                  .split("\n")
+                  .map((line, key) => (
+                    <Text key={key}>{line}</Text>
+                  ))}
+                <Box mt="auto">
+                  <Button
+                    mr="sm"
+                    mt="sm"
+                    onClick={() => {
+                      updateVODForm.setValues({
+                        streamDate: vod.streamDate,
+                        description: vod.description,
+                        pieces: vod.pieces.map((piece) => ({
+                          jsonURL: piece.jsonURL || "",
+                          mp4URL: piece.mp4URL,
+                        })),
+                      });
+                      setVODIDToUpdate(vod.id);
+                    }}
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    color="red"
+                    mt="xs"
+                    onClick={() => {
+                      setVODIDToDelete(vod.id);
+                    }}
+                  >
+                    Delete
+                  </Button>
+                </Box>
+              </Card>
+            );
+          })}
+        </SimpleGrid>
+      )}
+      {typeof vodsCount !== "undefined" && (
+        <Pagination
+          value={vodsPage}
+          onChange={setVODsPage}
+          total={Math.ceil(vodsCount / vodsPerPage)}
+          withEdges
+          mt="sm"
+        />
       )}
       <Modal
         opened={isAddingVOD}
