@@ -159,6 +159,7 @@ const Home: NextPage = () => {
                       style={{
                         flexDirection: "column",
                         borderRadius: "0.5rem",
+                        height: "100%",
                       }}
                       display="flex"
                     >
