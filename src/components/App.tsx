@@ -16,6 +16,7 @@ import {
   faYoutube,
 } from "@fortawesome/free-brands-svg-icons";
 import { signIn, signOut, useSession } from "next-auth/react";
+import Image from "next/image";
 
 interface Props {
   readonly children: JSX.Element;
@@ -192,6 +193,20 @@ const App: React.FC<Props> = ({ children }) => {
           </Footer>
         }
       >
+        <a className="easter-egg" href="https://twitch.tv/riazey">
+          <Image
+            style={{
+              width: "100%",
+              height: "2em",
+              objectFit: "cover",
+              objectPosition: "center",
+            }}
+            src="/easter-egg/cdboi.png"
+            width={100}
+            height={100}
+            alt="3 gift subs were given for this PogChamp"
+          />
+        </a>
         {children}
       </AppShell>
     </Box>
