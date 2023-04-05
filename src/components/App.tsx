@@ -33,11 +33,6 @@ const App: React.FC<Props> = ({ children }) => {
       isShown: streamIsLive,
     },
     {
-      text: "Community",
-      href: "/#community",
-      isShown: true,
-    },
-    {
       text: "Videos",
       href: "/#videos",
       isShown: true,
@@ -50,6 +45,11 @@ const App: React.FC<Props> = ({ children }) => {
     {
       text: "Games",
       href: "/#games",
+      isShown: true,
+    },
+    {
+      text: "Community",
+      href: "/#community",
       isShown: true,
     },
   ];

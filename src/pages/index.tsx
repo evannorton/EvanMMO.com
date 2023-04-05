@@ -72,19 +72,6 @@ const Home: NextPage = () => {
       )}
       <Section>
         <>
-          <Title id="community" color="gray.0" mb="md">
-            Community
-          </Title>
-          <iframe
-            style={{ border: "none", borderRadius: "0.5rem", height: "25rem" }}
-            src="https://discordapp.com/widget?id=543159733821898773&theme=dark"
-            width="100%"
-            sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
-          />
-        </>
-      </Section>
-      <Section>
-        <>
           <Title id="videos" color="gray.0" mb="md">
             Videos
           </Title>
@@ -325,6 +312,19 @@ const Home: NextPage = () => {
               </Box>
             ))}
           </SimpleGrid>
+        </>
+      </Section>
+      <Section>
+        <>
+          <Title id="community" color="gray.0" mb="md">
+            Community
+          </Title>
+          <iframe
+            style={{ border: "none", borderRadius: "0.5rem", height: "25rem" }}
+            src="https://discordapp.com/widget?id=543159733821898773&theme=dark"
+            width="100%"
+            sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
+          />
         </>
       </Section>
     </>
