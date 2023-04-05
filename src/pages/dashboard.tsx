@@ -120,7 +120,6 @@ const Dashboard: NextPage = () => {
       >
         Add VOD
       </Button>
-      {(isLoadingVODs || isLoadingVODsCount) && <Loader />}
       {typeof vodsCount !== "undefined" && (
         <Pagination
           value={vodsPage}
@@ -130,6 +129,7 @@ const Dashboard: NextPage = () => {
           withEdges
         />
       )}
+      {(isLoadingVODs || isLoadingVODsCount) && <Loader />}
       {vods && typeof vodsCount !== "undefined" && (
         <SimpleGrid
           cols={4}

@@ -107,7 +107,6 @@ const Home: NextPage = () => {
           <Title id="broadcasts" color="gray.0" mb="md">
             Broadcasts
           </Title>
-          {(isLoadingVODs || isLoadingVODsCount) && <Loader />}
           {selectedVOD && (
             <>
               <Box style={{ width: "100%" }} mb="md">
@@ -135,6 +134,7 @@ const Home: NextPage = () => {
               withEdges
             />
           )}
+          {(isLoadingVODs || isLoadingVODsCount) && <Loader />}
           {vods && typeof vodsCount !== "undefined" && (
             <SimpleGrid
               cols={4}
