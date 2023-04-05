@@ -133,7 +133,7 @@ const Dashboard: NextPage = () => {
       {vods && typeof vodsCount !== "undefined" && (
         <SimpleGrid
           cols={4}
-          spacing="md"
+          spacing="sm"
           breakpoints={[{ maxWidth: "sm", cols: 2 }]}
         >
           {vods.map((vod) => {
