@@ -62,6 +62,21 @@ const Home: NextPage = () => {
       <Section>
         <>
           <Title id="videos" color="gray.0" mb="md">
+            Community
+          </Title>
+          <iframe
+            style={{ border: "none", borderRadius: 8 }}
+            src="https://discordapp.com/widget?id=543159733821898773&theme=dark"
+            width="100%"
+            height="500"
+            allowTransparency={true}
+            sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
+          />
+        </>
+      </Section>
+      <Section>
+        <>
+          <Title id="videos" color="gray.0" mb="md">
             Videos
           </Title>
           {isLoadingVideos && <Loader />}
