@@ -16,9 +16,9 @@ const MyApp: AppType<Props> = ({
   Component,
   pageProps: { session, ...pageProps },
 }) => {
-  const [vodID, setVODID] = useState<string | null>(null);
-  const [videoID, setVideoID] = useState<string | null>(null);
-  const [gameID, setGameID] = useState<string | null>(null);
+  const [selectedVODID, setSelectedVODID] = useState<string | null>(null);
+  const [selectedVideoID, setSelectedVideoID] = useState<string | null>(null);
+  const [selectedGameID, setSelectedGameID] = useState<string | null>(null);
   return (
     <SessionProvider session={session}>
       <MantineProvider
@@ -30,7 +30,14 @@ const MyApp: AppType<Props> = ({
         }}
       >
         <context.Provider
-          value={{ vodID, setVODID, videoID, setVideoID, gameID, setGameID }}
+          value={{
+            selectedVODID,
+            setSelectedVODID,
+            selectedVideoID,
+            setSelectedVideoID,
+            selectedGameID,
+            setSelectedGameID,
+          }}
         >
           <App>
             <Component {...pageProps} />

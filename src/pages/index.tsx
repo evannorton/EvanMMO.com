@@ -35,11 +35,17 @@ const Home: NextPage = () => {
   });
   const { data: vodsCount, isLoading: isLoadingVODsCount } =
     api.vod.getCount.useQuery();
-  const { vodID, setVODID, videoID, gameID, setGameID } = useContext(context);
-  const vod = vods?.find((vod) => vod.id === vodID);
+  const {
+    selectedVODID,
+    setSelectedVODID,
+    selectedVideoID,
+    selectedGameID,
+    setSelectedGameID,
+  } = useContext(context);
+  const selectedVOD = vods?.find((vod) => vod.id === selectedVODID);
   const gameRef = useRef<HTMLIFrameElement>(null);
   const { data: games, isLoading: isLoadingGames } = api.game.getAll.useQuery();
-  const game = games?.find((game) => game.id === gameID);
+  const game = games?.find((game) => game.id === selectedGameID);
   return (
     <>
       <Head description="A hub for EvanMMO's content creation and game development" />
@@ -85,7 +91,7 @@ const Home: NextPage = () => {
             Videos
           </Title>
           {isLoadingVideos && <Loader />}
-          {videoID && (
+          {selectedVideoID && (
             <Box mb="md">
               <iframe
                 style={{
@@ -95,7 +101,7 @@ const Home: NextPage = () => {
                   height: "auto",
                   aspectRatio: 16 / 9,
                 }}
-                src={`https://www.youtube.com/embed/${videoID}?autoplay=1`}
+                src={`https://www.youtube.com/embed/${selectedVideoID}?autoplay=1`}
                 title="YouTube video player"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 allowFullScreen
@@ -113,11 +119,11 @@ const Home: NextPage = () => {
             Broadcasts
           </Title>
           {(isLoadingVODs || isLoadingVODsCount) && <Loader />}
-          {vod && (
+          {selectedVOD && (
             <>
               <Box style={{ width: "100%" }} mb="md">
                 <VODPlayer
-                  pieces={vod.pieces.map((piece) => ({
+                  pieces={selectedVOD.pieces.map((piece) => ({
                     id: piece.id,
                     mp4URL: piece.mp4URL,
                     jsonURL: piece.jsonURL,
@@ -126,7 +132,7 @@ const Home: NextPage = () => {
               </Box>
               <Box mb="md">
                 <Text style={{ width: "90%", margin: "0 auto" }} align="center">
-                  {vod.description}
+                  {selectedVOD.description}
                 </Text>
               </Box>
             </>
@@ -148,44 +154,61 @@ const Home: NextPage = () => {
             >
               {vods.map((vod) => {
                 return (
-                  <Card
-                    style={{ flexDirection: "column", borderRadius: "0.5rem" }}
-                    display="flex"
-                    key={vod.id}
-                  >
-                    <Text size="lg" mb="sm">
-                      {getFormattedDateString(vod.streamDate)}
-                    </Text>
-                    {getDescriptionPreview(vod.description)
-                      .split("\n")
-                      .map((line, key) => (
-                        <Text key={key}>{line}</Text>
-                      ))}
-                    <Box mt="auto">
-                      {vodID !== vod.id && (
-                        <Button
-                          color="green"
-                          mt="sm"
-                          onClick={() => {
-                            setVODID(vod.id);
-                          }}
-                        >
-                          Play
-                        </Button>
-                      )}
-                      {vodID === vod.id && (
-                        <Button
-                          color="red"
-                          mt="sm"
-                          onClick={() => {
-                            setVODID(null);
-                          }}
-                        >
-                          Stop
-                        </Button>
-                      )}
-                    </Box>
-                  </Card>
+                  <Box pos="relative" key={vod.id}>
+                    <Card
+                      style={{
+                        flexDirection: "column",
+                        borderRadius: "0.5rem",
+                      }}
+                      display="flex"
+                    >
+                      <Text size="lg" mb="sm">
+                        {getFormattedDateString(vod.streamDate)}
+                      </Text>
+                      {getDescriptionPreview(vod.description)
+                        .split("\n")
+                        .map((line, key) => (
+                          <Text key={key}>{line}</Text>
+                        ))}
+                      <Box mt="auto">
+                        {selectedVODID !== vod.id && (
+                          <Button
+                            color="green"
+                            mt="sm"
+                            onClick={() => {
+                              setSelectedVODID(vod.id);
+                            }}
+                          >
+                            Play
+                          </Button>
+                        )}
+                        {selectedVODID === vod.id && (
+                          <Button
+                            color="red"
+                            mt="sm"
+                            onClick={() => {
+                              setSelectedVODID(null);
+                            }}
+                          >
+                            Stop
+                          </Button>
+                        )}
+                      </Box>
+                    </Card>
+                    {vod.id === selectedVODID && (
+                      <Box
+                        pos="absolute"
+                        top={0}
+                        style={{
+                          borderRadius: "0.5rem",
+                          border: "4px solid white",
+                          width: "100%",
+                          height: "100%",
+                          pointerEvents: "none",
+                        }}
+                      />
+                    )}
+                  </Box>
                 );
               })}
             </SimpleGrid>
@@ -246,10 +269,10 @@ const Home: NextPage = () => {
                 <Box
                   style={{ cursor: "pointer", position: "relative" }}
                   onClick={() => {
-                    if (gameID !== game.id) {
-                      setGameID(game.id);
+                    if (selectedGameID !== game.id) {
+                      setSelectedGameID(game.id);
                     } else {
-                      setGameID(null);
+                      setSelectedGameID(null);
                     }
                   }}
                 >
@@ -264,7 +287,7 @@ const Home: NextPage = () => {
                       alt={game.title}
                       src={game.thumbnailURL}
                       style={{
-                        opacity: gameID === game.id ? 1 : 0.75,
+                        opacity: selectedGameID === game.id ? 1 : 0.75,
                       }}
                     />
                     <FontAwesomeIcon
@@ -280,9 +303,11 @@ const Home: NextPage = () => {
                         boxShadow: "5px 5px 50px 5px #000000",
                         borderRadius: "50%",
                       }}
-                      icon={gameID !== game.id ? faPlayCircle : faStopCircle}
+                      icon={
+                        selectedGameID !== game.id ? faPlayCircle : faStopCircle
+                      }
                     />
-                    {gameID === game.id && (
+                    {selectedGameID === game.id && (
                       <Box
                         pos="absolute"
                         top={0}

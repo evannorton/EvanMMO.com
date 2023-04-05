@@ -2,19 +2,19 @@ import { createContext } from "react";
 import type { Dispatch, SetStateAction } from "react";
 
 const context = createContext<{
-  vodID: string | null;
-  setVODID: Dispatch<SetStateAction<string | null>>;
-  videoID: string | null;
-  setVideoID: Dispatch<SetStateAction<string | null>>;
-  gameID: string | null;
-  setGameID: Dispatch<SetStateAction<string | null>>;
+  selectedVODID: string | null;
+  setSelectedVODID: Dispatch<SetStateAction<string | null>>;
+  selectedVideoID: string | null;
+  setSelectedVideoID: Dispatch<SetStateAction<string | null>>;
+  selectedGameID: string | null;
+  setSelectedGameID: Dispatch<SetStateAction<string | null>>;
 }>({
-  vodID: null,
-  setVODID: () => {},
-  videoID: null,
-  setVideoID: () => {},
-  gameID: null,
-  setGameID: () => {},
+  selectedVODID: null,
+  setSelectedVODID: () => {},
+  selectedVideoID: null,
+  setSelectedVideoID: () => {},
+  selectedGameID: null,
+  setSelectedGameID: () => {},
 });
 
 export default context;
