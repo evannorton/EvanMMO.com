@@ -119,7 +119,7 @@ const Home: NextPage = () => {
                 />
               </Box>
               <Box mb="md">
-                <Text style={{ width: "90%", margin: "0 auto" }} align="center">
+                <Text>
                   {selectedVOD.description}
                 </Text>
               </Box>
@@ -243,7 +243,7 @@ const Home: NextPage = () => {
                 />
               </Box>
               <Box mb="md">
-                <Text style={{ width: "90%", margin: "0 auto" }} align="center">
+                <Text>
                   {game.description}
                 </Text>
               </Box>
