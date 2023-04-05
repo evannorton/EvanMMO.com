@@ -52,7 +52,12 @@ const VODChat: React.FC<Props> = ({ jsonURL, currentTime }) => {
     return (
       <Box style={{ overflowY: "scroll", height: "100%" }} ref={boxRef}>
         {renderedComments.map((comment) => (
-          <Text key={comment._id}>{comment.message.body}</Text>
+          <Text key={comment._id}>
+            <b style={{ color: comment.message.user_color ?? undefined }}>
+              {comment.commenter.display_name}:
+            </b>{" "}
+            {comment.message.body}
+          </Text>
         ))}
       </Box>
     );
