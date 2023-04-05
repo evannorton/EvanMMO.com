@@ -1,4 +1,4 @@
-import { Box, Button, Flex } from "@mantine/core";
+import { Box, Button, Flex, Text } from "@mantine/core";
 import { useEffect, useState } from "react";
 import VODChat from "./VODChat";
 
@@ -43,18 +43,33 @@ const VODPlayer: React.FC<Props> = ({ pieces }) => {
             }}
           />
         </Box>
-        {piece && piece.jsonURL && currentTime !== null && (
-          <Box
-            pos="absolute"
-            right={0}
-            style={{
-              width: "25%",
-              height: "100%",
-            }}
-          >
+        <Box
+          pos="absolute"
+          right={0}
+          style={{
+            width: "25%",
+            height: "100%",
+          }}
+        >
+          {piece && piece.jsonURL && currentTime !== null && (
             <VODChat jsonURL={piece.jsonURL} currentTime={currentTime} />
-          </Box>
-        )}
+          )}
+          {piece && !piece.jsonURL && (
+            <Text
+              style={{
+                alignItems: "center",
+              }}
+              display="flex"
+              align="center"
+              pos="absolute"
+              top={0}
+              bottom={0}
+              px="sm"
+            >
+              No chat is available for this part of this VOD.
+            </Text>
+          )}
+        </Box>
       </Flex>
       {pieces.length > 1 && (
         <>
