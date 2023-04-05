@@ -115,7 +115,7 @@ const Home: NextPage = () => {
           {(isLoadingVODs || isLoadingVODsCount) && <Loader />}
           {vod && (
             <>
-              <Box style={{ aspectRatio: 16 / 9, width: "100%" }} mb="md">
+              <Box style={{ width: "100%" }} mb="md">
                 <VODPlayer
                   pieces={vod.pieces.map((piece) => ({
                     id: piece.id,
@@ -254,8 +254,8 @@ const Home: NextPage = () => {
                   }}
                 >
                   <Box
+                    pos="relative"
                     style={{
-                      position: "relative",
                       borderRadius: "0.5rem",
                       overflow: "hidden",
                     }}
@@ -284,10 +284,10 @@ const Home: NextPage = () => {
                     />
                     {gameID === game.id && (
                       <Box
+                        pos="absolute"
+                        top={0}
                         style={{
                           border: "4px solid white",
-                          position: "absolute",
-                          top: 0,
                           width: "100%",
                           height: "100%",
                         }}

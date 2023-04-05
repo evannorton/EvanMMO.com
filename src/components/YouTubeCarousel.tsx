@@ -54,8 +54,8 @@ const YouTubeCarousel: React.FC<Props> = ({ videos }) => {
                 }}
               >
                 <Box
+                  pos="relative"
                   style={{
-                    position: "relative",
                     borderRadius: "0.5rem",
                     overflow: "hidden",
                   }}
@@ -84,11 +84,11 @@ const YouTubeCarousel: React.FC<Props> = ({ videos }) => {
                   />
                   {videoID === video.id && (
                     <Box
+                      pos="absolute"
+                      left={0}
+                      top={0}
                       style={{
                         border: "4px solid white",
-                        position: "absolute",
-                        left: 0,
-                        top: 0,
                         width: "100%",
                         height: "100%",
                       }}

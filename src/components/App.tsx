@@ -3,6 +3,7 @@ import {
   AppShell,
   Box,
   Button,
+  Flex,
   Footer,
   Header,
   MediaQuery,
@@ -83,7 +84,7 @@ const App: React.FC<Props> = ({ children }) => {
             p="md"
             display="flex"
           >
-            <Box style={{ width: "100%", alignItems: "center" }} display="flex">
+            <Flex style={{ width: "100%" }} align="center">
               <Anchor
                 sx={{
                   "&:hover": {
@@ -131,10 +132,7 @@ const App: React.FC<Props> = ({ children }) => {
                 </Box>
               </MediaQuery>
               {typeof sessionData !== "undefined" && (
-                <Box
-                  display="flex"
-                  style={{ alignItems: "center", marginLeft: "auto" }}
-                >
+                <Flex align="center" ml="auto">
                   {sessionData?.user.role === "ADMIN" && (
                     <Anchor
                       sx={{
@@ -161,9 +159,9 @@ const App: React.FC<Props> = ({ children }) => {
                   >
                     {sessionData ? "Sign out" : "Sign in"}
                   </Button>
-                </Box>
+                </Flex>
               )}
-            </Box>
+            </Flex>
           </Header>
         }
         footer={
