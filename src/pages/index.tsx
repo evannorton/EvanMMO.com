@@ -59,8 +59,6 @@ const Home: NextPage = () => {
               style={{
                 aspectRatio: 16 / 9,
                 width: "100%",
-                borderRadius: "0.5rem",
-                overflow: "hidden",
               }}
             >
               <TwitchEmbed
