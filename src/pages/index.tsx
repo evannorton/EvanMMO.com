@@ -119,9 +119,7 @@ const Home: NextPage = () => {
                 />
               </Box>
               <Box mb="md">
-                <Text>
-                  {selectedVOD.description}
-                </Text>
+                <Text>{selectedVOD.description}</Text>
               </Box>
             </>
           )}
@@ -243,9 +241,7 @@ const Home: NextPage = () => {
                 />
               </Box>
               <Box mb="md">
-                <Text>
-                  {game.description}
-                </Text>
+                <Text>{game.description}</Text>
               </Box>
             </>
           )}
