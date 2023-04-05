@@ -53,11 +53,19 @@ const YouTubeCarousel: React.FC<Props> = ({ videos }) => {
                   }
                 }}
               >
-                <Box style={{ position: "relative" }}>
+                <Box
+                  style={{
+                    position: "relative",
+                    borderRadius: "0.5rem",
+                    overflow: "hidden",
+                  }}
+                >
                   <Image
                     alt={video.title}
                     src={video.thumbnailURL}
-                    style={{ opacity: videoID === video.id ? 1 : 0.75 }}
+                    style={{
+                      opacity: videoID === video.id ? 1 : 0.75,
+                    }}
                   />
                   <FontAwesomeIcon
                     style={{

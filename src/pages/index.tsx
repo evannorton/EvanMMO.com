@@ -49,7 +49,14 @@ const Home: NextPage = () => {
             <Title id="livestream" color="gray.0" mb="md">
               Livestream
             </Title>
-            <Box style={{ aspectRatio: 16 / 9, width: "100%" }}>
+            <Box
+              style={{
+                aspectRatio: 16 / 9,
+                width: "100%",
+                borderRadius: "0.5rem",
+                overflow: "hidden",
+              }}
+            >
               <TwitchEmbed
                 channel={twitchUsername}
                 width="100%"
@@ -61,15 +68,14 @@ const Home: NextPage = () => {
       )}
       <Section>
         <>
-          <Title id="videos" color="gray.0" mb="md">
+          <Title id="community" color="gray.0" mb="md">
             Community
           </Title>
           <iframe
-            style={{ border: "none", borderRadius: 8 }}
+            style={{ border: "none", borderRadius: "0.5rem" }}
             src="https://discordapp.com/widget?id=543159733821898773&theme=dark"
             width="100%"
             height="500"
-            allowTransparency={true}
             sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
           />
         </>
@@ -144,7 +150,7 @@ const Home: NextPage = () => {
               {vods.map((vod) => {
                 return (
                   <Card
-                    style={{ flexDirection: "column" }}
+                    style={{ flexDirection: "column", borderRadius: "0.5rem" }}
                     display="flex"
                     key={vod.id}
                   >
@@ -248,11 +254,19 @@ const Home: NextPage = () => {
                     }
                   }}
                 >
-                  <Box style={{ position: "relative" }}>
+                  <Box
+                    style={{
+                      position: "relative",
+                      borderRadius: "0.5rem",
+                      overflow: "hidden",
+                    }}
+                  >
                     <Image
                       alt={game.title}
                       src={game.thumbnailURL}
-                      style={{ opacity: gameID === game.id ? 1 : 0.75 }}
+                      style={{
+                        opacity: gameID === game.id ? 1 : 0.75,
+                      }}
                     />
                     <FontAwesomeIcon
                       style={{

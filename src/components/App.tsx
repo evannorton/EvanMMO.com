@@ -32,6 +32,11 @@ const App: React.FC<Props> = ({ children }) => {
       isShown: streamIsLive,
     },
     {
+      text: "Community",
+      href: "/#community",
+      isShown: true,
+    },
+    {
       text: "Videos",
       href: "/#videos",
       isShown: true,
@@ -82,7 +87,7 @@ const App: React.FC<Props> = ({ children }) => {
               <Anchor
                 sx={{
                   "&:hover": {
-                    opacity: ".75",
+                    opacity: "0.75",
                     textDecoration: "none",
                   },
                 }}
@@ -96,7 +101,7 @@ const App: React.FC<Props> = ({ children }) => {
                 EvanMMO
               </Anchor>
               <MediaQuery
-                smallerThan="sm"
+                smallerThan="md"
                 styles={{
                   display: "none",
                 }}
@@ -108,7 +113,7 @@ const App: React.FC<Props> = ({ children }) => {
                       <Anchor
                         sx={{
                           "&:hover": {
-                            opacity: ".75",
+                            opacity: "0.75",
                             textDecoration: "none",
                           },
                         }}
@@ -134,7 +139,7 @@ const App: React.FC<Props> = ({ children }) => {
                     <Anchor
                       sx={{
                         "&:hover": {
-                          opacity: ".75",
+                          opacity: "0.75",
                           textDecoration: "none",
                         },
                       }}
@@ -175,7 +180,7 @@ const App: React.FC<Props> = ({ children }) => {
                 style={{ display: "block", height: "100%" }}
                 sx={{
                   "&:hover": {
-                    opacity: ".75",
+                    opacity: "0.75",
                   },
                 }}
                 target="_blank"
