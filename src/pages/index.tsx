@@ -46,6 +46,10 @@ const Home: NextPage = () => {
   const gameRef = useRef<HTMLIFrameElement>(null);
   const { data: games, isLoading: isLoadingGames } = api.game.getAll.useQuery();
   const game = games?.find((game) => game.id === selectedGameID);
+  const handleVODsPagination = (page: number): void => {
+    setVODsPage(page);
+    setSelectedVODID(null);
+  };
   return (
     <>
       <Head description="A hub for EvanMMO's content creation and game development" />
@@ -125,7 +129,7 @@ const Home: NextPage = () => {
           {typeof vodsCount !== "undefined" && (
             <Pagination
               value={vodsPage}
-              onChange={setVODsPage}
+              onChange={handleVODsPagination}
               mb="md"
               total={Math.ceil(vodsCount / vodsPerPage)}
               withEdges
@@ -202,7 +206,7 @@ const Home: NextPage = () => {
           {typeof vodsCount !== "undefined" && (
             <Pagination
               value={vodsPage}
-              onChange={setVODsPage}
+              onChange={handleVODsPagination}
               total={Math.ceil(vodsCount / vodsPerPage)}
               withEdges
               mt="sm"
