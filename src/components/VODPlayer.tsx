@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Text } from "@mantine/core";
+import { Box, Button, Flex, MediaQuery, Text } from "@mantine/core";
 import { useEffect, useState } from "react";
 import VODChat from "./VODChat";
 
@@ -19,57 +19,74 @@ const VODPlayer: React.FC<Props> = ({ pieces }) => {
   }, [pieces]);
   return (
     <>
-      <Flex pos="relative">
-        <Box
-          style={{
-            width: "75%",
+      <Flex pos="relative" wrap="wrap">
+        <MediaQuery
+          smallerThan="sm"
+          styles={{
+            width: "100%",
           }}
         >
-          <video
-            style={{ display: "block", aspectRatio: 16 / 9, width: "100%" }}
-            width="100%"
-            src={piece?.mp4URL}
-            controls
-            autoPlay
-            onEnded={() => {
-              const index = pieces.findIndex((piece) => piece.id === pieceID);
-              const nextPiece = pieces[index + 1];
-              if (nextPiece) {
-                setPieceID(nextPiece.id);
-              }
+          <Box
+            sx={{
+              width: "75%",
             }}
-            onTimeUpdate={({ target }) => {
-              setCurrentTime((target as HTMLVideoElement).currentTime);
-            }}
-          />
-        </Box>
-        <Box
-          pos="absolute"
-          right={0}
-          style={{
-            width: "25%",
-            height: "100%",
-          }}
-        >
-          {piece && piece.jsonURL && currentTime !== null && (
-            <VODChat jsonURL={piece.jsonURL} currentTime={currentTime} />
-          )}
-          {piece && !piece.jsonURL && (
-            <Text
-              style={{
-                alignItems: "center",
+          >
+            <video
+              style={{ display: "block", aspectRatio: 16 / 9, width: "100%" }}
+              width="100%"
+              src={piece?.mp4URL}
+              controls
+              autoPlay
+              onEnded={() => {
+                const index = pieces.findIndex((piece) => piece.id === pieceID);
+                const nextPiece = pieces[index + 1];
+                if (nextPiece) {
+                  setPieceID(nextPiece.id);
+                }
               }}
-              display="flex"
-              align="center"
-              pos="absolute"
-              top={0}
-              bottom={0}
-              px="sm"
-            >
-              No chat is available for this part of this broadcast.
-            </Text>
-          )}
-        </Box>
+              onTimeUpdate={({ target }) => {
+                setCurrentTime((target as HTMLVideoElement).currentTime);
+              }}
+            />
+          </Box>
+        </MediaQuery>
+        <MediaQuery
+          smallerThan="sm"
+          styles={{
+            width: "100%",
+            position: "relative",
+            height: "25rem",
+            marginTop: "1rem",
+          }}
+        >
+          <Box
+            pos="absolute"
+            right={0}
+            sx={{
+              width: "25%",
+              height: "100%",
+            }}
+          >
+            {piece && piece.jsonURL && currentTime !== null && (
+              <VODChat jsonURL={piece.jsonURL} currentTime={currentTime} />
+            )}
+            {piece && !piece.jsonURL && (
+              <Text
+                style={{
+                  alignItems: "center",
+                }}
+                display="flex"
+                align="center"
+                pos="absolute"
+                top={0}
+                bottom={0}
+                px="sm"
+              >
+                No chat is available for this part of this broadcast.
+              </Text>
+            )}
+          </Box>
+        </MediaQuery>
       </Flex>
       {pieces.length > 1 && (
         <>
