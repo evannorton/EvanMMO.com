@@ -60,8 +60,8 @@ const Home: NextPage = () => {
               Livestream
             </Title>
             <Box
-              style={{
-                aspectRatio: 16 / 9,
+              sx={{
+                aspectRatio: "16 / 9",
                 width: "100%",
               }}
             >
@@ -88,7 +88,7 @@ const Home: NextPage = () => {
                   display: "block",
                   width: "100%",
                   height: "auto",
-                  aspectRatio: 16 / 9,
+                  aspectRatio: "16 / 9",
                 }}
                 src={`https://www.youtube.com/embed/${selectedVideoID}?autoplay=1`}
                 title="YouTube video player"
@@ -109,7 +109,7 @@ const Home: NextPage = () => {
           </Title>
           {selectedVOD && (
             <>
-              <Box style={{ width: "100%" }} mb="md">
+              <Box sx={{ width: "100%" }} mb="md">
                 <VODPlayer
                   pieces={selectedVOD.pieces.map((piece) => ({
                     id: piece.id,
@@ -143,7 +143,7 @@ const Home: NextPage = () => {
                 return (
                   <Box pos="relative" key={vod.id}>
                     <Card
-                      style={{
+                      sx={{
                         flexDirection: "column",
                         borderRadius: "0.5rem",
                         height: "100%",
@@ -187,7 +187,7 @@ const Home: NextPage = () => {
                       <Box
                         pos="absolute"
                         top={0}
-                        style={{
+                        sx={{
                           borderRadius: "0.5rem",
                           border: "4px solid white",
                           width: "100%",
@@ -221,7 +221,7 @@ const Home: NextPage = () => {
           {game && (
             <>
               <Box
-                style={{
+                sx={{
                   width: "100%",
                   overflow: "auto",
                 }}
@@ -253,7 +253,7 @@ const Home: NextPage = () => {
             {games?.map((game) => (
               <Box key={game.id}>
                 <Box
-                  style={{ cursor: "pointer", position: "relative" }}
+                  sx={{ cursor: "pointer", position: "relative" }}
                   onClick={() => {
                     if (selectedGameID !== game.id) {
                       setSelectedGameID(game.id);
@@ -264,7 +264,7 @@ const Home: NextPage = () => {
                 >
                   <Box
                     pos="relative"
-                    style={{
+                    sx={{
                       borderRadius: "0.5rem",
                       overflow: "hidden",
                     }}
@@ -272,7 +272,7 @@ const Home: NextPage = () => {
                     <Image
                       alt={game.title}
                       src={game.thumbnailURL}
-                      style={{
+                      sx={{
                         opacity: selectedGameID === game.id ? 1 : 0.75,
                       }}
                     />
@@ -297,7 +297,7 @@ const Home: NextPage = () => {
                       <Box
                         pos="absolute"
                         top={0}
-                        style={{
+                        sx={{
                           border: "4px solid white",
                           width: "100%",
                           height: "100%",

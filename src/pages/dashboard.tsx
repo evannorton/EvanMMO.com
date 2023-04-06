@@ -139,7 +139,7 @@ const Dashboard: NextPage = () => {
           {vods.map((vod) => {
             return (
               <Card
-                style={{ flexDirection: "column", borderRadius: "0.5rem" }}
+                sx={{ flexDirection: "column", borderRadius: "0.5rem" }}
                 display="flex"
                 key={vod.id}
               >

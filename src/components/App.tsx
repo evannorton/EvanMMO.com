@@ -6,6 +6,7 @@ import {
   Flex,
   Footer,
   Header,
+  Image,
   MediaQuery,
 } from "@mantine/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -17,7 +18,6 @@ import {
   faYoutube,
 } from "@fortawesome/free-brands-svg-icons";
 import { signIn, signOut, useSession } from "next-auth/react";
-import Image from "next/image";
 
 interface Props {
   readonly children: JSX.Element;
@@ -72,19 +72,19 @@ const App: React.FC<Props> = ({ children }) => {
     },
   ];
   return (
-    <Box style={{ maxWidth: 1440, margin: "0 auto" }}>
+    <Box sx={{ maxWidth: 1440, margin: "0 auto" }}>
       <AppShell
-        style={{ paddingTop: "3.75rem" }}
+        sx={{ paddingTop: "3.75rem" }}
         fixed={false}
         header={
           <Header
             fixed
-            style={{ alignItems: "center", maxWidth: 1440, margin: "0 auto" }}
+            sx={{ alignItems: "center", maxWidth: 1440, margin: "0 auto" }}
             height={60}
             p="md"
             display="flex"
           >
-            <Flex style={{ width: "100%" }} align="center">
+            <Flex sx={{ width: "100%" }} align="center">
               <Anchor
                 sx={{
                   "&:hover": {
@@ -167,7 +167,7 @@ const App: React.FC<Props> = ({ children }) => {
         footer={
           <Footer
             fixed={false}
-            style={{ alignItems: "center", justifyContent: "center" }}
+            sx={{ alignItems: "center", justifyContent: "center" }}
             height={60}
             p="md"
             display="flex"
@@ -175,8 +175,8 @@ const App: React.FC<Props> = ({ children }) => {
             {footerSocialMediaLinks.map((link, key) => (
               <Anchor
                 display="block"
-                style={{ display: "block", height: "100%" }}
                 sx={{
+                  height: "100%",
                   "&:hover": {
                     opacity: "0.75",
                   },
@@ -198,7 +198,7 @@ const App: React.FC<Props> = ({ children }) => {
       >
         <a className="easter-egg" href="https://twitch.tv/riazey">
           <Image
-            style={{
+            sx={{
               width: "100%",
               height: "2em",
               objectFit: "cover",

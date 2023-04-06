@@ -50,14 +50,14 @@ const VODChat: React.FC<Props> = ({ jsonURL, currentTime }) => {
   }, [boxRef, renderedComments]);
   if (vodJSON) {
     return (
-      <Box style={{ overflowY: "scroll", height: "100%" }} ref={boxRef}>
+      <Box sx={{ overflowY: "scroll", height: "100%" }} ref={boxRef}>
         {renderedComments.map((comment) => (
           <Text
-            style={{ overflowWrap: "break-word" }}
+            sx={{ overflowWrap: "break-word" }}
             px="sm"
             key={comment._id}
           >
-            <b style={{ color: comment.message.user_color ?? undefined }}>
+            <b sx={{ color: comment.message.user_color ?? undefined }}>
               {comment.commenter.display_name}:
             </b>{" "}
             {comment.message.body}

@@ -32,10 +32,10 @@ const YouTubeCarousel: React.FC<Props> = ({ videos }) => {
       ]}
       controlSize={40}
       previousControlIcon={
-        <FontAwesomeIcon style={{ width: "1em" }} icon={faChevronLeft} />
+        <FontAwesomeIcon sx={{ width: "1em" }} icon={faChevronLeft} />
       }
       nextControlIcon={
-        <FontAwesomeIcon style={{ width: "1em" }} icon={faChevronRight} />
+        <FontAwesomeIcon sx={{ width: "1em" }} icon={faChevronRight} />
       }
     >
       {videos.map((video) => {
@@ -43,7 +43,7 @@ const YouTubeCarousel: React.FC<Props> = ({ videos }) => {
           return (
             <Carousel.Slide key={video.id}>
               <Box
-                style={{ cursor: "pointer" }}
+                sx={{ cursor: "pointer" }}
                 onClick={() => {
                   if (video.id) {
                     if (videoID !== video.id) {
@@ -56,7 +56,7 @@ const YouTubeCarousel: React.FC<Props> = ({ videos }) => {
               >
                 <Box
                   pos="relative"
-                  style={{
+                  sx={{
                     borderRadius: "0.5rem",
                     overflow: "hidden",
                   }}
@@ -64,12 +64,12 @@ const YouTubeCarousel: React.FC<Props> = ({ videos }) => {
                   <Image
                     alt={video.title}
                     src={video.thumbnailURL}
-                    style={{
+                    sx={{
                       opacity: videoID === video.id ? 1 : 0.75,
                     }}
                   />
                   <FontAwesomeIcon
-                    style={{
+                    sx={{
                       position: "absolute",
                       left: 0,
                       top: 0,
@@ -88,7 +88,7 @@ const YouTubeCarousel: React.FC<Props> = ({ videos }) => {
                       pos="absolute"
                       left={0}
                       top={0}
-                      style={{
+                      sx={{
                         border: "4px solid white",
                         width: "100%",
                         height: "100%",
