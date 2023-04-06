@@ -32,10 +32,10 @@ const YouTubeCarousel: React.FC<Props> = ({ videos }) => {
       ]}
       controlSize={40}
       previousControlIcon={
-        <FontAwesomeIcon sx={{ width: "1em" }} icon={faChevronLeft} />
+        <FontAwesomeIcon style={{ width: "1em" }} icon={faChevronLeft} />
       }
       nextControlIcon={
-        <FontAwesomeIcon sx={{ width: "1em" }} icon={faChevronRight} />
+        <FontAwesomeIcon style={{ width: "1em" }} icon={faChevronRight} />
       }
     >
       {videos.map((video) => {
@@ -69,7 +69,7 @@ const YouTubeCarousel: React.FC<Props> = ({ videos }) => {
                     }}
                   />
                   <FontAwesomeIcon
-                    sx={{
+                    style={{
                       position: "absolute",
                       left: 0,
                       top: 0,
