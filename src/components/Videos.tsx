@@ -9,7 +9,7 @@ interface Props {}
 const DiscordEmbed: React.FC<Props> = () => {
   const { selectedVideoID } = useContext(context);
   const { data: youtubeVideos, isLoading: isLoadingVideos } =
-    api.youtube.videos.useQuery();
+    api.youtube.getVideos.useQuery();
   return (
     <>
       {isLoadingVideos && <Loader />}

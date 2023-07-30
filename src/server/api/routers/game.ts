@@ -2,7 +2,7 @@ import { Prisma } from "@prisma/client";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
 export const gameRouter = createTRPCRouter({
-  getAll: publicProcedure.query(({ ctx }) =>
+  getGames: publicProcedure.query(({ ctx }) =>
     ctx.prisma.game.findMany({
       select: {
         id: true,

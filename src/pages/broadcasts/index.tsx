@@ -1,7 +1,7 @@
 import { type NextPage } from "next";
 import { Title } from "@mantine/core";
-import Broadcasts from "../components/Broadcasts";
-import Head from "../components/Head";
+import Broadcasts from "../../components/Broadcasts";
+import Head from "../../components/Head";
 
 const BroadcastsPage: NextPage = () => (
   <>

@@ -1,6 +1,7 @@
 import "../style.css";
 import { type AppType } from "next/app";
 import { MantineProvider } from "@mantine/core";
+import { Notifications } from "@mantine/notifications";
 import { type Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
 import { api } from "../utils/api";
@@ -29,6 +30,7 @@ const MyApp: AppType<Props> = ({
           colorScheme: "dark",
         }}
       >
+        <Notifications />
         <context.Provider
           value={{
             selectedVODID,

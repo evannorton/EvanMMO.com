@@ -7,11 +7,14 @@ import {
   SimpleGrid,
   Text,
 } from "@mantine/core";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { api } from "../utils/api";
+import { faLink } from "@fortawesome/free-solid-svg-icons";
 import { getDescriptionPreview } from "../utils/description";
 import { getFormattedDateString } from "../utils/date";
+import { notifications } from "@mantine/notifications";
 import { useContext, useState } from "react";
-import VODPlayer from "./VODPlayer";
+import Broadcast from "./Broadcast";
 import context from "../context";
 import vodsPerPage from "../constants/vodsPerPage";
 
@@ -19,35 +22,19 @@ interface Props {}
 
 const Broadcasts: React.FC<Props> = () => {
   const [vodsPage, setVODsPage] = useState(1);
-  const { data: vods, isLoading: isLoadingVODs } = api.vod.getAll.useQuery({
+  const { data: vods, isLoading: isLoadingVODs } = api.vod.getVODs.useQuery({
     page: vodsPage - 1,
   });
   const { data: vodsCount, isLoading: isLoadingVODsCount } =
-    api.vod.getCount.useQuery();
+    api.vod.getVODsCount.useQuery();
   const { selectedVODID, setSelectedVODID } = useContext(context);
-  const selectedVOD = vods?.find((vod) => vod.id === selectedVODID);
   const handleVODsPagination = (page: number): void => {
     setVODsPage(page);
     setSelectedVODID(null);
   };
   return (
     <>
-      {selectedVOD && (
-        <>
-          <Box sx={{ width: "100%" }} mb="md">
-            <VODPlayer
-              pieces={selectedVOD.pieces.map((piece) => ({
-                id: piece.id,
-                mp4URL: piece.mp4URL,
-                jsonURL: piece.jsonURL,
-              }))}
-            />
-          </Box>
-          <Box mb="md">
-            <Text>{selectedVOD.description}</Text>
-          </Box>
-        </>
-      )}
+      {selectedVODID && <Broadcast vodID={selectedVODID} />}
       {typeof vodsCount !== "undefined" && (
         <Pagination
           value={vodsPage}
@@ -75,9 +62,46 @@ const Broadcasts: React.FC<Props> = () => {
                   }}
                   display="flex"
                 >
-                  <Text size="lg" mb="sm">
-                    {getFormattedDateString(vod.streamDate)}
-                  </Text>
+                  <Box
+                    sx={{
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    }}
+                    display="flex"
+                    mb="sm"
+                  >
+                    <Text size="lg" mr="sm">
+                      {getFormattedDateString(vod.streamDate)}
+                    </Text>
+                    <Box
+                      sx={{
+                        cursor: "pointer",
+                        "&:hover": {
+                          opacity: "0.75",
+                        },
+                      }}
+                      onClick={() => {
+                        navigator.clipboard
+                          .writeText(
+                            `${window.location.origin}/broadcasts/${vod.id}`
+                          )
+                          .then(() => {
+                            notifications.show({
+                              message: "Copied broadcast link to clipboard",
+                            });
+                          })
+                          .catch(() => {
+                            notifications.show({
+                              color: "red",
+                              message:
+                                "Failed to copy broadcast link to clipboard",
+                            });
+                          });
+                      }}
+                    >
+                      <FontAwesomeIcon icon={faLink} />
+                    </Box>
+                  </Box>
                   {getDescriptionPreview(vod.description)
                     .split("\n")
                     .map((line, key) => (
@@ -110,8 +134,6 @@ const Broadcasts: React.FC<Props> = () => {
                 </Card>
                 {vod.id === selectedVODID && (
                   <Box
-                    pos="absolute"
-                    top={0}
                     sx={{
                       borderRadius: "0.5rem",
                       border: "4px solid white",
@@ -119,6 +141,8 @@ const Broadcasts: React.FC<Props> = () => {
                       height: "100%",
                       pointerEvents: "none",
                     }}
+                    pos="absolute"
+                    top={0}
                   />
                 )}
               </Box>

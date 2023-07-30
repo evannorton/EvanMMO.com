@@ -10,7 +10,7 @@ interface Props {}
 const Games: React.FC<Props> = () => {
   const { selectedGameID, setSelectedGameID } = useContext(context);
   const gameRef = useRef<HTMLIFrameElement>(null);
-  const { data: games, isLoading: isLoadingGames } = api.game.getAll.useQuery();
+  const { data: games, isLoading: isLoadingGames } = api.game.getGames.useQuery();
   const game = games?.find((game) => game.id === selectedGameID);
   return (
     <>

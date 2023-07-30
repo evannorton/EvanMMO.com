@@ -3,7 +3,7 @@ import youtubeAPI from "../../youtubeAPI";
 import type YouTubeVideo from "../../../types/YouTubeVideo";
 
 export const youtubeRouter = createTRPCRouter({
-  videos: publicProcedure.query(async () => {
+  getVideos: publicProcedure.query(async () => {
     // YouTube videos
     const youtubeVideos: YouTubeVideo[][] = [];
     for (const playlistID of [

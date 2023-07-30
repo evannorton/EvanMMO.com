@@ -4,7 +4,7 @@ import { z } from "zod";
 import vodsPerPage from "../../../constants/vodsPerPage";
 
 export const vodRouter = createTRPCRouter({
-  getAll: publicProcedure
+  getVODs: publicProcedure
     .input(
       z.object({
         page: z.number(),
@@ -34,7 +34,31 @@ export const vodRouter = createTRPCRouter({
         take: vodsPerPage,
       })
     ),
-  getCount: publicProcedure.query(({ ctx }) => ctx.prisma.vod.count()),
+  getVOD: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .query(({ ctx, input }) =>
+      ctx.prisma.vod.findUnique({
+        select: {
+          id: true,
+          streamDate: true,
+          description: true,
+          pieces: {
+            select: {
+              id: true,
+              mp4URL: true,
+              jsonURL: true,
+            },
+            orderBy: {
+              createdAt: Prisma.SortOrder.asc,
+            },
+          },
+        },
+        where: {
+          id: input.id,
+        },
+      })
+    ),
+  getVODsCount: publicProcedure.query(({ ctx }) => ctx.prisma.vod.count()),
   insertVOD: adminProcedure
     .input(
       z.object({

@@ -53,14 +53,14 @@ const DashboardPage: NextPage = () => {
     data: vods,
     isLoading: isLoadingVODs,
     refetch: refetchVODs,
-  } = api.vod.getAll.useQuery({
+  } = api.vod.getVODs.useQuery({
     page: vodsPage - 1,
   });
   const {
     data: vodsCount,
     isLoading: isLoadingVODsCount,
     refetch: refetchVODsCount,
-  } = api.vod.getCount.useQuery();
+  } = api.vod.getVODsCount.useQuery();
   const [isAddingVOD, setIsAddingVOD] = useState(false);
   const insertVODForm = useForm<InsertVODFormValues>({
     initialValues: {
