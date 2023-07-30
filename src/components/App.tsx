@@ -6,11 +6,9 @@ import {
   Flex,
   Footer,
   Header,
-  Image,
   MediaQuery,
 } from "@mantine/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { api } from "../utils/api";
 import {
   faDiscord,
   faTwitch,
@@ -25,32 +23,26 @@ interface Props {
 
 const App: React.FC<Props> = ({ children }) => {
   const { data: sessionData } = useSession();
-  const { data: streamIsLive } = api.twitch.isLive.useQuery();
   const headerLinks = [
     {
       text: "Livestream",
-      href: "/#livestream",
-      isShown: streamIsLive,
+      href: "/livestream",
     },
     {
       text: "Videos",
-      href: "/#videos",
-      isShown: true,
+      href: "/videos",
     },
     {
       text: "Broadcasts",
-      href: "/#broadcasts",
-      isShown: true,
+      href: "/broadcasts",
     },
     {
       text: "Games",
-      href: "/#games",
-      isShown: true,
+      href: "/games",
     },
     {
       text: "Community",
-      href: "/#community",
-      isShown: true,
+      href: "/community",
     },
   ];
   const footerSocialMediaLinks = [
@@ -108,27 +100,25 @@ const App: React.FC<Props> = ({ children }) => {
                 }}
               >
                 <Box>
-                  {headerLinks
-                    .filter((link) => link.isShown)
-                    .map((link) => (
-                      <Anchor
-                        sx={{
-                          "&:hover": {
-                            opacity: "0.75",
-                            textDecoration: "none",
-                          },
-                        }}
-                        href={link.href}
-                        color="gray.4"
-                        size={20}
-                        weight="bold"
-                        mr="xs"
-                        underline={false}
-                        key={link.href}
-                      >
-                        {link.text}
-                      </Anchor>
-                    ))}
+                  {headerLinks.map((link) => (
+                    <Anchor
+                      sx={{
+                        "&:hover": {
+                          opacity: "0.75",
+                          textDecoration: "none",
+                        },
+                      }}
+                      href={link.href}
+                      color="gray.4"
+                      size={20}
+                      weight="bold"
+                      mr="xs"
+                      underline={false}
+                      key={link.href}
+                    >
+                      {link.text}
+                    </Anchor>
+                  ))}
                 </Box>
               </MediaQuery>
               {typeof sessionData !== "undefined" && (
@@ -196,20 +186,6 @@ const App: React.FC<Props> = ({ children }) => {
           </Footer>
         }
       >
-        <a className="easter-egg" href="https://twitch.tv/riazey">
-          <Image
-            sx={{
-              width: "100%",
-              height: "2em",
-              objectFit: "cover",
-              objectPosition: "center",
-            }}
-            src="/easter-egg/cdboi.png"
-            width={100}
-            height={100}
-            alt="3 gift subs were given for this PogChamp"
-          />
-        </a>
         {children}
       </AppShell>
     </Box>

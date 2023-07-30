@@ -47,7 +47,7 @@ interface UpdateVODFormValues {
   readonly pieces: UpdateVODFormPieceValues[];
 }
 
-const Dashboard: NextPage = () => {
+const DashboardPage: NextPage = () => {
   const [vodsPage, setVODsPage] = useState(1);
   const {
     data: vods,
@@ -108,7 +108,7 @@ const Dashboard: NextPage = () => {
   return (
     <>
       <Head description="Admin dashboard for EvanMMO's content creation and game development site" />
-      <Title id="videos" color="gray.0" mb="md">
+      <Title order={1} color="gray.0" mb="md">
         VODs
       </Title>
       <Button
@@ -446,7 +446,7 @@ const Dashboard: NextPage = () => {
   );
 };
 
-export default Dashboard;
+export default DashboardPage;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getServerSession(context.req, context.res, authOptions);
