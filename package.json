@@ -1,7 +1,6 @@
 {
   "name": "evanmmo.com",
   "version": "1.0.0",
-  "private": true,
   "scripts": {
     "build": "prisma db push && prisma generate && next build",
     "dev": "prisma db push && prisma generate && next dev",
