@@ -17,6 +17,7 @@ const Broadcast: React.FC<Props> = ({ vodID }) => {
         <>
           <Box sx={{ width: "100%" }} mb="md">
             <VODPlayer
+              vodID={vod.id}
               pieces={vod.pieces.map((piece) => ({
                 id: piece.id,
                 mp4URL: piece.mp4URL,

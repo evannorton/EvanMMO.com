@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import VODChat from "./VODChat";
 
 interface Props {
+  readonly vodID: string;
   readonly pieces: {
     readonly id: string;
     readonly mp4URL: string;
@@ -10,13 +11,14 @@ interface Props {
   }[];
 }
 
-const VODPlayer: React.FC<Props> = ({ pieces }) => {
+const VODPlayer: React.FC<Props> = ({ pieces, vodID }) => {
   const [pieceID, setPieceID] = useState<string | null>(pieces[0]?.id ?? null);
   const piece = pieces.find((piece) => piece.id === pieceID);
   const [currentTime, setCurrentTime] = useState<number>(0);
   useEffect(() => {
     setPieceID(pieces[0]?.id ?? null);
-  }, [pieces]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [vodID]);
   return (
     <>
       <Flex pos="relative" wrap="wrap">
