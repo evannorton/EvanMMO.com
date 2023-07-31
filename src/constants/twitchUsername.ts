@@ -1,3 +1,3 @@
-const twitchUsername = "EvanMMObhfjkgkjsdfnkjghdf";
+const twitchUsername = "EvanMMO";
 
 export default twitchUsername;
