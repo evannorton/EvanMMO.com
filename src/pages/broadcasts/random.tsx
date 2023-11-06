@@ -6,7 +6,11 @@ import Broadcast from "../../components/Broadcast";
 import Head from "../../components/Head";
 
 const RandomBroadcastPage: NextPage = () => {
-  const { data: vod } = api.vod.getRandomVOD.useQuery();
+  const { data: vod } = api.vod.getRandomVOD.useQuery(undefined, {
+    refetchInterval: false,
+    refetchOnReconnect: false,
+    refetchOnWindowFocus: false,
+  });
   return (
     <>
       <Head
