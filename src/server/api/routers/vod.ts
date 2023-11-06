@@ -58,6 +58,26 @@ export const vodRouter = createTRPCRouter({
         },
       })
     ),
+  getRandomVOD: publicProcedure.query(async ({ ctx }) =>
+    ctx.prisma.vod.findFirst({
+      select: {
+        id: true,
+        streamDate: true,
+        description: true,
+        pieces: {
+          select: {
+            id: true,
+            mp4URL: true,
+            jsonURL: true,
+          },
+          orderBy: {
+            createdAt: Prisma.SortOrder.asc,
+          },
+        },
+      },
+      skip: Math.floor(Math.random() * (await ctx.prisma.vod.count())),
+    })
+  ),
   getVODsCount: publicProcedure.query(({ ctx }) => ctx.prisma.vod.count()),
   insertVOD: adminProcedure
     .input(
