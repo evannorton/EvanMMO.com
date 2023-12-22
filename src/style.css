@@ -5,3 +5,13 @@ body {
 .mantine-AppShell-main {
   width: 100%;
 }
+
+.livestream-embed {
+  aspect-ratio: 16 / 9;
+ }
+
+@media (max-width: 768px) {
+  .livestream-embed {
+    aspect-ratio: 3 / 5;
+  }
+}

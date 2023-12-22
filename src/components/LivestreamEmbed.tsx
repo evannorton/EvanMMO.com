@@ -7,8 +7,8 @@ interface Props {}
 const LivestreamEmbed: React.FC<Props> = () => {
   return (
     <Box
+      className="livestream-embed"
       sx={{
-        aspectRatio: "16 / 9",
         width: "100%",
       }}
     >
