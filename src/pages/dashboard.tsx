@@ -156,8 +156,10 @@ const DashboardPage: NextPage = () => {
                     mr="sm"
                     mt="sm"
                     onClick={() => {
+                      const diff =
+                        vod.streamDate.getTimezoneOffset() * 60 * 1000;
                       updateVODForm.setValues({
-                        streamDate: vod.streamDate,
+                        streamDate: new Date(vod.streamDate.getTime() + diff),
                         description: vod.description,
                         pieces: vod.pieces.map((piece) => ({
                           jsonURL: piece.jsonURL || "",
@@ -211,9 +213,13 @@ const DashboardPage: NextPage = () => {
           onSubmit={insertVODForm.onSubmit((values) => {
             setIsAddingVOD(false);
             insertVODForm.reset();
+            const diff =
+              (values.streamDate as Date).getTimezoneOffset() * 60 * 1000;
             insertVODMutation
               .mutateAsync({
-                streamDate: values.streamDate as Date,
+                streamDate: new Date(
+                  (values.streamDate as Date).getTime() - diff
+                ),
                 description: values.description,
                 pieces: values.pieces.map((piece) => ({
                   jsonURL: piece.jsonURL.length > 0 ? piece.jsonURL : null,
