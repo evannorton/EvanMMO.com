@@ -186,6 +186,7 @@ const App: React.FC<Props> = ({ children }) => {
             </Box>
             <Link
               href="https://www.paypal.com/donate/?hosted_button_id=4GETT9FKF4WWY"
+              target="_blank"
               style={{
                 width: "10em",
                 display: "block",
@@ -194,7 +195,12 @@ const App: React.FC<Props> = ({ children }) => {
               }}
             >
               <Image
-                src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif"
+                sx={{
+                  "&:hover": {
+                    opacity: "0.75",
+                  },
+                }}
+                src="/paypal.png"
                 alt="Donate"
               />
             </Link>
