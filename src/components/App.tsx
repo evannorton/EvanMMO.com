@@ -6,6 +6,7 @@ import {
   Flex,
   Footer,
   Header,
+  Image,
   MediaQuery,
 } from "@mantine/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -16,6 +17,7 @@ import {
   faYoutube,
 } from "@fortawesome/free-brands-svg-icons";
 import { signIn, signOut, useSession } from "next-auth/react";
+import Link from "next/link";
 
 interface Props {
   readonly children: JSX.Element;
@@ -155,34 +157,47 @@ const App: React.FC<Props> = ({ children }) => {
           </Header>
         }
         footer={
-          <Footer
-            fixed={false}
-            sx={{ alignItems: "center", justifyContent: "center" }}
-            height={60}
-            p="md"
-            display="flex"
-          >
-            {footerSocialMediaLinks.map((link, key) => (
-              <Anchor
-                display="block"
-                sx={{
-                  height: "100%",
-                  "&:hover": {
-                    opacity: "0.75",
-                  },
-                }}
-                target="_blank"
-                color="gray.4"
-                ml={key > 0 ? "lg" : undefined}
-                href={link.href}
-                key={link.href}
-              >
-                <FontAwesomeIcon
-                  style={{ display: "block", height: "100%" }}
-                  icon={link.icon}
-                />
-              </Anchor>
-            ))}
+          <Footer fixed={false} height="auto" p="md">
+            <Box
+              sx={{ alignItems: "center", justifyContent: "center" }}
+              display="flex"
+            >
+              {footerSocialMediaLinks.map((link, key) => (
+                <Anchor
+                  display="block"
+                  sx={{
+                    height: "100%",
+                    "&:hover": {
+                      opacity: "0.75",
+                    },
+                  }}
+                  target="_blank"
+                  color="gray.4"
+                  ml={key > 0 ? "lg" : undefined}
+                  href={link.href}
+                  key={link.href}
+                >
+                  <FontAwesomeIcon
+                    style={{ display: "block", height: "2em" }}
+                    icon={link.icon}
+                  />
+                </Anchor>
+              ))}
+            </Box>
+            <Link
+              href="https://www.paypal.com/donate/?hosted_button_id=4GETT9FKF4WWY"
+              style={{
+                width: "10em",
+                display: "block",
+                margin: "0 auto",
+                marginTop: ".75em",
+              }}
+            >
+              <Image
+                src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif"
+                alt="Donate"
+              />
+            </Link>
           </Footer>
         }
       >
