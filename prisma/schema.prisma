@@ -90,7 +90,7 @@ model Vod {
     createdAt   DateTime  @default(now())
     updatedAt   DateTime  @updatedAt @default(now())
     id          String    @id @default(cuid())
-    description String    @db.Text @default("")
+    description String    @db.Text
     streamDate  DateTime
     pieces      VodPiece[]
 }
