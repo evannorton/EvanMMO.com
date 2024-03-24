@@ -72,6 +72,7 @@ const App: React.FC<Props> = ({ children }) => {
         fixed={false}
         header={
           <Header
+            style={{ maxHeight: "4.75em", height: "4.75em" }}
             fixed
             sx={{ alignItems: "center", maxWidth: 1440, margin: "0 auto" }}
             height={60}
@@ -93,7 +94,11 @@ const App: React.FC<Props> = ({ children }) => {
                 underline={false}
                 mr="lg"
               >
-                EvanMMO
+                <Image
+                  style={{ width: "5em" }}
+                  src="/evanmmo-logo.png"
+                  alt="EvanMMO"
+                />
               </Anchor>
               <MediaQuery
                 smallerThan="md"
