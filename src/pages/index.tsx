@@ -1,5 +1,5 @@
-import { Box, Title } from "@mantine/core";
 import { type NextPage } from "next";
+import { Title } from "@mantine/core";
 import { api } from "../utils/api";
 import Broadcasts from "../components/Broadcasts";
 import DiscordEmbed from "../components/DiscordEmbed";
@@ -14,7 +14,6 @@ const HomePage: NextPage = () => {
   return (
     <>
       <Head description="A hub for EvanMMO's content creation and game development" />
-      <Box mt="sm" />
       {streamIsLive && (
         <Section>
           <>

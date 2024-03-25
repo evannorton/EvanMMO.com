@@ -212,6 +212,7 @@ const App: React.FC<Props> = ({ children }) => {
           </Footer>
         }
       >
+        <Box mt="sm" />
         {children}
       </AppShell>
     </Box>
