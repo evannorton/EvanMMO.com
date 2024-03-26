@@ -75,7 +75,6 @@ export const vodRouter = createTRPCRouter({
           },
         },
       },
-      skip: Math.floor(Math.random() * (await ctx.prisma.vod.count())),
     })
   ),
   getVODsCount: publicProcedure.query(({ ctx }) => ctx.prisma.vod.count()),
