@@ -18,7 +18,8 @@ const LivestreamPage: NextPage = () => {
       {streamIsLive === false && (
         <>
           <Text mb="md">
-            EvanMMO is not currently live. Join the offline community in Discord:
+            EvanMMO is not currently live. Join the offline community in
+            Discord:
           </Text>
           <DiscordEmbed />
         </>
