@@ -1,6 +1,7 @@
 import { type NextPage } from "next";
 import { Title } from "@mantine/core";
 import { api } from "../utils/api";
+import { includeContent } from "../config";
 import Broadcasts from "../components/Broadcasts";
 import DiscordEmbed from "../components/DiscordEmbed";
 import Games from "../components/Games";
@@ -14,32 +15,37 @@ const HomePage: NextPage = () => {
   return (
     <>
       <Head description="A hub for EvanMMO's content creation and game development" />
-      {streamIsLive && (
-        <Section>
-          <>
-            <Title id="livestream" order={2} color="gray.0" mb="md">
-              Livestream
-            </Title>
-            <LivestreamEmbed />
-          </>
-        </Section>
+      {includeContent && (
+        <>
+          {streamIsLive && (
+            <Section>
+              <>
+                <Title id="livestream" order={2} color="gray.0" mb="md">
+                  Livestream
+                </Title>
+                <LivestreamEmbed />
+              </>
+            </Section>
+          )}
+          <Section>
+            <>
+              <Title id="videos" order={2} color="gray.0" mb="md">
+                Videos
+              </Title>
+              <Videos />
+            </>
+          </Section>
+          <Section>
+            <>
+              <Title id="broadcasts" order={2} color="gray.0" mb="md">
+                Broadcasts
+              </Title>
+              <Broadcasts />
+            </>
+          </Section>
+        </>
       )}
-      <Section>
-        <>
-          <Title id="videos" order={2} color="gray.0" mb="md">
-            Videos
-          </Title>
-          <Videos />
-        </>
-      </Section>
-      <Section>
-        <>
-          <Title id="broadcasts" order={2} color="gray.0" mb="md">
-            Broadcasts
-          </Title>
-          <Broadcasts />
-        </>
-      </Section>
+
       <Section>
         <>
           <Title id="games" order={2} color="gray.0" mb="md">

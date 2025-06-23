@@ -16,6 +16,7 @@ import {
   faTwitter,
   faYoutube,
 } from "@fortawesome/free-brands-svg-icons";
+import { includeContent } from "../config";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 
@@ -25,19 +26,24 @@ interface Props {
 
 const App: React.FC<Props> = ({ children }) => {
   const { data: sessionData } = useSession();
-  const headerLinks = [
-    {
-      text: "Livestream",
-      href: "/livestream",
-    },
-    {
-      text: "Videos",
-      href: "/videos",
-    },
-    {
-      text: "Broadcasts",
-      href: "/broadcasts",
-    },
+  const headerLinks = [];
+  if (includeContent) {
+    headerLinks.push(
+      {
+        text: "Livestream",
+        href: "/livestream",
+      },
+      {
+        text: "Videos",
+        href: "/videos",
+      },
+      {
+        text: "Broadcasts",
+        href: "/broadcasts",
+      }
+    );
+  }
+  headerLinks.push(
     {
       text: "Games",
       href: "/games",
@@ -45,8 +51,8 @@ const App: React.FC<Props> = ({ children }) => {
     {
       text: "Community",
       href: "/community",
-    },
-  ];
+    }
+  );
   const footerSocialMediaLinks = [
     {
       icon: faTwitch,
