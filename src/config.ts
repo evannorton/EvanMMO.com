@@ -1,1 +1,1 @@
-export const includeContent = false;
+export const includeContent = true;
