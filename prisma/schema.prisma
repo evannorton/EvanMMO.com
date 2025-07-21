@@ -58,6 +58,7 @@ model User {
     email         String?   @unique
     emailVerified DateTime?
     image         String?
+    canPlaySoundboard Boolean @default(false)
     accounts      Account[]
     sessions      Session[]
     role          UserRole  @default(USER)
@@ -104,3 +105,11 @@ model VodPiece {
     vodId     String
     vod       Vod      @relation(fields: [vodId], references: [id])
 }
+
+model Sound {
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt @default(now())
+    id        String   @id @default(cuid())
+    mp3URL    String
+}
+
