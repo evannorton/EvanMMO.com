@@ -1,5 +1,5 @@
 import { Prisma } from "@prisma/client";
-import { adminProcedure, createTRPCRouter, publicProcedure } from "../trpc";
+import { adminProcedure, createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 import { z } from "zod";
 
 export const soundboardRouter = createTRPCRouter({
@@ -17,6 +17,45 @@ export const soundboardRouter = createTRPCRouter({
       },
     })
   ),
+  getSoundboardSoundsWithUserPins: protectedProcedure.query(async ({ ctx }) => {
+    const sounds = await ctx.prisma.soundboardSound.findMany({
+      select: {
+        id: true,
+        name: true,
+        url: true,
+        createdAt: true,
+        updatedAt: true,
+        userPins: {
+          where: {
+            userId: ctx.session.user.id,
+          },
+          select: {
+            id: true,
+          },
+        },
+      },
+      orderBy: {
+        name: Prisma.SortOrder.asc,
+      },
+    });
+
+    // Transform the data to include a simple isPinned boolean and sort by pinned status
+    const soundsWithPinStatus = sounds.map((sound) => ({
+      id: sound.id,
+      name: sound.name,
+      url: sound.url,
+      createdAt: sound.createdAt,
+      updatedAt: sound.updatedAt,
+      isPinned: sound.userPins.length > 0,
+    }));
+
+    // Sort by pinned status first, then by name
+    return soundsWithPinStatus.sort((a, b) => {
+      if (a.isPinned && !b.isPinned) return -1;
+      if (!a.isPinned && b.isPinned) return 1;
+      return a.name.localeCompare(b.name);
+    });
+  }),
   getSoundboardSound: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(({ ctx, input }) =>
@@ -79,5 +118,74 @@ export const soundboardRouter = createTRPCRouter({
           id: input.id,
         },
       });
+    }),
+  pinSoundForUser: protectedProcedure
+    .input(
+      z.object({
+        soundId: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      // Use upsert to avoid duplicate key errors
+      await ctx.prisma.userSoundPin.upsert({
+        where: {
+          userId_soundId: {
+            userId: ctx.session.user.id,
+            soundId: input.soundId,
+          },
+        },
+        update: {},
+        create: {
+          userId: ctx.session.user.id,
+          soundId: input.soundId,
+        },
+      });
+    }),
+  unpinSoundForUser: protectedProcedure
+    .input(
+      z.object({
+        soundId: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.prisma.userSoundPin.deleteMany({
+        where: {
+          userId: ctx.session.user.id,
+          soundId: input.soundId,
+        },
+      });
+    }),
+  toggleSoundPinForUser: protectedProcedure
+    .input(
+      z.object({
+        soundId: z.string(),
+        isPinned: z.boolean(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      if (input.isPinned) {
+        // Unpin the sound
+        await ctx.prisma.userSoundPin.deleteMany({
+          where: {
+            userId: ctx.session.user.id,
+            soundId: input.soundId,
+          },
+        });
+      } else {
+        // Pin the sound
+        await ctx.prisma.userSoundPin.upsert({
+          where: {
+            userId_soundId: {
+              userId: ctx.session.user.id,
+              soundId: input.soundId,
+            },
+          },
+          update: {},
+          create: {
+            userId: ctx.session.user.id,
+            soundId: input.soundId,
+          },
+        });
+      }
     }),
 });

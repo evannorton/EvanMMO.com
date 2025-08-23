@@ -23,13 +23,20 @@ const SoundboardPage: NextPage = () => {
     new Map()
   );
   const [soundLog, setSoundLog] = useState<SoundLogEntry[]>([]);
-  const { data: soundboardSounds, isLoading: isLoadingSoundboardSounds } =
-    api.soundboard.getSoundboardSounds.useQuery();
+  const {
+    data: soundboardSounds,
+    isLoading: isLoadingSoundboardSounds,
+    refetch: refetchSoundboardSounds,
+  } = session?.user
+    ? api.soundboard.getSoundboardSoundsWithUserPins.useQuery()
+    : api.soundboard.getSoundboardSounds.useQuery();
 
   const isPrivilegedUser =
     session?.user?.role === UserRole.ADMIN ||
     session?.user?.role === UserRole.MODERATOR ||
     session?.user?.role === UserRole.CONTRIBUTOR;
+
+  const toggleSoundPinMutation = api.soundboard.toggleSoundPinForUser.useMutation();
 
   // Helper function to get or create cached audio
   const getCachedAudio = useCallback(
@@ -156,6 +163,10 @@ const SoundboardPage: NextPage = () => {
           breakpoints={[{ maxWidth: "sm", cols: 2 }]}
         >
           {soundboardSounds.map((sound) => {
+            // Check if this sound has isPinned property (authenticated user)
+            const soundWithPin = sound as typeof sound & { isPinned?: boolean };
+            const isPinned = soundWithPin.isPinned || false;
+
             return (
               <Card
                 sx={{ flexDirection: "column", borderRadius: "0.5rem" }}
@@ -163,27 +174,54 @@ const SoundboardPage: NextPage = () => {
                 key={sound.id}
               >
                 <Text size="lg" mb="sm">
+                  {isPinned && "📌 "}
                   {sound.name}
                 </Text>
-                <Button
-                  onClick={() => {
-                    if (isPrivilegedUser && socket && session?.sessionToken) {
-                      // Privileged users: Send websocket event
-                      socket.emit("play_sound", sound.id);
-                    } else if (isPrivilegedUser && !socket) {
-                      console.warn("Socket not connected for privileged user");
-                    } else {
-                      // Regular users: Play sound locally using cached audio
-                      const audio = getCachedAudio(sound.url);
-                      audio.currentTime = 0; // Reset to beginning
-                      audio.play().catch((e) => {
-                        console.error("Error playing sound:", e);
-                      });
-                    }
-                  }}
-                >
-                  Play
-                </Button>
+                <div style={{ display: "flex", gap: "8px" }}>
+                  <Button
+                    style={{ flex: 1 }}
+                    onClick={() => {
+                      if (isPrivilegedUser && socket && session?.sessionToken) {
+                        // Privileged users: Send websocket event
+                        socket.emit("play_sound", sound.id);
+                      } else if (isPrivilegedUser && !socket) {
+                        console.warn("Socket not connected for privileged user");
+                      } else {
+                        // Regular users: Play sound locally using cached audio
+                        const audio = getCachedAudio(sound.url);
+                        audio.currentTime = 0; // Reset to beginning
+                        audio.play().catch((e) => {
+                          console.error("Error playing sound:", e);
+                        });
+                      }
+                    }}
+                  >
+                    Play
+                  </Button>
+                  {session?.user && (
+                    <Button
+                      style={{ flex: 1 }}
+                      variant={isPinned ? "filled" : "outline"}
+                      onClick={() => {
+                        toggleSoundPinMutation
+                          .mutateAsync({
+                            soundId: sound.id,
+                            isPinned: isPinned,
+                          })
+                          .then(() => {
+                            refetchSoundboardSounds().catch((e) => {
+                              throw e;
+                            });
+                          })
+                          .catch((e) => {
+                            throw e;
+                          });
+                      }}
+                    >
+                      {isPinned ? "Unpin" : "Pin"}
+                    </Button>
+                  )}
+                </div>
               </Card>
             );
           })}

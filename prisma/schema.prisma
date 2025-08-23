@@ -60,10 +60,10 @@ model User {
     email         String?   @unique
     emailVerified DateTime?
     image         String?
-    canPlaySoundboard Boolean @default(false)
     accounts      Account[]
     sessions      Session[]
     role          UserRole  @default(USER)
+    soundPins     UserSoundPin[]
 }
 
 model VerificationToken {
@@ -114,5 +114,18 @@ model SoundboardSound {
     id        String   @id @default(cuid())
     name      String
     url       String
+    userPins  UserSoundPin[]
+}
+
+model UserSoundPin {
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt @default(now())
+    id        String   @id @default(cuid())
+    userId    String
+    soundId   String
+    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    sound     SoundboardSound @relation(fields: [soundId], references: [id], onDelete: Cascade)
+
+    @@unique([userId, soundId])
 }
 
