@@ -35,6 +35,7 @@ interface ConnectedUser {
   name: string;
   role: string;
   image: string | null;
+  muted: boolean;
 }
 
 interface ConnectedUsersData {
@@ -76,6 +77,7 @@ const SoundboardPage: NextPage = () => {
   const [renameValue, setRenameValue] = useState("");
   const [compactMode, setCompactMode] = useState(true);
   const [isMuted, setIsMuted] = useState(false);
+  const [showDisconnectModal, setShowDisconnectModal] = useState(false);
 
   // Force compact mode for non-privileged users
   const effectiveCompactMode = isPrivilegedUser ? compactMode : true;
@@ -122,7 +124,7 @@ const SoundboardPage: NextPage = () => {
   );
 
   useEffect(() => {
-    if (session?.user && session?.sessionToken && isPrivilegedUser) {
+    if (session?.user && session?.sessionToken && isPrivilegedUser && !socket) {
       const socketUrl: string | undefined =
         env.NEXT_PUBLIC_SOCKET_URL ?? undefined;
       const socketInstance = io(socketUrl, {
@@ -171,13 +173,19 @@ const SoundboardPage: NextPage = () => {
         setConnectedUsers(data);
       });
 
+      // Handle socket disconnection
+      socketInstance.on("disconnect", () => {
+        setShowDisconnectModal(true);
+      });
+
       setSocket(socketInstance);
 
       return () => {
         socketInstance.close();
       };
     }
-  }, [session, isPrivilegedUser, getCachedAudio, isMuted]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session]);
 
   return (
     <>
@@ -275,6 +283,17 @@ const SoundboardPage: NextPage = () => {
                         <Text color="gray.0" size="sm">
                           {user.name}
                         </Text>
+
+                        {user.muted && (
+                          <Text
+                            color="red.4"
+                            size="sm"
+                            title="User is muted"
+                            style={{ marginLeft: "4px" }}
+                          >
+                            🔇
+                          </Text>
+                        )}
 
                         {(user.role === UserRole.ADMIN ||
                           user.role === UserRole.MODERATOR) && (
@@ -402,7 +421,15 @@ const SoundboardPage: NextPage = () => {
           <Switch
             label="Mute sounds"
             checked={isMuted}
-            onChange={(event) => setIsMuted(event.currentTarget.checked)}
+            onChange={(event) => {
+              const newMuteState = event.currentTarget.checked;
+              setIsMuted(newMuteState);
+              // Emit mute/unmute event through socket
+              if (socket && session?.sessionToken) {
+                console.log(newMuteState ? "mute" : "unmute");
+                socket.emit(newMuteState ? "mute" : "unmute");
+              }
+            }}
             size="sm"
             color="red"
           />
@@ -623,6 +650,33 @@ const SoundboardPage: NextPage = () => {
           disabled={!renameValue.trim()}
         >
           Save
+        </Button>
+      </Modal>
+
+      {/* Disconnect Modal */}
+      <Modal
+        opened={showDisconnectModal}
+        onClose={() => {
+          setShowDisconnectModal(false);
+          window.location.reload();
+        }}
+        title="Connection Lost"
+        closeOnClickOutside={false}
+        closeOnEscape={false}
+      >
+        <Text mb="md">
+          You have been disconnected from the server. The page will reload to
+          restore your connection.
+        </Text>
+        <Button
+          fullWidth
+          color="blue"
+          onClick={() => {
+            setShowDisconnectModal(false);
+            window.location.reload();
+          }}
+        >
+          Reload Page
         </Button>
       </Modal>
     </>
