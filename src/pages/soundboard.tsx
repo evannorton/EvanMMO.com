@@ -10,17 +10,15 @@ import {
   TextInput,
   Title,
 } from "@mantine/core";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Image } from "@mantine/core";
 import { type Socket, io } from "socket.io-client";
 import { UserRole } from "@prisma/client";
 import { api } from "../utils/api";
 import { env } from "../env.mjs";
-import { faPlay } from "@fortawesome/free-solid-svg-icons";
 import { useCallback, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import EmojiPicker, { Theme } from "emoji-picker-react";
 import Head from "../components/Head";
-import Image from "next/image";
 import type { EmojiClickData } from "emoji-picker-react";
 import type { NextPage } from "next";
 
@@ -77,6 +75,9 @@ const SoundboardPage: NextPage = () => {
   const [renamingSoundId, setRenamingSoundId] = useState<string | null>(null);
   const [renameValue, setRenameValue] = useState("");
   const [compactMode, setCompactMode] = useState(false);
+
+  // Force compact mode for non-privileged users
+  const effectiveCompactMode = isPrivilegedUser ? compactMode : true;
 
   const handleRenameSubmit = useCallback(() => {
     if (renamingSoundId && renameValue.trim()) {
@@ -385,16 +386,18 @@ const SoundboardPage: NextPage = () => {
         </Card>
       )}
 
-      {/* Compact Mode Toggle */}
-      <div style={{ marginBottom: "1rem" }}>
-        <Switch
-          label="Compact mode"
-          checked={compactMode}
-          onChange={(event) => setCompactMode(event.currentTarget.checked)}
-          size="sm"
-          color="blue"
-        />
-      </div>
+      {/* Compact Mode Toggle - Only show for privileged users */}
+      {isPrivilegedUser && (
+        <div style={{ marginBottom: "1rem" }}>
+          <Switch
+            label="Compact mode"
+            checked={compactMode}
+            onChange={(event) => setCompactMode(event.currentTarget.checked)}
+            size="sm"
+            color="blue"
+          />
+        </div>
+      )}
 
       {isLoadingSoundboardSounds && <Loader />}
       {soundboardSounds && (
@@ -429,12 +432,11 @@ const SoundboardPage: NextPage = () => {
                   {emoji && `${emoji} `}
                   {sound.name}
                 </Text>
-                {/* Row 1: Play button only */}
+                {/* Row 1: Play button (+ Pin in compact mode) */}
                 <div
                   style={{
                     display: "flex",
                     gap: "8px",
-                    marginBottom: compactMode ? "0px" : "8px",
                   }}
                 >
                   <Button
@@ -457,15 +459,42 @@ const SoundboardPage: NextPage = () => {
                         });
                       }
                     }}
-                    rightIcon={<FontAwesomeIcon icon={faPlay} />}
                   >
                     Play
                   </Button>
+
+                  {/* Pin button in compact mode for all authenticated users */}
+                  {session?.user && effectiveCompactMode && (
+                    <Button
+                      style={{ flex: 1 }}
+                      variant={isPinned ? "filled" : "outline"}
+                      size="md"
+                      onClick={() => {
+                        toggleSoundPinMutation
+                          .mutateAsync({
+                            soundId: sound.id,
+                            isPinned: isPinned,
+                          })
+                          .then(() => {
+                            refetchSoundboardSounds().catch((e) => {
+                              throw e;
+                            });
+                          })
+                          .catch((e) => {
+                            throw e;
+                          });
+                      }}
+                    >
+                      {isPinned ? "Unpin" : "Pin"}
+                    </Button>
+                  )}
                 </div>
 
                 {/* Row 2: Pin, Emoji and Rename buttons */}
-                {session?.user && !compactMode && (
-                  <div style={{ display: "flex", gap: "8px" }}>
+                {session?.user && !effectiveCompactMode && (
+                  <div
+                    style={{ display: "flex", gap: "8px", marginTop: "8px" }}
+                  >
                     <Button
                       style={{ flex: 1 }}
                       variant={isPinned ? "filled" : "outline"}
