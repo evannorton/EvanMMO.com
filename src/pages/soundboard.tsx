@@ -268,14 +268,13 @@ const SoundboardPage: NextPage = () => {
                         <Text color="gray.0" size="sm">
                           {user.name}
                         </Text>
-                        <Text color="gray.5" size="xs">
+
+                        {(user.role === UserRole.ADMIN || user.role === UserRole.MODERATOR) && <Text color="gray.5" size="xs">
                           ({({
                             [UserRole.ADMIN]: "administrator",
                             [UserRole.MODERATOR]: "moderator",
-                            [UserRole.CONTRIBUTOR]: "collaborator",
-                            [UserRole.USER]: "user",
                           } as const)[user.role]})
-                        </Text>
+                        </Text>}
                       </div>
                     ))}
                 </div>
