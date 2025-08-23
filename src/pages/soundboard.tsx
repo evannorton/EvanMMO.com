@@ -182,10 +182,6 @@ const SoundboardPage: NextPage = () => {
       });
 
       setSocket(socketInstance);
-
-      return () => {
-        socketInstance.close();
-      };
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session]);
