@@ -210,63 +210,69 @@ const SoundboardPage: NextPage = () => {
               </div>
               {showUsersList && (
                 <div
-                                     style={{
-                     marginTop: "12px",
-                     paddingTop: "12px",
-                     borderTop: "1px solid #444",
-                   }}
-                 >
-                   {connectedUsers.users
-                     .slice()
-                     .sort((a, b) => {
-                       // Define role hierarchy (lower number = higher priority)
-                       const roleOrder = {
-                         admin: 1,
-                         moderator: 2,
-                         contributor: 3,
-                         user: 4,
-                       };
-                       
-                       const aRoleOrder = roleOrder[a.role.toLowerCase() as keyof typeof roleOrder] || 5;
-                       const bRoleOrder = roleOrder[b.role.toLowerCase() as keyof typeof roleOrder] || 5;
-                       
-                       // Primary sort: by role
-                       if (aRoleOrder !== bRoleOrder) {
-                         return aRoleOrder - bRoleOrder;
-                       }
-                       
-                       // Secondary sort: alphabetically by name
-                       return a.name.localeCompare(b.name);
-                     })
-                     .map((user) => (
-                    <div
-                      key={user.id}
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "8px",
-                        padding: "4px 0",
-                      }}
-                    >
-                      {user.image && (
-                        <img
-                          src={user.image}
-                          alt={user.name}
-                          style={{
-                            width: "24px",
-                            height: "24px",
-                            borderRadius: "50%",
-                          }}
-                        />
-                      )}
-                      <Text color="gray.0" size="sm">
-                        {user.name}
-                      </Text>
-                      <Text color="gray.5" size="xs">
-                        ({user.role.toLowerCase()})
-                      </Text>
-                    </div>
-                  ))}
+                  style={{
+                    marginTop: "12px",
+                    paddingTop: "12px",
+                    borderTop: "1px solid #444",
+                  }}
+                >
+                  {connectedUsers.users
+                    .slice()
+                    .sort((a, b) => {
+                      // Define role hierarchy (lower number = higher priority)
+                      const roleOrder = {
+                        admin: 1,
+                        moderator: 2,
+                        contributor: 3,
+                        user: 4,
+                      };
+
+                      const aRoleOrder =
+                        roleOrder[
+                          a.role.toLowerCase() as keyof typeof roleOrder
+                        ] || 5;
+                      const bRoleOrder =
+                        roleOrder[
+                          b.role.toLowerCase() as keyof typeof roleOrder
+                        ] || 5;
+
+                      // Primary sort: by role
+                      if (aRoleOrder !== bRoleOrder) {
+                        return aRoleOrder - bRoleOrder;
+                      }
+
+                      // Secondary sort: alphabetically by name
+                      return a.name.localeCompare(b.name);
+                    })
+                    .map((user) => (
+                      <div
+                        key={user.id}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
+                          padding: "4px 0",
+                        }}
+                      >
+                        {user.image && (
+                          <img
+                            src={user.image}
+                            alt={user.name}
+                            style={{
+                              width: "24px",
+                              height: "24px",
+                              borderRadius: "50%",
+                            }}
+                          />
+                        )}
+                        <Text color="gray.0" size="sm">
+                          {user.name}
+                        </Text>
+                        <Text color="gray.5" size="xs">
+                          ({user.role.toLowerCase()})
+                        </Text>
+                      </div>
+                    ))}
                 </div>
               )}
             </>
