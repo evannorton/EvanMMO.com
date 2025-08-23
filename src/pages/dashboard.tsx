@@ -286,26 +286,19 @@ const DashboardPage: NextPage = () => {
                 <Text size="lg" mb="sm">
                   {sound.name}
                 </Text>
-                <Button
-                  mb="xs"
-                  onClick={() => {
-                    const audio = new Audio(sound.url);
-                    audio.play().catch((e) => {
-                      console.error("Error playing sound:", e);
-                    });
-                  }}
-                >
-                  Play
-                </Button>
-                <Button
-                  mb="sm"
-                  onClick={() => {
-                    window.open(sound.url, "_blank");
-                  }}
-                >
-                  Open link
-                </Button>
                 <Box mt="auto">
+                  <Button
+                    mr="sm"
+                    mt="sm"
+                    onClick={() => {
+                      const audio = new Audio(sound.url);
+                      audio.play().catch((e) => {
+                        console.error("Error playing sound:", e);
+                      });
+                    }}
+                  >
+                    Play
+                  </Button>
                   <Button
                     mr="sm"
                     mt="sm"
