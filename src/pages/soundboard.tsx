@@ -127,15 +127,49 @@ const SoundboardPage: NextPage = () => {
                     padding: "8px 0",
                     borderBottom:
                       index < soundLog.length - 1 ? "1px solid #444" : "none",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
                   }}
                 >
-                  <Text size="sm" color="gray.0">
-                    <strong>{entry.soundName}</strong> played by{" "}
-                    <strong>{entry.playedBy}</strong>
-                  </Text>
-                  <Text size="xs" color="gray.5">
-                    {new Date(entry.timestamp).toLocaleString()}
-                  </Text>
+                  <button
+                    style={{
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+                      fontSize: "18px",
+                      padding: "4px",
+                      borderRadius: "4px",
+                      opacity: 0.7,
+                      transition: "opacity 0.2s",
+                      flexShrink: 0,
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
+                    onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.7")}
+                    onClick={() => {
+                      // Find the sound in soundboardSounds to get the URL
+                      const sound = soundboardSounds?.find((s) => s.id === entry.soundId);
+                      if (sound) {
+                        const audio = getCachedAudio(sound.url);
+                        audio.currentTime = 0;
+                        audio.play().catch((e) => {
+                          console.error("Error replaying sound:", e);
+                        });
+                      }
+                    }}
+                    title="Replay sound"
+                  >
+                    🔄
+                  </button>
+                  <div>
+                    <Text size="sm" color="gray.0">
+                      <strong>{entry.soundName}</strong> played by{" "}
+                      <strong>{entry.playedBy}</strong>
+                    </Text>
+                    <Text size="xs" color="gray.5">
+                      {new Date(entry.timestamp).toLocaleString()}
+                    </Text>
+                  </div>
                 </div>
               ))
             ) : (
