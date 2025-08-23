@@ -75,6 +75,7 @@ const SoundboardPage: NextPage = () => {
   const [renamingSoundId, setRenamingSoundId] = useState<string | null>(null);
   const [renameValue, setRenameValue] = useState("");
   const [compactMode, setCompactMode] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
 
   // Force compact mode for non-privileged users
   const effectiveCompactMode = isPrivilegedUser ? compactMode : true;
@@ -154,12 +155,14 @@ const SoundboardPage: NextPage = () => {
             ...prev.slice(0, 49),
           ]);
 
-          // Play the sound using cached audio
-          const audio = getCachedAudio(data.soundUrl);
-          audio.currentTime = 0; // Reset to beginning
-          audio.play().catch((e) => {
-            console.error("Error playing sound from server event:", e);
-          });
+          // Play the sound using cached audio (unless muted)
+          if (!isMuted) {
+            const audio = getCachedAudio(data.soundUrl);
+            audio.currentTime = 0; // Reset to beginning
+            audio.play().catch((e) => {
+              console.error("Error playing sound from server event:", e);
+            });
+          }
         }
       );
 
@@ -174,7 +177,7 @@ const SoundboardPage: NextPage = () => {
         socketInstance.close();
       };
     }
-  }, [session, isPrivilegedUser, getCachedAudio]);
+  }, [session, isPrivilegedUser, getCachedAudio, isMuted]);
 
   return (
     <>
@@ -345,7 +348,7 @@ const SoundboardPage: NextPage = () => {
                       const sound = soundboardSounds?.find(
                         (s) => s.id === entry.soundId
                       );
-                      if (sound) {
+                      if (sound && !isMuted) {
                         const audio = getCachedAudio(sound.url);
                         audio.currentTime = 0;
                         audio.play().catch((e) => {
@@ -386,15 +389,22 @@ const SoundboardPage: NextPage = () => {
         </Card>
       )}
 
-      {/* Compact Mode Toggle - Only show for privileged users */}
+      {/* Compact Mode and Mute Toggles - Only show for privileged users */}
       {isPrivilegedUser && (
-        <div style={{ marginBottom: "1rem" }}>
+        <div style={{ marginBottom: "1rem", display: "flex", gap: "2rem" }}>
           <Switch
             label="Compact mode"
             checked={compactMode}
             onChange={(event) => setCompactMode(event.currentTarget.checked)}
             size="sm"
             color="blue"
+          />
+          <Switch
+            label="Mute sounds"
+            checked={isMuted}
+            onChange={(event) => setIsMuted(event.currentTarget.checked)}
+            size="sm"
+            color="red"
           />
         </div>
       )}
@@ -450,8 +460,8 @@ const SoundboardPage: NextPage = () => {
                         console.warn(
                           "Socket not connected for privileged user"
                         );
-                      } else {
-                        // Regular users: Play sound locally using cached audio
+                      } else if (!isMuted) {
+                        // Regular users: Play sound locally using cached audio (unless muted)
                         const audio = getCachedAudio(sound.url);
                         audio.currentTime = 0; // Reset to beginning
                         audio.play().catch((e) => {
