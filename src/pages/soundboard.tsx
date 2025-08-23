@@ -157,17 +157,25 @@ const SoundboardPage: NextPage = () => {
           playedById: string;
           timestamp: string;
         }) => {
-          // Add to sound log (keep only last 50 entries)
-          setSoundLog((prev) => [
-            {
-              soundId: data.soundId,
-              soundName: data.soundName,
-              playedBy: data.playedBy,
-              playedById: data.playedById,
-              timestamp: data.timestamp,
-            },
-            ...prev.slice(0, 49),
-          ]);
+          // Add to sound log (keep only last 50 entries, sorted by timestamp)
+          setSoundLog((prev) =>
+            [
+              {
+                soundId: data.soundId,
+                soundName: data.soundName,
+                playedBy: data.playedBy,
+                playedById: data.playedById,
+                timestamp: data.timestamp,
+              },
+              ...prev,
+            ]
+              .sort(
+                (a, b) =>
+                  new Date(b.timestamp).getTime() -
+                  new Date(a.timestamp).getTime()
+              )
+              .slice(0, 50)
+          );
 
           // Play the sound using cached audio (unless muted)
           if (!isMutedRef.current) {
