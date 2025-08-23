@@ -346,7 +346,7 @@ const DashboardPage: NextPage = () => {
                       style={{ height: "400px", overflow: "hidden" }}
                     >
                       <EmojiPicker
-                      theme={Theme.DARK}
+                        theme={Theme.DARK}
                         onEmojiClick={(emojiData: EmojiClickData) => {
                           updateSoundEmojiMutation
                             .mutateAsync({

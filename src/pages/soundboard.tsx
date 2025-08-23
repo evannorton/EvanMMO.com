@@ -9,14 +9,14 @@ import {
   TextInput,
   Title,
 } from "@mantine/core";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { type Socket, io } from "socket.io-client";
 import { UserRole } from "@prisma/client";
 import { api } from "../utils/api";
 import { env } from "../env.mjs";
+import { faPlay } from "@fortawesome/free-solid-svg-icons";
 import { useCallback, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlay } from "@fortawesome/free-solid-svg-icons";
 import EmojiPicker, { Theme } from "emoji-picker-react";
 import Head from "../components/Head";
 import type { EmojiClickData } from "emoji-picker-react";
@@ -30,6 +30,19 @@ interface SoundLogEntry {
   timestamp: string;
 }
 
+interface ConnectedUser {
+  id: string;
+  name: string;
+  role: string;
+  image: string | null;
+}
+
+interface ConnectedUsersData {
+  users: ConnectedUser[];
+  count: number;
+  timestamp: string;
+}
+
 const SoundboardPage: NextPage = () => {
   const { data: session } = useSession();
   const [socket, setSocket] = useState<Socket | null>(null);
@@ -37,6 +50,9 @@ const SoundboardPage: NextPage = () => {
     new Map()
   );
   const [soundLog, setSoundLog] = useState<SoundLogEntry[]>([]);
+  const [connectedUsers, setConnectedUsers] =
+    useState<ConnectedUsersData | null>(null);
+  const [showUsersList, setShowUsersList] = useState(false);
   const {
     data: soundboardSounds,
     isLoading: isLoadingSoundboardSounds,
@@ -143,6 +159,11 @@ const SoundboardPage: NextPage = () => {
         }
       );
 
+      // Handle incoming connected_users events
+      socketInstance.on("connected_users", (data: ConnectedUsersData) => {
+        setConnectedUsers(data);
+      });
+
       setSocket(socketInstance);
 
       return () => {
@@ -157,6 +178,86 @@ const SoundboardPage: NextPage = () => {
       <Title order={1} color="gray.0" mb="md">
         Soundboard
       </Title>
+
+      {/* Connected Users Counter - Only show for privileged users with socket connection */}
+      {isPrivilegedUser && socket && (
+        <Card mb="md" sx={{ borderRadius: "0.5rem" }}>
+          {connectedUsers ? (
+            <>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  cursor: "pointer",
+                }}
+                onClick={() => setShowUsersList(!showUsersList)}
+              >
+                <div
+                  style={{ display: "flex", alignItems: "center", gap: "8px" }}
+                >
+                  <Text size="lg" color="gray.0">
+                    🟢 {connectedUsers.count} user
+                    {connectedUsers.count !== 1 ? "s" : ""} online
+                  </Text>
+                  <Text size="sm" color="gray.5">
+                    (click to {showUsersList ? "hide" : "show"})
+                  </Text>
+                </div>
+                <Text size="lg" color="gray.5">
+                  {showUsersList ? "▲" : "▼"}
+                </Text>
+              </div>
+              {showUsersList && (
+                <div
+                  style={{
+                    marginTop: "12px",
+                    paddingTop: "12px",
+                    borderTop: "1px solid #444",
+                  }}
+                >
+                  {connectedUsers.users.map((user) => (
+                    <div
+                      key={user.id}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                        padding: "4px 0",
+                      }}
+                    >
+                      {user.image && (
+                        <img
+                          src={user.image}
+                          alt={user.name}
+                          style={{
+                            width: "24px",
+                            height: "24px",
+                            borderRadius: "50%",
+                          }}
+                        />
+                      )}
+                      <Text color="gray.0" size="sm">
+                        {user.name}
+                      </Text>
+                      <Text color="gray.5" size="xs">
+                        ({user.role.toLowerCase()})
+                      </Text>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
+          ) : (
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <Loader size="sm" />
+              <Text size="lg" color="gray.5">
+                Loading connected users...
+              </Text>
+            </div>
+          )}
+        </Card>
+      )}
 
       {/* Recent Sounds Log - Always show for privileged users */}
       {isPrivilegedUser && (
