@@ -65,6 +65,10 @@ const SoundboardPage: NextPage = () => {
   const isPrivilegedUser =
     session?.user?.role === UserRole.ADMIN ||
     session?.user?.role === UserRole.MODERATOR;
+  const isCollaborativeUser =
+    session?.user?.role === UserRole.ADMIN ||
+    session?.user?.role === UserRole.MODERATOR ||
+    session?.user?.role === UserRole.CONTRIBUTOR;
 
   const toggleSoundPinMutation =
     api.soundboard.toggleSoundPinForUser.useMutation();
@@ -127,7 +131,12 @@ const SoundboardPage: NextPage = () => {
   );
 
   useEffect(() => {
-    if (session?.user && session?.sessionToken && isPrivilegedUser && !socket) {
+    if (
+      session?.user &&
+      session?.sessionToken &&
+      isCollaborativeUser &&
+      !socket
+    ) {
       const socketUrl: string | undefined =
         env.NEXT_PUBLIC_SOCKET_URL ?? undefined;
       const socketInstance = io(socketUrl, {
@@ -194,7 +203,7 @@ const SoundboardPage: NextPage = () => {
       </Title>
 
       {/* Connected Users Counter - Only show for privileged users with socket connection */}
-      {isPrivilegedUser && socket && (
+      {isCollaborativeUser && socket && (
         <Card mb="md" sx={{ borderRadius: "0.5rem" }}>
           {connectedUsers ? (
             <>
@@ -326,7 +335,7 @@ const SoundboardPage: NextPage = () => {
       )}
 
       {/* Recent Sounds Log - Always show for privileged users */}
-      {isPrivilegedUser && (
+      {isCollaborativeUser && (
         <Card mb="xl" sx={{ borderRadius: "0.5rem" }}>
           <Title order={3} color="gray.0" mb="sm">
             Recent Sounds
@@ -479,12 +488,16 @@ const SoundboardPage: NextPage = () => {
                     style={{ flex: 1 }}
                     size="md"
                     onClick={() => {
-                      if (isPrivilegedUser && socket && session?.sessionToken) {
+                      if (
+                        isCollaborativeUser &&
+                        socket &&
+                        session?.sessionToken
+                      ) {
                         // Privileged users: Send websocket event
                         socket.emit("play_sound", sound.id);
-                      } else if (isPrivilegedUser && !socket) {
+                      } else if (isCollaborativeUser && !socket) {
                         console.warn(
-                          "Socket not connected for privileged user"
+                          "Socket not connected for collaborative user"
                         );
                       } else if (!isMutedRef.current) {
                         // Regular users: Play sound locally using cached audio (unless muted)
