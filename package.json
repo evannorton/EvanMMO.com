@@ -2,7 +2,7 @@
   "name": "evanmmo.com",
   "version": "1.0.0",
   "scripts": {
-    "build": "prisma db push && prisma generate && next build",
+    "build": "prisma db push --accept-data-loss && prisma generate && next build",
     "dev": "prisma db push && prisma generate && next dev",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
