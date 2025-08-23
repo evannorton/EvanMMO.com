@@ -11,6 +11,7 @@ import {
   TextInput,
   Textarea,
   Title,
+  Popover,
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { UserRole } from "@prisma/client";
@@ -24,6 +25,8 @@ import { useState } from "react";
 import Head from "../components/Head";
 import vodsPerPage from "../constants/vodsPerPage";
 import type { GetServerSideProps, NextPage } from "next";
+import EmojiPicker from "emoji-picker-react";
+import type { EmojiClickData } from "emoji-picker-react";
 
 interface InsertVODFormPieceValues {
   readonly jsonURL: string;
@@ -50,13 +53,11 @@ interface UpdateVODFormValues {
 interface InsertSoundboardSoundFormValues {
   readonly name: string;
   readonly url: string;
-  readonly emoji: string;
 }
 
 interface UpdateSoundboardSoundFormValues {
   readonly name: string;
   readonly url: string;
-  readonly emoji: string;
 }
 
 const DashboardPage: NextPage = () => {
@@ -70,28 +71,27 @@ const DashboardPage: NextPage = () => {
     initialValues: {
       name: "",
       url: "",
-      emoji: "",
     },
     validate: {
       name: (value) => (value.length === 0 ? "You must specify a name" : null),
       url: (value) => (value.length === 0 ? "You must specify a URL" : null),
-      emoji: (value) => (value.length > 4 ? "Please enter a single emoji only" : null),
     },
   });
   const updateSoundboardSoundForm = useForm<UpdateSoundboardSoundFormValues>({
     initialValues: {
       name: "",
       url: "",
-      emoji: "",
     },
     validate: {
       name: (value) => (value.length === 0 ? "You must specify a name" : null),
       url: (value) => (value.length === 0 ? "You must specify a URL" : null),
-      emoji: (value) => (value.length > 4 ? "Please enter a single emoji only" : null),
     },
   });
   const insertSoundboardSoundMutation =
     api.soundboard.insertSoundboardSound.useMutation();
+  const updateSoundEmojiMutation =
+    api.soundboard.updateSoundboardSoundEmoji.useMutation();
+  const [emojiPickerOpen, setEmojiPickerOpen] = useState<string | null>(null);
   const [soundboardSoundIDToUpdate, setSoundboardSoundIDToUpdate] = useState<
     string | null
   >(null);
@@ -285,6 +285,7 @@ const DashboardPage: NextPage = () => {
           {soundboardSounds.map((sound) => {
             return (
               <Card
+              style={{overflow:"visible"}}
                 sx={{ flexDirection: "column", borderRadius: "0.5rem" }}
                 display="flex"
                 key={sound.id}
@@ -313,13 +314,53 @@ const DashboardPage: NextPage = () => {
                       updateSoundboardSoundForm.setValues({
                         name: sound.name,
                         url: sound.url,
-                        emoji: sound.emoji || "",
                       });
                       setSoundboardSoundIDToUpdate(sound.id);
                     }}
                   >
                     Edit
                   </Button>
+                  <Popover
+                    opened={emojiPickerOpen === sound.id}
+                    onClose={() => setEmojiPickerOpen(null)}
+                    position="bottom"
+                    withArrow
+                    width={350}
+                  >
+                    <Popover.Target>
+                      <Button
+                        mr="sm"
+                        mt="sm"
+                        variant="outline"
+                        onClick={() => setEmojiPickerOpen(emojiPickerOpen === sound.id ? null : sound.id)}
+                        style={{ minWidth: "auto", padding: "8px 12px" }}
+                      >
+                        {sound.emoji || "😀"}
+                      </Button>
+                    </Popover.Target>
+                    <Popover.Dropdown style={{ height: "400px", overflow: "hidden" }}>
+                      <EmojiPicker 
+                        onEmojiClick={(emojiData: EmojiClickData) => {
+                          updateSoundEmojiMutation
+                            .mutateAsync({
+                              id: sound.id,
+                              emoji: emojiData.emoji,
+                            })
+                            .then(() => {
+                              refetchSoundboardSounds().catch((e) => {
+                                throw e;
+                              });
+                              setEmojiPickerOpen(null);
+                            })
+                            .catch((e) => {
+                              throw e;
+                            });
+                        }}
+                        width={320}
+                        height={380}
+                      />
+                    </Popover.Dropdown>
+                  </Popover>
                   <Button
                     color="red"
                     mt="xs"
@@ -611,7 +652,6 @@ const DashboardPage: NextPage = () => {
                .mutateAsync({
                  name: values.name,
                  url: values.url,
-                 emoji: values.emoji || undefined,
                })
               .then(() => {
                 refetchSoundboardSounds().catch((e) => {
@@ -634,13 +674,6 @@ const DashboardPage: NextPage = () => {
             label="URL"
             mb="sm"
             {...insertSoundboardSoundForm.getInputProps("url")}
-          />
-          <TextInput
-            label="Emoji"
-            placeholder="🎵"
-            mb="sm"
-            maxLength={4}
-            {...insertSoundboardSoundForm.getInputProps("emoji")}
           />
           <Button type="submit">Submit</Button>
         </form>
@@ -669,7 +702,6 @@ const DashboardPage: NextPage = () => {
                    id: soundboardSoundToUpdate.id,
                    name: values.name,
                    url: values.url,
-                   emoji: values.emoji || undefined,
                  })
                 .then(() => {
                   refetchSoundboardSounds().catch((e) => {
@@ -693,13 +725,6 @@ const DashboardPage: NextPage = () => {
             label="URL"
             mb="sm"
             {...updateSoundboardSoundForm.getInputProps("url")}
-          />
-          <TextInput
-            label="Emoji"
-            placeholder="🎵"
-            mb="sm"
-            maxLength={4}
-            {...updateSoundboardSoundForm.getInputProps("emoji")}
           />
           <Button type="submit">Submit</Button>
         </form>
@@ -756,5 +781,8 @@ export default DashboardPage;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getServerSession(context.req, context.res, authOptions);
-  return { props: {}, notFound: session?.user.role !== UserRole.ADMIN };
+  return { 
+    props: {}, 
+    notFound: session?.user.role !== UserRole.ADMIN 
+  };
 };

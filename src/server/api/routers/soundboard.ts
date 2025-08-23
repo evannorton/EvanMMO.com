@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client";
 import {
   adminProcedure,
   createTRPCRouter,
+  privilegedProcedure,
   protectedProcedure,
   publicProcedure,
 } from "../trpc";
@@ -104,7 +105,6 @@ export const soundboardRouter = createTRPCRouter({
         id: z.string(),
         name: z.string(),
         url: z.string(),
-        emoji: z.string().max(10).optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -115,6 +115,22 @@ export const soundboardRouter = createTRPCRouter({
         data: {
           name: input.name,
           url: input.url,
+        },
+      });
+    }),
+  updateSoundboardSoundEmoji: privilegedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        emoji: z.string().max(10).optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.prisma.soundboardSound.update({
+        where: {
+          id: input.id,
+        },
+        data: {
           emoji: input.emoji,
         },
       });

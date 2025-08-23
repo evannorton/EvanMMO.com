@@ -1,4 +1,4 @@
-import { Button, Card, Loader, SimpleGrid, Text, Title } from "@mantine/core";
+import { Button, Card, Loader, SimpleGrid, Text, Title, Popover } from "@mantine/core";
 import { type Socket, io } from "socket.io-client";
 import { UserRole } from "@prisma/client";
 import { api } from "../utils/api";
@@ -7,6 +7,8 @@ import { useCallback, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import Head from "../components/Head";
 import type { NextPage } from "next";
+import EmojiPicker from "emoji-picker-react";
+import type { EmojiClickData } from "emoji-picker-react";
 
 interface SoundLogEntry {
   soundId: string;
@@ -38,6 +40,9 @@ const SoundboardPage: NextPage = () => {
 
   const toggleSoundPinMutation =
     api.soundboard.toggleSoundPinForUser.useMutation();
+  const updateSoundEmojiMutation = 
+    api.soundboard.updateSoundboardSoundEmoji.useMutation();
+  const [emojiPickerOpen, setEmojiPickerOpen] = useState<string | null>(null);
 
   // Helper function to get or create cached audio
   const getCachedAudio = useCallback(
@@ -209,6 +214,7 @@ const SoundboardPage: NextPage = () => {
 
             return (
               <Card
+                style={{ overflow: "visible" }}
                 sx={{ flexDirection: "column", borderRadius: "0.5rem" }}
                 display="flex"
                 key={sound.id}
@@ -263,6 +269,47 @@ const SoundboardPage: NextPage = () => {
                     >
                       {isPinned ? "Unpin" : "Pin"}
                     </Button>
+                  )}
+                  {isPrivilegedUser && (
+                    <Popover
+                      opened={emojiPickerOpen === sound.id}
+                      onClose={() => setEmojiPickerOpen(null)}
+                      position="bottom"
+                      withArrow
+                      width={350}
+                    >
+                      <Popover.Target>
+                        <Button
+                          style={{ flex: 1 }}
+                          variant="outline"
+                          onClick={() => setEmojiPickerOpen(emojiPickerOpen === sound.id ? null : sound.id)}
+                        >
+                          {emoji || "😀"}
+                        </Button>
+                      </Popover.Target>
+                      <Popover.Dropdown style={{ height: "400px", overflow: "hidden" }}>
+                        <EmojiPicker 
+                          onEmojiClick={(emojiData: EmojiClickData) => {
+                            updateSoundEmojiMutation
+                              .mutateAsync({
+                                id: sound.id,
+                                emoji: emojiData.emoji,
+                              })
+                              .then(() => {
+                                refetchSoundboardSounds().catch((e) => {
+                                  throw e;
+                                });
+                                setEmojiPickerOpen(null);
+                              })
+                              .catch((e) => {
+                                throw e;
+                              });
+                          }}
+                          width={320}
+                          height={380}
+                        />
+                      </Popover.Dropdown>
+                    </Popover>
                   )}
                 </div>
               </Card>

@@ -145,6 +145,25 @@ const enforceUserIsAdmin = t.middleware(({ ctx, next }) => {
 });
 
 /**
+ * Reusable middleware that enforces users are logged in as a moderator or admin before running the
+ * procedure.
+ */
+const enforceUserIsPrivileged = t.middleware(({ ctx, next }) => {
+  if (!ctx.session || !ctx.session.user) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+  if (ctx.session.user && ctx.session.user.role !== UserRole.ADMIN && ctx.session.user.role !== UserRole.MODERATOR) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+  return next({
+    ctx: {
+      // infers the `session` as non-nullable
+      session: { ...ctx.session, user: ctx.session.user },
+    },
+  });
+});
+
+/**
  * Protected (authenticated) procedure
  *
  * If you want a query or mutation to ONLY be accessible to logged in users who are admins, use
@@ -154,3 +173,14 @@ const enforceUserIsAdmin = t.middleware(({ ctx, next }) => {
  * @see https://trpc.io/docs/procedures
  */
 export const adminProcedure = t.procedure.use(enforceUserIsAdmin);
+
+/**
+ * Privileged procedure
+ *
+ * If you want a query or mutation to ONLY be accessible to logged in users who are moderators or admins, use
+ * this. It verifies the session is valid and guarantees `ctx.session.user` is
+ * not null.
+ *
+ * @see https://trpc.io/docs/procedures
+ */
+export const privilegedProcedure = t.procedure.use(enforceUserIsPrivileged);
