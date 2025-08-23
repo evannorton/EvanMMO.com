@@ -36,7 +36,8 @@ const SoundboardPage: NextPage = () => {
     session?.user?.role === UserRole.MODERATOR ||
     session?.user?.role === UserRole.CONTRIBUTOR;
 
-  const toggleSoundPinMutation = api.soundboard.toggleSoundPinForUser.useMutation();
+  const toggleSoundPinMutation =
+    api.soundboard.toggleSoundPinForUser.useMutation();
 
   // Helper function to get or create cached audio
   const getCachedAudio = useCallback(
@@ -145,10 +146,14 @@ const SoundboardPage: NextPage = () => {
                       flexShrink: 0,
                     }}
                     onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
-                    onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.7")}
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.opacity = "0.7")
+                    }
                     onClick={() => {
                       // Find the sound in soundboardSounds to get the URL
-                      const sound = soundboardSounds?.find((s) => s.id === entry.soundId);
+                      const sound = soundboardSounds?.find(
+                        (s) => s.id === entry.soundId
+                      );
                       if (sound) {
                         const audio = getCachedAudio(sound.url);
                         audio.currentTime = 0;
@@ -219,7 +224,9 @@ const SoundboardPage: NextPage = () => {
                         // Privileged users: Send websocket event
                         socket.emit("play_sound", sound.id);
                       } else if (isPrivilegedUser && !socket) {
-                        console.warn("Socket not connected for privileged user");
+                        console.warn(
+                          "Socket not connected for privileged user"
+                        );
                       } else {
                         // Regular users: Play sound locally using cached audio
                         const audio = getCachedAudio(sound.url);

@@ -1,5 +1,10 @@
 import { Prisma } from "@prisma/client";
-import { adminProcedure, createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
+import {
+  adminProcedure,
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from "../trpc";
 import { z } from "zod";
 
 export const soundboardRouter = createTRPCRouter({
