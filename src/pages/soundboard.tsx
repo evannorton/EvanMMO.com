@@ -417,8 +417,9 @@ const SoundboardPage: NextPage = () => {
       )}
 
       {/* Compact Mode and Mute Toggles - Only show for privileged users */}
-      {isPrivilegedUser && (
-        <div style={{ marginBottom: "1rem", display: "flex", gap: "2rem" }}>
+
+      <div style={{ display: "flex", gap: "2rem" }}>
+        {isPrivilegedUser && (
           <Switch
             label="Compact mode"
             checked={compactMode}
@@ -426,23 +427,25 @@ const SoundboardPage: NextPage = () => {
             size="sm"
             color="blue"
           />
-          <Switch
-            label="Mute sounds"
-            checked={isMuted}
-            onChange={(event) => {
-              const newMuteState = event.currentTarget.checked;
-              setIsMuted(newMuteState);
-              isMutedRef.current = newMuteState;
-              // Emit mute/unmute event through socket
-              if (socket && session?.sessionToken) {
-                socket.emit(newMuteState ? "mute" : "unmute");
-              }
-            }}
-            size="sm"
-            color="red"
-          />
-        </div>
-      )}
+        )}
+
+        <Switch
+          style={{ marginBottom: "1rem", display: "flex", gap: "2rem" }}
+          label="Mute sounds"
+          checked={isMuted}
+          onChange={(event) => {
+            const newMuteState = event.currentTarget.checked;
+            setIsMuted(newMuteState);
+            isMutedRef.current = newMuteState;
+            // Emit mute/unmute event through socket
+            if (socket && session?.sessionToken) {
+              socket.emit(newMuteState ? "mute" : "unmute");
+            }
+          }}
+          size="sm"
+          color="red"
+        />
+      </div>
 
       {isLoadingSoundboardSounds && <Loader />}
       {soundboardSounds && (
