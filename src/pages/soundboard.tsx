@@ -17,7 +17,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlay } from "@fortawesome/free-solid-svg-icons";
-import EmojiPicker from "emoji-picker-react";
+import EmojiPicker, { Theme } from "emoji-picker-react";
 import Head from "../components/Head";
 import type { EmojiClickData } from "emoji-picker-react";
 import type { NextPage } from "next";
@@ -363,6 +363,7 @@ const SoundboardPage: NextPage = () => {
                           style={{ height: "400px", overflow: "hidden" }}
                         >
                           <EmojiPicker
+                            theme={Theme.DARK}
                             onEmojiClick={(emojiData: EmojiClickData) => {
                               updateSoundEmojiMutation
                                 .mutateAsync({

@@ -22,7 +22,7 @@ import { getFormattedDateString } from "../utils/date";
 import { getServerSession } from "next-auth";
 import { useForm } from "@mantine/form";
 import { useState } from "react";
-import EmojiPicker from "emoji-picker-react";
+import EmojiPicker, { Theme } from "emoji-picker-react";
 import Head from "../components/Head";
 import vodsPerPage from "../constants/vodsPerPage";
 import type { EmojiClickData } from "emoji-picker-react";
@@ -346,6 +346,7 @@ const DashboardPage: NextPage = () => {
                       style={{ height: "400px", overflow: "hidden" }}
                     >
                       <EmojiPicker
+                      theme={Theme.DARK}
                         onEmojiClick={(emojiData: EmojiClickData) => {
                           updateSoundEmojiMutation
                             .mutateAsync({
