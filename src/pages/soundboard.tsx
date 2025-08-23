@@ -1,4 +1,4 @@
-import { Button, Card, Loader, SimpleGrid, Text, Title, Popover } from "@mantine/core";
+import { Button, Card, Loader, SimpleGrid, Text, Title, Popover, Modal, TextInput } from "@mantine/core";
 import { type Socket, io } from "socket.io-client";
 import { UserRole } from "@prisma/client";
 import { api } from "../utils/api";
@@ -35,14 +35,37 @@ const SoundboardPage: NextPage = () => {
 
   const isPrivilegedUser =
     session?.user?.role === UserRole.ADMIN ||
-    session?.user?.role === UserRole.MODERATOR ||
-    session?.user?.role === UserRole.CONTRIBUTOR;
+    session?.user?.role === UserRole.MODERATOR;
 
   const toggleSoundPinMutation =
     api.soundboard.toggleSoundPinForUser.useMutation();
   const updateSoundEmojiMutation = 
     api.soundboard.updateSoundboardSoundEmoji.useMutation();
+  const renameSoundMutation = 
+    api.soundboard.renameSoundboardSound.useMutation();
   const [emojiPickerOpen, setEmojiPickerOpen] = useState<string | null>(null);
+  const [renamingSoundId, setRenamingSoundId] = useState<string | null>(null);
+  const [renameValue, setRenameValue] = useState("");
+
+  const handleRenameSubmit = useCallback(() => {
+    if (renamingSoundId && renameValue.trim()) {
+      renameSoundMutation
+        .mutateAsync({
+          id: renamingSoundId,
+          name: renameValue.trim(),
+        })
+        .then(() => {
+          refetchSoundboardSounds().catch((e) => {
+            throw e;
+          });
+          setRenamingSoundId(null);
+          setRenameValue("");
+        })
+        .catch((e) => {
+          throw e;
+        });
+    }
+  }, [renamingSoundId, renameValue, renameSoundMutation, refetchSoundboardSounds]);
 
   // Helper function to get or create cached audio
   const getCachedAudio = useCallback(
@@ -202,9 +225,14 @@ const SoundboardPage: NextPage = () => {
       {isLoadingSoundboardSounds && <Loader />}
       {soundboardSounds && (
         <SimpleGrid
-          cols={4}
+          cols={5}
           spacing="sm"
-          breakpoints={[{ maxWidth: "sm", cols: 2 }]}
+          breakpoints={[
+            { maxWidth: "lg", cols: 4 },
+            { maxWidth: "md", cols: 3 },
+            { maxWidth: "sm", cols: 2 },
+            { maxWidth: "xs", cols: 1 }
+          ]}
         >
           {soundboardSounds.map((sound) => {
             // Check if this sound has isPinned property (authenticated user)
@@ -224,7 +252,8 @@ const SoundboardPage: NextPage = () => {
                   {emoji && `${emoji} `}
                   {sound.name}
                 </Text>
-                <div style={{ display: "flex", gap: "8px" }}>
+                {/* Row 1: Play and Pin buttons */}
+                <div style={{ display: "flex", gap: "8px", marginBottom: "8px" }}>
                   <Button
                     style={{ flex: 1 }}
                     onClick={() => {
@@ -270,7 +299,11 @@ const SoundboardPage: NextPage = () => {
                       {isPinned ? "Unpin" : "Pin"}
                     </Button>
                   )}
-                  {isPrivilegedUser && (
+                </div>
+
+                {/* Row 2: Emoji and Rename buttons (only for privileged users) */}
+                {isPrivilegedUser && (
+                  <div style={{ display: "flex", gap: "8px" }}>
                     <Popover
                       opened={emojiPickerOpen === sound.id}
                       onClose={() => setEmojiPickerOpen(null)}
@@ -310,8 +343,18 @@ const SoundboardPage: NextPage = () => {
                         />
                       </Popover.Dropdown>
                     </Popover>
-                  )}
-                </div>
+                    <Button
+                      style={{ flex: 1 }}
+                      variant="outline"
+                      onClick={() => {
+                        setRenamingSoundId(sound.id);
+                        setRenameValue(sound.name);
+                      }}
+                    >
+                      Rename
+                    </Button>
+                  </div>
+                )}
               </Card>
             );
           })}
@@ -320,6 +363,35 @@ const SoundboardPage: NextPage = () => {
       {soundboardSounds?.length === 0 && (
         <Text color="gray.5">No sounds available yet.</Text>
       )}
+
+      <Modal
+        opened={renamingSoundId !== null}
+        onClose={() => {
+          setRenamingSoundId(null);
+          setRenameValue("");
+        }}
+        title="Rename Sound"
+      >
+        <TextInput
+          label="Sound Name"
+          value={renameValue}
+          onChange={(event) => setRenameValue(event.currentTarget.value)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              handleRenameSubmit();
+            }
+          }}
+          data-autofocus
+        />
+        <Button
+          fullWidth
+          mt="md"
+          onClick={handleRenameSubmit}
+          disabled={!renameValue.trim()}
+        >
+          Save
+        </Button>
+      </Modal>
     </>
   );
 };

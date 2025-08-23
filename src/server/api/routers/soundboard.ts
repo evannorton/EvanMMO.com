@@ -135,6 +135,23 @@ export const soundboardRouter = createTRPCRouter({
         },
       });
     }),
+  renameSoundboardSound: privilegedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        name: z.string().min(1, "Name is required"),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.prisma.soundboardSound.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          name: input.name,
+        },
+      });
+    }),
   deleteSoundboardSound: adminProcedure
     .input(
       z.object({
