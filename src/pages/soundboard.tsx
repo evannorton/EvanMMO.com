@@ -269,7 +269,12 @@ const SoundboardPage: NextPage = () => {
                           {user.name}
                         </Text>
                         <Text color="gray.5" size="xs">
-                          ({user.role.toLowerCase()})
+                          ({({
+                            [UserRole.ADMIN]: "administrator",
+                            [UserRole.MODERATOR]: "moderator",
+                            [UserRole.CONTRIBUTOR]: "collaborator",
+                            [UserRole.USER]: "user",
+                          } as const)[user.role]})
                         </Text>
                       </div>
                     ))}
