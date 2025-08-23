@@ -42,14 +42,14 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         session.user.id = user.id;
         session.user.role = user.role;
-        
+
         // Get the session token for socket authentication
         const dbSession = await prisma.session.findFirst({
           where: { userId: user.id },
-          orderBy: { expires: 'desc' },
-          select: { sessionToken: true }
+          orderBy: { expires: "desc" },
+          select: { sessionToken: true },
         });
-        
+
         if (dbSession) {
           session.sessionToken = dbSession.sessionToken;
         }

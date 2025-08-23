@@ -10,13 +10,13 @@ import {
   MediaQuery,
 } from "@mantine/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { UserRole } from "@prisma/client";
 import {
   faDiscord,
   faTwitch,
   faTwitter,
   faYoutube,
 } from "@fortawesome/free-brands-svg-icons";
-import { UserRole } from "@prisma/client";
 import { includeContent } from "../config";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
