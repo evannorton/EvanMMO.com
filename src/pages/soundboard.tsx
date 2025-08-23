@@ -203,8 +203,9 @@ const SoundboardPage: NextPage = () => {
         >
           {soundboardSounds.map((sound) => {
             // Check if this sound has isPinned property (authenticated user)
-            const soundWithPin = sound as typeof sound & { isPinned?: boolean };
+            const soundWithPin = sound as typeof sound & { isPinned?: boolean; emoji?: string | null };
             const isPinned = soundWithPin.isPinned || false;
+            const emoji = soundWithPin.emoji;
 
             return (
               <Card
@@ -214,6 +215,7 @@ const SoundboardPage: NextPage = () => {
               >
                 <Text size="lg" mb="sm">
                   {isPinned && "📌 "}
+                  {emoji && `${emoji} `}
                   {sound.name}
                 </Text>
                 <div style={{ display: "flex", gap: "8px" }}>

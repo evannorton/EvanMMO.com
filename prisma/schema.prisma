@@ -114,6 +114,7 @@ model SoundboardSound {
     id        String   @id @default(cuid())
     name      String
     url       String
+    emoji     String?  @db.VarChar(10)
     userPins  UserSoundPin[]
 }
 

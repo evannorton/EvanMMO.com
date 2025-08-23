@@ -50,11 +50,13 @@ interface UpdateVODFormValues {
 interface InsertSoundboardSoundFormValues {
   readonly name: string;
   readonly url: string;
+  readonly emoji: string;
 }
 
 interface UpdateSoundboardSoundFormValues {
   readonly name: string;
   readonly url: string;
+  readonly emoji: string;
 }
 
 const DashboardPage: NextPage = () => {
@@ -68,20 +70,24 @@ const DashboardPage: NextPage = () => {
     initialValues: {
       name: "",
       url: "",
+      emoji: "",
     },
     validate: {
       name: (value) => (value.length === 0 ? "You must specify a name" : null),
       url: (value) => (value.length === 0 ? "You must specify a URL" : null),
+      emoji: (value) => (value.length > 4 ? "Please enter a single emoji only" : null),
     },
   });
   const updateSoundboardSoundForm = useForm<UpdateSoundboardSoundFormValues>({
     initialValues: {
       name: "",
       url: "",
+      emoji: "",
     },
     validate: {
       name: (value) => (value.length === 0 ? "You must specify a name" : null),
       url: (value) => (value.length === 0 ? "You must specify a URL" : null),
+      emoji: (value) => (value.length > 4 ? "Please enter a single emoji only" : null),
     },
   });
   const insertSoundboardSoundMutation =
@@ -284,6 +290,7 @@ const DashboardPage: NextPage = () => {
                 key={sound.id}
               >
                 <Text size="lg" mb="sm">
+                  {sound.emoji && `${sound.emoji} `}
                   {sound.name}
                 </Text>
                 <Box mt="auto">
@@ -306,6 +313,7 @@ const DashboardPage: NextPage = () => {
                       updateSoundboardSoundForm.setValues({
                         name: sound.name,
                         url: sound.url,
+                        emoji: sound.emoji || "",
                       });
                       setSoundboardSoundIDToUpdate(sound.id);
                     }}
@@ -599,11 +607,12 @@ const DashboardPage: NextPage = () => {
           onSubmit={insertSoundboardSoundForm.onSubmit((values) => {
             setIsAddingSoundboardSound(false);
             insertSoundboardSoundForm.reset();
-            insertSoundboardSoundMutation
-              .mutateAsync({
-                name: values.name,
-                url: values.url,
-              })
+                         insertSoundboardSoundMutation
+               .mutateAsync({
+                 name: values.name,
+                 url: values.url,
+                 emoji: values.emoji || undefined,
+               })
               .then(() => {
                 refetchSoundboardSounds().catch((e) => {
                   throw e;
@@ -625,6 +634,13 @@ const DashboardPage: NextPage = () => {
             label="URL"
             mb="sm"
             {...insertSoundboardSoundForm.getInputProps("url")}
+          />
+          <TextInput
+            label="Emoji"
+            placeholder="🎵"
+            mb="sm"
+            maxLength={4}
+            {...insertSoundboardSoundForm.getInputProps("emoji")}
           />
           <Button type="submit">Submit</Button>
         </form>
@@ -648,12 +664,13 @@ const DashboardPage: NextPage = () => {
             if (soundboardSoundToUpdate !== null) {
               setSoundboardSoundIDToUpdate(null);
               updateSoundboardSoundForm.reset();
-              updateSoundboardSoundMutation
-                .mutateAsync({
-                  id: soundboardSoundToUpdate.id,
-                  name: values.name,
-                  url: values.url,
-                })
+                             updateSoundboardSoundMutation
+                 .mutateAsync({
+                   id: soundboardSoundToUpdate.id,
+                   name: values.name,
+                   url: values.url,
+                   emoji: values.emoji || undefined,
+                 })
                 .then(() => {
                   refetchSoundboardSounds().catch((e) => {
                     throw e;
@@ -676,6 +693,13 @@ const DashboardPage: NextPage = () => {
             label="URL"
             mb="sm"
             {...updateSoundboardSoundForm.getInputProps("url")}
+          />
+          <TextInput
+            label="Emoji"
+            placeholder="🎵"
+            mb="sm"
+            maxLength={4}
+            {...updateSoundboardSoundForm.getInputProps("emoji")}
           />
           <Button type="submit">Submit</Button>
         </form>

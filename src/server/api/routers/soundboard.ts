@@ -14,6 +14,7 @@ export const soundboardRouter = createTRPCRouter({
         id: true,
         name: true,
         url: true,
+        emoji: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -28,6 +29,7 @@ export const soundboardRouter = createTRPCRouter({
         id: true,
         name: true,
         url: true,
+        emoji: true,
         createdAt: true,
         updatedAt: true,
         userPins: {
@@ -49,6 +51,7 @@ export const soundboardRouter = createTRPCRouter({
       id: sound.id,
       name: sound.name,
       url: sound.url,
+      emoji: sound.emoji,
       createdAt: sound.createdAt,
       updatedAt: sound.updatedAt,
       isPinned: sound.userPins.length > 0,
@@ -69,6 +72,7 @@ export const soundboardRouter = createTRPCRouter({
           id: true,
           name: true,
           url: true,
+          emoji: true,
           createdAt: true,
           updatedAt: true,
         },
@@ -82,6 +86,7 @@ export const soundboardRouter = createTRPCRouter({
       z.object({
         name: z.string(),
         url: z.string(),
+        emoji: z.string().max(10).optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -89,6 +94,7 @@ export const soundboardRouter = createTRPCRouter({
         data: {
           name: input.name,
           url: input.url,
+          emoji: input.emoji,
         },
       });
     }),
@@ -98,6 +104,7 @@ export const soundboardRouter = createTRPCRouter({
         id: z.string(),
         name: z.string(),
         url: z.string(),
+        emoji: z.string().max(10).optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -108,6 +115,7 @@ export const soundboardRouter = createTRPCRouter({
         data: {
           name: input.name,
           url: input.url,
+          emoji: input.emoji,
         },
       });
     }),
