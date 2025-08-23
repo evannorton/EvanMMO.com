@@ -74,7 +74,7 @@ const SoundboardPage: NextPage = () => {
   const [emojiPickerOpen, setEmojiPickerOpen] = useState<string | null>(null);
   const [renamingSoundId, setRenamingSoundId] = useState<string | null>(null);
   const [renameValue, setRenameValue] = useState("");
-  const [compactMode, setCompactMode] = useState(false);
+  const [compactMode, setCompactMode] = useState(true);
   const [isMuted, setIsMuted] = useState(false);
 
   // Force compact mode for non-privileged users
