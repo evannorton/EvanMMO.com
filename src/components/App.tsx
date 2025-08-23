@@ -138,7 +138,8 @@ const App: React.FC<Props> = ({ children }) => {
               {typeof sessionData !== "undefined" && (
                 <Flex align="center" ml="auto">
                   {(sessionData?.user.role === UserRole.ADMIN ||
-                    sessionData?.user.role === UserRole.MODERATOR) && (
+                    sessionData?.user.role === UserRole.MODERATOR ||
+                    sessionData?.user.role === UserRole.CONTRIBUTOR) && (
                     <Anchor
                       sx={{
                         "&:hover": {

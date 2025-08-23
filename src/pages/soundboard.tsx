@@ -28,7 +28,8 @@ const SoundboardPage: NextPage = () => {
 
   const isPrivilegedUser =
     session?.user?.role === UserRole.ADMIN ||
-    session?.user?.role === UserRole.MODERATOR;
+    session?.user?.role === UserRole.MODERATOR ||
+    session?.user?.role === UserRole.CONTRIBUTOR;
 
   // Helper function to get or create cached audio
   const getCachedAudio = useCallback(
