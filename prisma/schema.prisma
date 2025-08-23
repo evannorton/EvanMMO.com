@@ -16,6 +16,7 @@ datasource db {
 
 enum UserRole {
   ADMIN
+  MODERATOR
   USER
 }
 
@@ -106,10 +107,11 @@ model VodPiece {
     vod       Vod      @relation(fields: [vodId], references: [id])
 }
 
-model Sound {
+model SoundboardSound {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt @default(now())
     id        String   @id @default(cuid())
-    mp3URL    String
+    name      String
+    url       String
 }
 

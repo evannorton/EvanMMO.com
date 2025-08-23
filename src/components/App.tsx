@@ -16,6 +16,7 @@ import {
   faTwitter,
   faYoutube,
 } from "@fortawesome/free-brands-svg-icons";
+import { UserRole } from "@prisma/client";
 import { includeContent } from "../config";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
@@ -136,7 +137,26 @@ const App: React.FC<Props> = ({ children }) => {
               </MediaQuery>
               {typeof sessionData !== "undefined" && (
                 <Flex align="center" ml="auto">
-                  {sessionData?.user.role === "ADMIN" && (
+                  {(sessionData?.user.role === UserRole.ADMIN ||
+                    sessionData?.user.role === UserRole.MODERATOR) && (
+                    <Anchor
+                      sx={{
+                        "&:hover": {
+                          opacity: "0.75",
+                          textDecoration: "none",
+                        },
+                      }}
+                      href="/soundboard"
+                      color="gray.4"
+                      size={20}
+                      weight="bold"
+                      mr="xs"
+                      underline={false}
+                    >
+                      Soundboard
+                    </Anchor>
+                  )}
+                  {sessionData?.user.role === UserRole.ADMIN && (
                     <Anchor
                       sx={{
                         "&:hover": {

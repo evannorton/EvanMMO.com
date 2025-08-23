@@ -47,7 +47,68 @@ interface UpdateVODFormValues {
   readonly pieces: UpdateVODFormPieceValues[];
 }
 
+interface InsertSoundboardSoundFormValues {
+  readonly name: string;
+  readonly url: string;
+}
+
+interface UpdateSoundboardSoundFormValues {
+  readonly name: string;
+  readonly url: string;
+}
+
 const DashboardPage: NextPage = () => {
+  const {
+    data: soundboardSounds,
+    isLoading: isLoadingSoundboardSounds,
+    refetch: refetchSoundboardSounds,
+  } = api.soundboard.getSoundboardSounds.useQuery();
+  const [isAddingSoundboardSound, setIsAddingSoundboardSound] = useState(false);
+  const insertSoundboardSoundForm = useForm<InsertSoundboardSoundFormValues>({
+    initialValues: {
+      name: "",
+      url: "",
+    },
+    validate: {
+      name: (value) => (value.length === 0 ? "You must specify a name" : null),
+      url: (value) => (value.length === 0 ? "You must specify a URL" : null),
+    },
+  });
+  const updateSoundboardSoundForm = useForm<UpdateSoundboardSoundFormValues>({
+    initialValues: {
+      name: "",
+      url: "",
+    },
+    validate: {
+      name: (value) => (value.length === 0 ? "You must specify a name" : null),
+      url: (value) => (value.length === 0 ? "You must specify a URL" : null),
+    },
+  });
+  const insertSoundboardSoundMutation =
+    api.soundboard.insertSoundboardSound.useMutation();
+  const [soundboardSoundIDToUpdate, setSoundboardSoundIDToUpdate] = useState<
+    string | null
+  >(null);
+  const soundboardSoundToUpdate =
+    soundboardSoundIDToUpdate !== null
+      ? soundboardSounds?.find(
+          (sound) => sound.id === soundboardSoundIDToUpdate
+        ) ?? null
+      : null;
+  const updateSoundboardSoundMutation =
+    api.soundboard.updateSoundboardSound.useMutation();
+  const [soundboardSoundIDToDelete, setSoundboardSoundIDToDelete] = useState<
+    string | null
+  >(null);
+  const soundboardSoundToDelete =
+    soundboardSoundIDToDelete !== null
+      ? soundboardSounds?.find(
+          (sound) => sound.id === soundboardSoundIDToDelete
+        ) ?? null
+      : null;
+  const deleteSoundboardSoundMutation =
+    api.soundboard.deleteSoundboardSound.useMutation();
+
   const [vodsPage, setVODsPage] = useState(1);
   const {
     data: vods,
@@ -108,7 +169,7 @@ const DashboardPage: NextPage = () => {
   return (
     <>
       <Head description="Admin dashboard for EvanMMO's content creation and game development site" />
-      <Title order={1} color="gray.0" mb="md">
+      <Title order={2} color="gray.0" mb="md">
         VODs
       </Title>
       <Button
@@ -194,6 +255,84 @@ const DashboardPage: NextPage = () => {
           withEdges
           mt="sm"
         />
+      )}
+      <Title order={2} color="gray.0" mt="xl" mb="md">
+        Soundboard
+      </Title>
+      <Button
+        display="block"
+        onClick={() => {
+          setIsAddingSoundboardSound(true);
+        }}
+        mb="md"
+      >
+        Add Sound
+      </Button>
+      {isLoadingSoundboardSounds && <Loader />}
+      {soundboardSounds && (
+        <SimpleGrid
+          cols={4}
+          spacing="sm"
+          breakpoints={[{ maxWidth: "sm", cols: 2 }]}
+          mb="xl"
+        >
+          {soundboardSounds.map((sound) => {
+            return (
+              <Card
+                sx={{ flexDirection: "column", borderRadius: "0.5rem" }}
+                display="flex"
+                key={sound.id}
+              >
+                <Text size="lg" mb="sm">
+                  {sound.name}
+                </Text>
+                <Button
+                  mb="xs"
+                  onClick={() => {
+                    const audio = new Audio(sound.url);
+                    audio.play().catch((e) => {
+                      console.error("Error playing sound:", e);
+                    });
+                  }}
+                >
+                  Play
+                </Button>
+                <Button
+                  mb="sm"
+                  onClick={() => {
+                    window.open(sound.url, "_blank");
+                  }}
+                >
+                  Open link
+                </Button>
+                <Box mt="auto">
+                  <Button
+                    mr="sm"
+                    mt="sm"
+                    onClick={() => {
+                      updateSoundboardSoundForm.setValues({
+                        name: sound.name,
+                        url: sound.url,
+                      });
+                      setSoundboardSoundIDToUpdate(sound.id);
+                    }}
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    color="red"
+                    mt="xs"
+                    onClick={() => {
+                      setSoundboardSoundIDToDelete(sound.id);
+                    }}
+                  >
+                    Delete
+                  </Button>
+                </Box>
+              </Card>
+            );
+          })}
+        </SimpleGrid>
       )}
       <Modal
         opened={isAddingVOD}
@@ -441,6 +580,150 @@ const DashboardPage: NextPage = () => {
               mt="xs"
               onClick={() => {
                 setVODIDToDelete(null);
+              }}
+            >
+              Cancel
+            </Button>
+          </>
+        )}
+      </Modal>
+
+      {/* Soundboard Modals */}
+      <Modal
+        opened={isAddingSoundboardSound}
+        onClose={() => {
+          setIsAddingSoundboardSound(false);
+          insertSoundboardSoundForm.reset();
+        }}
+        title="Add Sound"
+      >
+        {Object.keys(insertSoundboardSoundForm.errors).length > 0 && (
+          <Text color="red" mb="xs">
+            There are invalid field(s).
+          </Text>
+        )}
+        <form
+          onSubmit={insertSoundboardSoundForm.onSubmit((values) => {
+            setIsAddingSoundboardSound(false);
+            insertSoundboardSoundForm.reset();
+            insertSoundboardSoundMutation
+              .mutateAsync({
+                name: values.name,
+                url: values.url,
+              })
+              .then(() => {
+                refetchSoundboardSounds().catch((e) => {
+                  throw e;
+                });
+              })
+              .catch((e) => {
+                throw e;
+              });
+          })}
+        >
+          <TextInput
+            withAsterisk
+            label="Name"
+            mb="sm"
+            {...insertSoundboardSoundForm.getInputProps("name")}
+          />
+          <TextInput
+            withAsterisk
+            label="URL"
+            mb="sm"
+            {...insertSoundboardSoundForm.getInputProps("url")}
+          />
+          <Button type="submit">Submit</Button>
+        </form>
+      </Modal>
+
+      <Modal
+        opened={soundboardSoundToUpdate !== null}
+        onClose={() => {
+          setSoundboardSoundIDToUpdate(null);
+          updateSoundboardSoundForm.reset();
+        }}
+        title="Edit Sound"
+      >
+        {Object.keys(updateSoundboardSoundForm.errors).length > 0 && (
+          <Text color="red" mb="xs">
+            There are invalid field(s).
+          </Text>
+        )}
+        <form
+          onSubmit={updateSoundboardSoundForm.onSubmit((values) => {
+            if (soundboardSoundToUpdate !== null) {
+              setSoundboardSoundIDToUpdate(null);
+              updateSoundboardSoundForm.reset();
+              updateSoundboardSoundMutation
+                .mutateAsync({
+                  id: soundboardSoundToUpdate.id,
+                  name: values.name,
+                  url: values.url,
+                })
+                .then(() => {
+                  refetchSoundboardSounds().catch((e) => {
+                    throw e;
+                  });
+                })
+                .catch((e) => {
+                  throw e;
+                });
+            }
+          })}
+        >
+          <TextInput
+            withAsterisk
+            label="Name"
+            mb="sm"
+            {...updateSoundboardSoundForm.getInputProps("name")}
+          />
+          <TextInput
+            withAsterisk
+            label="URL"
+            mb="sm"
+            {...updateSoundboardSoundForm.getInputProps("url")}
+          />
+          <Button type="submit">Submit</Button>
+        </form>
+      </Modal>
+
+      <Modal
+        opened={soundboardSoundToDelete !== null}
+        onClose={() => {
+          setSoundboardSoundIDToDelete(null);
+        }}
+        title="Delete Sound"
+      >
+        {soundboardSoundToDelete && (
+          <>
+            <Text>
+              Are you sure that you would like to delete sound{" "}
+              {soundboardSoundToDelete?.name}?
+            </Text>
+            <Button
+              color="red"
+              mr="sm"
+              mt="sm"
+              onClick={() => {
+                deleteSoundboardSoundMutation
+                  .mutateAsync({ id: soundboardSoundToDelete.id })
+                  .then(() => {
+                    refetchSoundboardSounds().catch((e) => {
+                      throw e;
+                    });
+                  })
+                  .catch((e) => {
+                    throw e;
+                  });
+              }}
+            >
+              Delete
+            </Button>
+            <Button
+              mt="xs"
+              onClick={() => {
+                setSoundboardSoundIDToDelete(null);
               }}
             >
               Cancel

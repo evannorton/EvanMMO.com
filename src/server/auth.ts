@@ -24,6 +24,7 @@ declare module "next-auth" {
       id: string;
       role: UserRole;
     } & DefaultSession["user"];
+    sessionToken?: string;
   }
 
   interface User extends PrismaUser {}
@@ -37,10 +38,21 @@ declare module "next-auth" {
  **/
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    session({ session, user }) {
+    async session({ session, user }) {
       if (session.user) {
         session.user.id = user.id;
         session.user.role = user.role;
+        
+        // Get the session token for socket authentication
+        const dbSession = await prisma.session.findFirst({
+          where: { userId: user.id },
+          orderBy: { expires: 'desc' },
+          select: { sessionToken: true }
+        });
+        
+        if (dbSession) {
+          session.sessionToken = dbSession.sessionToken;
+        }
       }
       return session;
     },
