@@ -15,7 +15,7 @@ import { type Socket, io } from "socket.io-client";
 import { UserRole } from "@prisma/client";
 import { api } from "../utils/api";
 import { env } from "../env.mjs";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
 import EmojiPicker, { Theme } from "emoji-picker-react";
 import Head from "../components/Head";
@@ -78,6 +78,9 @@ const SoundboardPage: NextPage = () => {
   const [compactMode, setCompactMode] = useState(true);
   const [isMuted, setIsMuted] = useState(false);
   const [showDisconnectModal, setShowDisconnectModal] = useState(false);
+
+  // Use ref to track current mute state for socket handlers
+  const isMutedRef = useRef(false);
 
   // Force compact mode for non-privileged users
   const effectiveCompactMode = isPrivilegedUser ? compactMode : true;
@@ -158,7 +161,7 @@ const SoundboardPage: NextPage = () => {
           ]);
 
           // Play the sound using cached audio (unless muted)
-          if (!isMuted) {
+          if (!isMutedRef.current) {
             const audio = getCachedAudio(data.soundUrl);
             audio.currentTime = 0; // Reset to beginning
             audio.play().catch((e) => {
@@ -367,7 +370,7 @@ const SoundboardPage: NextPage = () => {
                       const sound = soundboardSounds?.find(
                         (s) => s.id === entry.soundId
                       );
-                      if (sound && !isMuted) {
+                      if (sound && !isMutedRef.current) {
                         const audio = getCachedAudio(sound.url);
                         audio.currentTime = 0;
                         audio.play().catch((e) => {
@@ -424,9 +427,9 @@ const SoundboardPage: NextPage = () => {
             onChange={(event) => {
               const newMuteState = event.currentTarget.checked;
               setIsMuted(newMuteState);
+              isMutedRef.current = newMuteState;
               // Emit mute/unmute event through socket
               if (socket && session?.sessionToken) {
-                console.log(newMuteState ? "mute" : "unmute");
                 socket.emit(newMuteState ? "mute" : "unmute");
               }
             }}
@@ -487,7 +490,7 @@ const SoundboardPage: NextPage = () => {
                         console.warn(
                           "Socket not connected for privileged user"
                         );
-                      } else if (!isMuted) {
+                      } else if (!isMutedRef.current) {
                         // Regular users: Play sound locally using cached audio (unless muted)
                         const audio = getCachedAudio(sound.url);
                         audio.currentTime = 0; // Reset to beginning
