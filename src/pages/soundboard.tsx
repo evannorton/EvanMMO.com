@@ -15,6 +15,8 @@ import { api } from "../utils/api";
 import { env } from "../env.mjs";
 import { useCallback, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlay } from "@fortawesome/free-solid-svg-icons";
 import EmojiPicker from "emoji-picker-react";
 import Head from "../components/Head";
 import type { EmojiClickData } from "emoji-picker-react";
@@ -270,12 +272,13 @@ const SoundboardPage: NextPage = () => {
                   {emoji && `${emoji} `}
                   {sound.name}
                 </Text>
-                {/* Row 1: Play and Pin buttons */}
+                {/* Row 1: Play button only */}
                 <div
                   style={{ display: "flex", gap: "8px", marginBottom: "8px" }}
                 >
                   <Button
                     style={{ flex: 1 }}
+                    size="md"
                     onClick={() => {
                       if (isPrivilegedUser && socket && session?.sessionToken) {
                         // Privileged users: Send websocket event
@@ -293,10 +296,15 @@ const SoundboardPage: NextPage = () => {
                         });
                       }
                     }}
+                    rightIcon={<FontAwesomeIcon icon={faPlay} />}
                   >
                     Play
                   </Button>
-                  {session?.user && (
+                </div>
+
+                {/* Row 2: Pin, Emoji and Rename buttons */}
+                {session?.user && (
+                  <div style={{ display: "flex", gap: "8px" }}>
                     <Button
                       style={{ flex: 1 }}
                       variant={isPinned ? "filled" : "outline"}
@@ -318,67 +326,65 @@ const SoundboardPage: NextPage = () => {
                     >
                       {isPinned ? "Unpin" : "Pin"}
                     </Button>
-                  )}
-                </div>
-
-                {/* Row 2: Emoji and Rename buttons (only for privileged users) */}
-                {isPrivilegedUser && (
-                  <div style={{ display: "flex", gap: "8px" }}>
-                    <Popover
-                      opened={emojiPickerOpen === sound.id}
-                      onClose={() => setEmojiPickerOpen(null)}
-                      position="bottom"
-                      withArrow
-                      width={350}
-                    >
-                      <Popover.Target>
-                        <Button
-                          style={{ flex: 1 }}
-                          variant="outline"
-                          onClick={() =>
-                            setEmojiPickerOpen(
-                              emojiPickerOpen === sound.id ? null : sound.id
-                            )
-                          }
-                        >
-                          {emoji || "😀"}
-                        </Button>
-                      </Popover.Target>
-                      <Popover.Dropdown
-                        style={{ height: "400px", overflow: "hidden" }}
+                    {isPrivilegedUser && (
+                      <Button
+                        style={{ flex: 1 }}
+                        variant="outline"
+                        onClick={() => {
+                          setRenamingSoundId(sound.id);
+                          setRenameValue(sound.name);
+                        }}
                       >
-                        <EmojiPicker
-                          onEmojiClick={(emojiData: EmojiClickData) => {
-                            updateSoundEmojiMutation
-                              .mutateAsync({
-                                id: sound.id,
-                                emoji: emojiData.emoji,
-                              })
-                              .then(() => {
-                                refetchSoundboardSounds().catch((e) => {
+                        Name
+                      </Button>
+                    )}
+                    {isPrivilegedUser && (
+                      <Popover
+                        opened={emojiPickerOpen === sound.id}
+                        onClose={() => setEmojiPickerOpen(null)}
+                        position="bottom"
+                        withArrow
+                        width={350}
+                      >
+                        <Popover.Target>
+                          <Button
+                            style={{ flex: 1 }}
+                            variant="outline"
+                            onClick={() =>
+                              setEmojiPickerOpen(
+                                emojiPickerOpen === sound.id ? null : sound.id
+                              )
+                            }
+                          >
+                            {emoji || "😀"}
+                          </Button>
+                        </Popover.Target>
+                        <Popover.Dropdown
+                          style={{ height: "400px", overflow: "hidden" }}
+                        >
+                          <EmojiPicker
+                            onEmojiClick={(emojiData: EmojiClickData) => {
+                              updateSoundEmojiMutation
+                                .mutateAsync({
+                                  id: sound.id,
+                                  emoji: emojiData.emoji,
+                                })
+                                .then(() => {
+                                  refetchSoundboardSounds().catch((e) => {
+                                    throw e;
+                                  });
+                                  setEmojiPickerOpen(null);
+                                })
+                                .catch((e) => {
                                   throw e;
                                 });
-                                setEmojiPickerOpen(null);
-                              })
-                              .catch((e) => {
-                                throw e;
-                              });
-                          }}
-                          width={320}
-                          height={380}
-                        />
-                      </Popover.Dropdown>
-                    </Popover>
-                    <Button
-                      style={{ flex: 1 }}
-                      variant="outline"
-                      onClick={() => {
-                        setRenamingSoundId(sound.id);
-                        setRenameValue(sound.name);
-                      }}
-                    >
-                      Rename
-                    </Button>
+                            }}
+                            width={320}
+                            height={380}
+                          />
+                        </Popover.Dropdown>
+                      </Popover>
+                    )}
                   </div>
                 )}
               </Card>
