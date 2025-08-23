@@ -5,6 +5,7 @@ import {
   Modal,
   Popover,
   SimpleGrid,
+  Switch,
   Text,
   TextInput,
   Title,
@@ -19,6 +20,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import EmojiPicker, { Theme } from "emoji-picker-react";
 import Head from "../components/Head";
+import Image from "next/image";
 import type { EmojiClickData } from "emoji-picker-react";
 import type { NextPage } from "next";
 
@@ -74,6 +76,7 @@ const SoundboardPage: NextPage = () => {
   const [emojiPickerOpen, setEmojiPickerOpen] = useState<string | null>(null);
   const [renamingSoundId, setRenamingSoundId] = useState<string | null>(null);
   const [renameValue, setRenameValue] = useState("");
+  const [compactMode, setCompactMode] = useState(false);
 
   const handleRenameSubmit = useCallback(() => {
     if (renamingSoundId && renameValue.trim()) {
@@ -255,7 +258,7 @@ const SoundboardPage: NextPage = () => {
                         }}
                       >
                         {user.image && (
-                          <img
+                          <Image
                             src={user.image}
                             alt={user.name}
                             style={{
@@ -269,12 +272,21 @@ const SoundboardPage: NextPage = () => {
                           {user.name}
                         </Text>
 
-                        {(user.role === UserRole.ADMIN || user.role === UserRole.MODERATOR) && <Text color="gray.5" size="xs">
-                          ({({
-                            [UserRole.ADMIN]: "administrator",
-                            [UserRole.MODERATOR]: "moderator",
-                          } as const)[user.role]})
-                        </Text>}
+                        {(user.role === UserRole.ADMIN ||
+                          user.role === UserRole.MODERATOR) && (
+                          <Text color="gray.5" size="xs">
+                            (
+                            {
+                              (
+                                {
+                                  [UserRole.ADMIN]: "administrator",
+                                  [UserRole.MODERATOR]: "moderator",
+                                } as const
+                              )[user.role]
+                            }
+                            )
+                          </Text>
+                        )}
                       </div>
                     ))}
                 </div>
@@ -372,6 +384,18 @@ const SoundboardPage: NextPage = () => {
           </div>
         </Card>
       )}
+
+      {/* Compact Mode Toggle */}
+      <div style={{ marginBottom: "1rem" }}>
+        <Switch
+          label="Compact mode"
+          checked={compactMode}
+          onChange={(event) => setCompactMode(event.currentTarget.checked)}
+          size="sm"
+          color="blue"
+        />
+      </div>
+
       {isLoadingSoundboardSounds && <Loader />}
       {soundboardSounds && (
         <SimpleGrid
@@ -407,7 +431,11 @@ const SoundboardPage: NextPage = () => {
                 </Text>
                 {/* Row 1: Play button only */}
                 <div
-                  style={{ display: "flex", gap: "8px", marginBottom: "8px" }}
+                  style={{
+                    display: "flex",
+                    gap: "8px",
+                    marginBottom: compactMode ? "0px" : "8px",
+                  }}
                 >
                   <Button
                     style={{ flex: 1 }}
@@ -436,7 +464,7 @@ const SoundboardPage: NextPage = () => {
                 </div>
 
                 {/* Row 2: Pin, Emoji and Rename buttons */}
-                {session?.user && (
+                {session?.user && !compactMode && (
                   <div style={{ display: "flex", gap: "8px" }}>
                     <Button
                       style={{ flex: 1 }}
