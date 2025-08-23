@@ -152,7 +152,11 @@ const enforceUserIsPrivileged = t.middleware(({ ctx, next }) => {
   if (!ctx.session || !ctx.session.user) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
-  if (ctx.session.user && ctx.session.user.role !== UserRole.ADMIN && ctx.session.user.role !== UserRole.MODERATOR) {
+  if (
+    ctx.session.user &&
+    ctx.session.user.role !== UserRole.ADMIN &&
+    ctx.session.user.role !== UserRole.MODERATOR
+  ) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
   return next({

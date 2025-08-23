@@ -1,14 +1,24 @@
-import { Button, Card, Loader, SimpleGrid, Text, Title, Popover, Modal, TextInput } from "@mantine/core";
+import {
+  Button,
+  Card,
+  Loader,
+  Modal,
+  Popover,
+  SimpleGrid,
+  Text,
+  TextInput,
+  Title,
+} from "@mantine/core";
 import { type Socket, io } from "socket.io-client";
 import { UserRole } from "@prisma/client";
 import { api } from "../utils/api";
 import { env } from "../env.mjs";
 import { useCallback, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import Head from "../components/Head";
-import type { NextPage } from "next";
 import EmojiPicker from "emoji-picker-react";
+import Head from "../components/Head";
 import type { EmojiClickData } from "emoji-picker-react";
+import type { NextPage } from "next";
 
 interface SoundLogEntry {
   soundId: string;
@@ -39,9 +49,9 @@ const SoundboardPage: NextPage = () => {
 
   const toggleSoundPinMutation =
     api.soundboard.toggleSoundPinForUser.useMutation();
-  const updateSoundEmojiMutation = 
+  const updateSoundEmojiMutation =
     api.soundboard.updateSoundboardSoundEmoji.useMutation();
-  const renameSoundMutation = 
+  const renameSoundMutation =
     api.soundboard.renameSoundboardSound.useMutation();
   const [emojiPickerOpen, setEmojiPickerOpen] = useState<string | null>(null);
   const [renamingSoundId, setRenamingSoundId] = useState<string | null>(null);
@@ -65,7 +75,12 @@ const SoundboardPage: NextPage = () => {
           throw e;
         });
     }
-  }, [renamingSoundId, renameValue, renameSoundMutation, refetchSoundboardSounds]);
+  }, [
+    renamingSoundId,
+    renameValue,
+    renameSoundMutation,
+    refetchSoundboardSounds,
+  ]);
 
   // Helper function to get or create cached audio
   const getCachedAudio = useCallback(
@@ -231,12 +246,15 @@ const SoundboardPage: NextPage = () => {
             { maxWidth: "lg", cols: 4 },
             { maxWidth: "md", cols: 3 },
             { maxWidth: "sm", cols: 2 },
-            { maxWidth: "xs", cols: 1 }
+            { maxWidth: "xs", cols: 1 },
           ]}
         >
           {soundboardSounds.map((sound) => {
             // Check if this sound has isPinned property (authenticated user)
-            const soundWithPin = sound as typeof sound & { isPinned?: boolean; emoji?: string | null };
+            const soundWithPin = sound as typeof sound & {
+              isPinned?: boolean;
+              emoji?: string | null;
+            };
             const isPinned = soundWithPin.isPinned || false;
             const emoji = soundWithPin.emoji;
 
@@ -253,7 +271,9 @@ const SoundboardPage: NextPage = () => {
                   {sound.name}
                 </Text>
                 {/* Row 1: Play and Pin buttons */}
-                <div style={{ display: "flex", gap: "8px", marginBottom: "8px" }}>
+                <div
+                  style={{ display: "flex", gap: "8px", marginBottom: "8px" }}
+                >
                   <Button
                     style={{ flex: 1 }}
                     onClick={() => {
@@ -315,13 +335,19 @@ const SoundboardPage: NextPage = () => {
                         <Button
                           style={{ flex: 1 }}
                           variant="outline"
-                          onClick={() => setEmojiPickerOpen(emojiPickerOpen === sound.id ? null : sound.id)}
+                          onClick={() =>
+                            setEmojiPickerOpen(
+                              emojiPickerOpen === sound.id ? null : sound.id
+                            )
+                          }
                         >
                           {emoji || "😀"}
                         </Button>
                       </Popover.Target>
-                      <Popover.Dropdown style={{ height: "400px", overflow: "hidden" }}>
-                        <EmojiPicker 
+                      <Popover.Dropdown
+                        style={{ height: "400px", overflow: "hidden" }}
+                      >
+                        <EmojiPicker
                           onEmojiClick={(emojiData: EmojiClickData) => {
                             updateSoundEmojiMutation
                               .mutateAsync({

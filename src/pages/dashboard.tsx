@@ -5,13 +5,13 @@ import {
   Loader,
   Modal,
   Pagination,
+  Popover,
   SimpleGrid,
   Tabs,
   Text,
   TextInput,
   Textarea,
   Title,
-  Popover,
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { UserRole } from "@prisma/client";
@@ -22,11 +22,11 @@ import { getFormattedDateString } from "../utils/date";
 import { getServerSession } from "next-auth";
 import { useForm } from "@mantine/form";
 import { useState } from "react";
+import EmojiPicker from "emoji-picker-react";
 import Head from "../components/Head";
 import vodsPerPage from "../constants/vodsPerPage";
-import type { GetServerSideProps, NextPage } from "next";
-import EmojiPicker from "emoji-picker-react";
 import type { EmojiClickData } from "emoji-picker-react";
+import type { GetServerSideProps, NextPage } from "next";
 
 interface InsertVODFormPieceValues {
   readonly jsonURL: string;
@@ -285,7 +285,7 @@ const DashboardPage: NextPage = () => {
           {soundboardSounds.map((sound) => {
             return (
               <Card
-              style={{overflow:"visible"}}
+                style={{ overflow: "visible" }}
                 sx={{ flexDirection: "column", borderRadius: "0.5rem" }}
                 display="flex"
                 key={sound.id}
@@ -332,14 +332,20 @@ const DashboardPage: NextPage = () => {
                         mr="sm"
                         mt="sm"
                         variant="outline"
-                        onClick={() => setEmojiPickerOpen(emojiPickerOpen === sound.id ? null : sound.id)}
+                        onClick={() =>
+                          setEmojiPickerOpen(
+                            emojiPickerOpen === sound.id ? null : sound.id
+                          )
+                        }
                         style={{ minWidth: "auto", padding: "8px 12px" }}
                       >
                         {sound.emoji || "😀"}
                       </Button>
                     </Popover.Target>
-                    <Popover.Dropdown style={{ height: "400px", overflow: "hidden" }}>
-                      <EmojiPicker 
+                    <Popover.Dropdown
+                      style={{ height: "400px", overflow: "hidden" }}
+                    >
+                      <EmojiPicker
                         onEmojiClick={(emojiData: EmojiClickData) => {
                           updateSoundEmojiMutation
                             .mutateAsync({
@@ -648,11 +654,11 @@ const DashboardPage: NextPage = () => {
           onSubmit={insertSoundboardSoundForm.onSubmit((values) => {
             setIsAddingSoundboardSound(false);
             insertSoundboardSoundForm.reset();
-                         insertSoundboardSoundMutation
-               .mutateAsync({
-                 name: values.name,
-                 url: values.url,
-               })
+            insertSoundboardSoundMutation
+              .mutateAsync({
+                name: values.name,
+                url: values.url,
+              })
               .then(() => {
                 refetchSoundboardSounds().catch((e) => {
                   throw e;
@@ -697,12 +703,12 @@ const DashboardPage: NextPage = () => {
             if (soundboardSoundToUpdate !== null) {
               setSoundboardSoundIDToUpdate(null);
               updateSoundboardSoundForm.reset();
-                             updateSoundboardSoundMutation
-                 .mutateAsync({
-                   id: soundboardSoundToUpdate.id,
-                   name: values.name,
-                   url: values.url,
-                 })
+              updateSoundboardSoundMutation
+                .mutateAsync({
+                  id: soundboardSoundToUpdate.id,
+                  name: values.name,
+                  url: values.url,
+                })
                 .then(() => {
                   refetchSoundboardSounds().catch((e) => {
                     throw e;
@@ -781,8 +787,8 @@ export default DashboardPage;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getServerSession(context.req, context.res, authOptions);
-  return { 
-    props: {}, 
-    notFound: session?.user.role !== UserRole.ADMIN 
+  return {
+    props: {},
+    notFound: session?.user.role !== UserRole.ADMIN,
   };
 };
