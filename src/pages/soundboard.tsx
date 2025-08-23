@@ -68,12 +68,6 @@ const SoundboardPage: NextPage = () => {
           playedById: string;
           timestamp: string;
         }) => {
-          console.log("Sound played by server:", {
-            sound: data.soundName,
-            playedBy: data.playedBy,
-            timestamp: data.timestamp,
-          });
-
           // Add to sound log (keep only last 50 entries)
           setSoundLog((prev) => [
             {
@@ -175,11 +169,6 @@ const SoundboardPage: NextPage = () => {
                     if (isPrivilegedUser && socket && session?.sessionToken) {
                       // Privileged users: Send websocket event
                       socket.emit("play_sound", sound.id);
-                      console.log(
-                        "Sent play_sound request for:",
-                        sound.name,
-                        sound.id
-                      );
                     } else if (isPrivilegedUser && !socket) {
                       console.warn("Socket not connected for privileged user");
                     } else {
@@ -189,7 +178,6 @@ const SoundboardPage: NextPage = () => {
                       audio.play().catch((e) => {
                         console.error("Error playing sound:", e);
                       });
-                      console.log("Playing sound locally:", sound.name);
                     }
                   }}
                 >
