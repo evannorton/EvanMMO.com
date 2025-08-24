@@ -81,10 +81,22 @@ const SoundboardPage: NextPage = () => {
   const [renameValue, setRenameValue] = useState("");
   const [compactMode, setCompactMode] = useState(true);
   const [isMuted, setIsMuted] = useState(false);
+  // Admin/Mod/Contributor default to broadcast mode (false)
+  // Regular users are forced to local-only mode (true)
+  const [playLocalOnly, setPlayLocalOnly] = useState(false);
   const [showDisconnectModal, setShowDisconnectModal] = useState(false);
 
   // Use ref to track current mute state for socket handlers
   const isMutedRef = useRef(false);
+
+  // Set proper default for playLocalOnly once session is available
+  useEffect(() => {
+    if (session !== undefined) {
+      // Admin/Mod/Contributor: false (broadcast mode)
+      // Regular users: true (local-only mode)
+      setPlayLocalOnly(!isCollaborativeUser);
+    }
+  }, [session, isCollaborativeUser]);
 
   // Force compact mode for non-privileged users
   const effectiveCompactMode = isPrivilegedUser ? compactMode : true;
@@ -424,9 +436,9 @@ const SoundboardPage: NextPage = () => {
         </Card>
       )}
 
-      {/* Compact Mode and Mute Toggles - Only show for privileged users */}
+      {/* Compact Mode, Local Play, and Mute Toggles */}
 
-      <div style={{ display: "flex", gap: "2rem" }}>
+      <div style={{ display: "flex", gap: "2rem", marginBottom: "1rem" }}>
         {isPrivilegedUser && (
           <Switch
             label="Compact mode"
@@ -437,22 +449,33 @@ const SoundboardPage: NextPage = () => {
           />
         )}
 
-        <Switch
-          style={{ marginBottom: "1rem", display: "flex", gap: "2rem" }}
-          label="Mute sounds"
-          checked={isMuted}
-          onChange={(event) => {
-            const newMuteState = event.currentTarget.checked;
-            setIsMuted(newMuteState);
-            isMutedRef.current = newMuteState;
-            // Emit mute/unmute event through socket
-            if (socket && session?.sessionToken) {
-              socket.emit(newMuteState ? "mute" : "unmute");
-            }
-          }}
-          size="sm"
-          color="red"
-        />
+        {isCollaborativeUser && session && (
+          <Switch
+            label="Play locally only"
+            checked={playLocalOnly}
+            onChange={(event) => setPlayLocalOnly(event.currentTarget.checked)}
+            size="sm"
+            color="orange"
+          />
+        )}
+
+        {isCollaborativeUser && session && (
+          <Switch
+            label="Mute sounds"
+            checked={isMuted}
+            onChange={(event) => {
+              const newMuteState = event.currentTarget.checked;
+              setIsMuted(newMuteState);
+              isMutedRef.current = newMuteState;
+              // Emit mute/unmute event through socket
+              if (socket && session?.sessionToken) {
+                socket.emit(newMuteState ? "mute" : "unmute");
+              }
+            }}
+            size="sm"
+            color="red"
+          />
+        )}
       </div>
 
       {isLoadingSoundboardSounds && <Loader />}
@@ -502,16 +525,21 @@ const SoundboardPage: NextPage = () => {
                       if (
                         isCollaborativeUser &&
                         socket &&
-                        session?.sessionToken
+                        session?.sessionToken &&
+                        !playLocalOnly
                       ) {
-                        // Privileged users: Send websocket event
+                        // Collaborative users with local-only disabled: Send websocket event
                         socket.emit("play_sound", sound.id);
-                      } else if (isCollaborativeUser && !socket) {
+                      } else if (
+                        isCollaborativeUser &&
+                        !socket &&
+                        !playLocalOnly
+                      ) {
                         console.warn(
                           "Socket not connected for collaborative user"
                         );
                       } else if (!isMutedRef.current) {
-                        // Regular users: Play sound locally using cached audio (unless muted)
+                        // Local playback: Play sound locally using cached audio (unless muted)
                         const audio = getCachedAudio(sound.url);
                         audio.currentTime = 0; // Reset to beginning
                         audio.play().catch((e) => {
