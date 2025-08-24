@@ -5,6 +5,7 @@ import {
   Modal,
   Popover,
   SimpleGrid,
+  Slider,
   Switch,
   Text,
   TextInput,
@@ -85,10 +86,14 @@ const SoundboardPage: NextPage = () => {
   // Regular users are forced to local-only mode (true)
   const [playLocalOnly, setPlayLocalOnly] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [volume, setVolume] = useState(50); // Volume from 0-100
   const [showDisconnectModal, setShowDisconnectModal] = useState(false);
 
   // Use ref to track current mute state for socket handlers
   const isMutedRef = useRef(false);
+
+  // Use ref to track current volume for socket handlers
+  const volumeRef = useRef(volume);
 
   // Set proper default for playLocalOnly once session is available
   useEffect(() => {
@@ -98,6 +103,11 @@ const SoundboardPage: NextPage = () => {
       setPlayLocalOnly(!isCollaborativeUser);
     }
   }, [session, isCollaborativeUser]);
+
+  // Keep volume ref in sync with volume state
+  useEffect(() => {
+    volumeRef.current = volume;
+  }, [volume]);
 
   // Force compact mode for non-privileged users
   const effectiveCompactMode = isPrivilegedUser ? compactMode : true;
@@ -134,10 +144,13 @@ const SoundboardPage: NextPage = () => {
       if (!audio) {
         audio = new Audio(soundUrl);
         audio.preload = "auto";
+        audio.volume = volumeRef.current / 100; // Convert 0-100 to 0-1
         const newAudio = audio;
         setAudioCache((prev) => new Map(prev.set(soundUrl, newAudio)));
         return newAudio;
       }
+      // Update volume for existing cached audio
+      audio.volume = volumeRef.current / 100;
       return audio;
     },
     [audioCache]
@@ -439,7 +452,15 @@ const SoundboardPage: NextPage = () => {
 
       {/* Compact Mode, Local Play, and Mute Toggles */}
 
-      <div style={{ display: "flex", gap: "2rem", marginBottom: "1rem" }}>
+      <div
+        style={{
+          display: "flex",
+          gap: "2rem",
+          marginBottom: "1rem",
+          alignItems: "center",
+          flexWrap: "wrap",
+        }}
+      >
         {isPrivilegedUser && (
           <Switch
             label="Compact mode"
@@ -477,6 +498,29 @@ const SoundboardPage: NextPage = () => {
             color="red"
           />
         )}
+
+        {/* Volume Slider */}
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <Text size="sm" color="gray.0">
+            Volume
+          </Text>
+          <Slider
+            value={volume}
+            onChange={(newVolume) => {
+              setVolume(newVolume);
+              volumeRef.current = newVolume;
+            }}
+            min={0}
+            max={100}
+            step={1}
+            style={{ width: "100px" }}
+            size="sm"
+            color="green"
+          />
+          <Text size="xs" color="gray.5" style={{ minWidth: "30px" }}>
+            {volume}%
+          </Text>
+        </div>
       </div>
 
       {/* Search Bar */}
