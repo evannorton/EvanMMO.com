@@ -109,13 +109,14 @@ model VodPiece {
 }
 
 model SoundboardSound {
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt @default(now())
-    id        String   @id @default(cuid())
-    name      String
-    url       String
-    emoji     String?  @db.VarChar(10)
-    userPins  UserSoundPin[]
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt @default(now())
+    id          String   @id @default(cuid())
+    name        String
+    url         String
+    emoji       String?  @db.VarChar(10)
+    soundVolume Int      @default(100) @db.TinyInt
+    userPins    UserSoundPin[]
 }
 
 model UserSoundPin {

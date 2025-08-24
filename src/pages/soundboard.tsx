@@ -75,9 +75,17 @@ const SoundboardPage: NextPage = () => {
     api.soundboard.toggleSoundPinForUser.useMutation();
   const updateSoundEmojiMutation =
     api.soundboard.updateSoundboardSoundEmoji.useMutation();
+  const updateSoundVolumeMutation =
+    api.soundboard.updateSoundboardSoundVolume.useMutation();
   const renameSoundMutation =
     api.soundboard.renameSoundboardSound.useMutation();
   const [emojiPickerOpen, setEmojiPickerOpen] = useState<string | null>(null);
+  const [volumePopoverOpen, setVolumePopoverOpen] = useState<string | null>(
+    null
+  );
+  const [tempSoundVolumes, setTempSoundVolumes] = useState<
+    Record<string, number>
+  >({});
   const [renamingSoundId, setRenamingSoundId] = useState<string | null>(null);
   const [renameValue, setRenameValue] = useState("");
   const [compactMode, setCompactMode] = useState(true);
@@ -86,7 +94,7 @@ const SoundboardPage: NextPage = () => {
   // Regular users are forced to local-only mode (true)
   const [playLocalOnly, setPlayLocalOnly] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [volume, setVolume] = useState(50); // Volume from 0-100
+  const [volume, setVolume] = useState(100); // Volume from 0-100
   const [showDisconnectModal, setShowDisconnectModal] = useState(false);
 
   // Use ref to track current mute state for socket handlers
@@ -95,19 +103,49 @@ const SoundboardPage: NextPage = () => {
   // Use ref to track current volume for socket handlers
   const volumeRef = useRef(volume);
 
+  // Use ref to track current soundboard sounds for socket handlers
+  const soundboardSoundsRef = useRef(soundboardSounds);
+
+  // Use ref to track if we've set the initial playLocalOnly value
+  const hasSetInitialPlayLocalOnly = useRef(false);
+
   // Set proper default for playLocalOnly once session is available
   useEffect(() => {
-    if (session !== undefined) {
+    if (session !== undefined && !hasSetInitialPlayLocalOnly.current) {
       // Admin/Mod/Contributor: false (broadcast mode)
       // Regular users: true (local-only mode)
       setPlayLocalOnly(!isCollaborativeUser);
+      hasSetInitialPlayLocalOnly.current = true;
     }
   }, [session, isCollaborativeUser]);
 
   // Keep volume ref in sync with volume state
   useEffect(() => {
     volumeRef.current = volume;
-  }, [volume]);
+    // Update all cached audio volumes when global volume changes
+    audioCache.forEach((audio, soundUrl) => {
+      // We need to find the sound's volume for this URL
+      const sound = soundboardSounds?.find((s) => s.url === soundUrl);
+      const soundVolume = sound?.soundVolume ?? 100;
+      audio.volume = (volume / 100) * (soundVolume / 100);
+    });
+  }, [volume, audioCache, soundboardSounds]);
+
+  // Keep soundboard sounds ref in sync with soundboard sounds state
+  useEffect(() => {
+    soundboardSoundsRef.current = soundboardSounds;
+  }, [soundboardSounds]);
+
+  // Update cached audio volumes when soundboard data changes (per-sound volume updates)
+  useEffect(() => {
+    if (soundboardSounds) {
+      audioCache.forEach((audio, soundUrl) => {
+        const sound = soundboardSounds.find((s) => s.url === soundUrl);
+        const soundVolume = sound?.soundVolume ?? 100;
+        audio.volume = (volumeRef.current / 100) * (soundVolume / 100);
+      });
+    }
+  }, [soundboardSounds, audioCache]);
 
   // Force compact mode for non-privileged users
   const effectiveCompactMode = isPrivilegedUser ? compactMode : true;
@@ -139,21 +177,22 @@ const SoundboardPage: NextPage = () => {
 
   // Helper function to get or create cached audio
   const getCachedAudio = useCallback(
-    (soundUrl: string): HTMLAudioElement => {
+    (soundUrl: string, soundVolume: number): HTMLAudioElement => {
       let audio = audioCache.get(soundUrl);
       if (!audio) {
         audio = new Audio(soundUrl);
         audio.preload = "auto";
-        audio.volume = volumeRef.current / 100; // Convert 0-100 to 0-1
+        // Apply both global volume and per-sound volume
+        audio.volume = (volumeRef.current / 100) * (soundVolume / 100);
         const newAudio = audio;
         setAudioCache((prev) => new Map(prev.set(soundUrl, newAudio)));
         return newAudio;
       }
       // Update volume for existing cached audio
-      audio.volume = volumeRef.current / 100;
+      audio.volume = (volumeRef.current / 100) * (soundVolume / 100);
       return audio;
     },
-    [audioCache]
+    [audioCache] // Include audioCache dependency for React Hook rules
   );
 
   useEffect(() => {
@@ -205,7 +244,14 @@ const SoundboardPage: NextPage = () => {
 
           // Play the sound using cached audio (unless muted)
           if (!isMutedRef.current) {
-            const audio = getCachedAudio(data.soundUrl);
+            // Look up the sound volume from our existing data
+            const sound = soundboardSoundsRef.current?.find(
+              (s) => s.id === data.soundId
+            );
+            const audio = getCachedAudio(
+              data.soundUrl,
+              sound?.soundVolume ?? 100
+            );
             audio.currentTime = 0; // Reset to beginning
             audio.play().catch((e) => {
               console.error("Error playing sound from server event:", e);
@@ -410,7 +456,13 @@ const SoundboardPage: NextPage = () => {
                         (s) => s.id === entry.soundId
                       );
                       if (sound && !isMutedRef.current) {
-                        const audio = getCachedAudio(sound.url);
+                        const soundWithVolume = sound as typeof sound & {
+                          soundVolume?: number;
+                        };
+                        const audio = getCachedAudio(
+                          sound.url,
+                          soundWithVolume.soundVolume ?? 100
+                        );
                         audio.currentTime = 0;
                         audio.play().catch((e) => {
                           console.error("Error replaying sound:", e);
@@ -554,13 +606,17 @@ const SoundboardPage: NextPage = () => {
                 ]}
               >
                 {filteredSounds.map((sound) => {
-                  // Check if this sound has isPinned property (authenticated user)
-                  const soundWithPin = sound as typeof sound & {
+                  // Check if this sound has isPinned, emoji, and soundVolume properties
+                  const soundWithExtras = sound as typeof sound & {
                     isPinned?: boolean;
                     emoji?: string | null;
+                    soundVolume?: number;
                   };
-                  const isPinned = soundWithPin.isPinned || false;
-                  const emoji = soundWithPin.emoji;
+                  const isPinned = soundWithExtras.isPinned || false;
+                  const emoji = soundWithExtras.emoji;
+                  const soundVolume = soundWithExtras.soundVolume ?? 100;
+                  const currentDisplayVolume =
+                    tempSoundVolumes[sound.id] ?? soundVolume;
 
                   return (
                     <Card
@@ -603,7 +659,10 @@ const SoundboardPage: NextPage = () => {
                               );
                             } else if (!isMutedRef.current) {
                               // Local playback: Play sound locally using cached audio (unless muted)
-                              const audio = getCachedAudio(sound.url);
+                              const audio = getCachedAudio(
+                                sound.url,
+                                soundVolume
+                              );
                               audio.currentTime = 0; // Reset to beginning
                               audio.play().catch((e) => {
                                 console.error("Error playing sound:", e);
@@ -641,7 +700,7 @@ const SoundboardPage: NextPage = () => {
                         )}
                       </div>
 
-                      {/* Row 2: Pin, Emoji and Rename buttons */}
+                      {/* Row 2: Pin and Rename buttons */}
                       {session?.user && !effectiveCompactMode && (
                         <div
                           style={{
@@ -683,7 +742,87 @@ const SoundboardPage: NextPage = () => {
                               Name
                             </Button>
                           )}
-                          {isPrivilegedUser && (
+                        </div>
+                      )}
+
+                      {/* Row 3: Volume and Emoji buttons */}
+                      {session?.user &&
+                        !effectiveCompactMode &&
+                        isPrivilegedUser && (
+                          <div
+                            style={{
+                              display: "flex",
+                              gap: "8px",
+                              marginTop: "8px",
+                            }}
+                          >
+                            <Popover
+                              opened={volumePopoverOpen === sound.id}
+                              onClose={() => setVolumePopoverOpen(null)}
+                              position="bottom"
+                              withArrow
+                              width={200}
+                            >
+                              <Popover.Target>
+                                <Button
+                                  style={{ flex: 1 }}
+                                  variant="outline"
+                                  onClick={() =>
+                                    setVolumePopoverOpen(
+                                      volumePopoverOpen === sound.id
+                                        ? null
+                                        : sound.id
+                                    )
+                                  }
+                                >
+                                  Volume
+                                </Button>
+                              </Popover.Target>
+                              <Popover.Dropdown>
+                                <div style={{ padding: "8px" }}>
+                                  <Text size="sm" mb="xs" color="gray.0">
+                                    Sound Volume: {currentDisplayVolume}%
+                                  </Text>
+                                  <Slider
+                                    value={currentDisplayVolume}
+                                    onChange={(newVolume) => {
+                                      setTempSoundVolumes((prev) => ({
+                                        ...prev,
+                                        [sound.id]: newVolume,
+                                      }));
+                                    }}
+                                    onChangeEnd={(newVolume) => {
+                                      updateSoundVolumeMutation
+                                        .mutateAsync({
+                                          id: sound.id,
+                                          soundVolume: newVolume,
+                                        })
+                                        .then(() => {
+                                          return refetchSoundboardSounds();
+                                        })
+                                        .then(() => {
+                                          setTempSoundVolumes((prev) => {
+                                            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                                            const { [sound.id]: _, ...rest } =
+                                              prev;
+
+                                            return rest;
+                                          });
+                                        })
+                                        .catch((e: unknown) => {
+                                          throw e;
+                                        });
+                                    }}
+                                    min={0}
+                                    max={100}
+                                    step={1}
+                                    style={{ width: "100%" }}
+                                    size="sm"
+                                    color="blue"
+                                  />
+                                </div>
+                              </Popover.Dropdown>
+                            </Popover>
                             <Popover
                               opened={emojiPickerOpen === sound.id}
                               onClose={() => setEmojiPickerOpen(null)}
@@ -703,7 +842,7 @@ const SoundboardPage: NextPage = () => {
                                     )
                                   }
                                 >
-                                  {emoji || "😀"}
+                                  Emoji
                                 </Button>
                               </Popover.Target>
                               <Popover.Dropdown
@@ -732,9 +871,8 @@ const SoundboardPage: NextPage = () => {
                                 />
                               </Popover.Dropdown>
                             </Popover>
-                          )}
-                        </div>
-                      )}
+                          </div>
+                        )}
                     </Card>
                   );
                 })}

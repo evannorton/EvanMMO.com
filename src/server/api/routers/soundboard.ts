@@ -16,6 +16,7 @@ export const soundboardRouter = createTRPCRouter({
         name: true,
         url: true,
         emoji: true,
+        soundVolume: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -31,6 +32,7 @@ export const soundboardRouter = createTRPCRouter({
         name: true,
         url: true,
         emoji: true,
+        soundVolume: true,
         createdAt: true,
         updatedAt: true,
         userPins: {
@@ -53,6 +55,7 @@ export const soundboardRouter = createTRPCRouter({
       name: sound.name,
       url: sound.url,
       emoji: sound.emoji,
+      soundVolume: sound.soundVolume,
       createdAt: sound.createdAt,
       updatedAt: sound.updatedAt,
       isPinned: sound.userPins.length > 0,
@@ -74,6 +77,7 @@ export const soundboardRouter = createTRPCRouter({
           name: true,
           url: true,
           emoji: true,
+          soundVolume: true,
           createdAt: true,
           updatedAt: true,
         },
@@ -88,6 +92,7 @@ export const soundboardRouter = createTRPCRouter({
         name: z.string(),
         url: z.string(),
         emoji: z.string().max(10).optional(),
+        soundVolume: z.number().int().min(0).max(100).optional().default(100),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -96,6 +101,7 @@ export const soundboardRouter = createTRPCRouter({
           name: input.name,
           url: input.url,
           emoji: input.emoji,
+          soundVolume: input.soundVolume,
         },
       });
     }),
@@ -149,6 +155,23 @@ export const soundboardRouter = createTRPCRouter({
         },
         data: {
           name: input.name,
+        },
+      });
+    }),
+  updateSoundboardSoundVolume: privilegedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        soundVolume: z.number().int().min(0).max(100),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.prisma.soundboardSound.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          soundVolume: input.soundVolume,
         },
       });
     }),

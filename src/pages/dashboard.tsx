@@ -7,6 +7,7 @@ import {
   Pagination,
   Popover,
   SimpleGrid,
+  Slider,
   Tabs,
   Text,
   TextInput,
@@ -91,7 +92,15 @@ const DashboardPage: NextPage = () => {
     api.soundboard.insertSoundboardSound.useMutation();
   const updateSoundEmojiMutation =
     api.soundboard.updateSoundboardSoundEmoji.useMutation();
+  const updateSoundVolumeMutation =
+    api.soundboard.updateSoundboardSoundVolume.useMutation();
   const [emojiPickerOpen, setEmojiPickerOpen] = useState<string | null>(null);
+  const [volumePopoverOpen, setVolumePopoverOpen] = useState<string | null>(
+    null
+  );
+  const [tempSoundVolumes, setTempSoundVolumes] = useState<
+    Record<string, number>
+  >({});
   const [soundboardSoundIDToUpdate, setSoundboardSoundIDToUpdate] = useState<
     string | null
   >(null);
@@ -283,6 +292,10 @@ const DashboardPage: NextPage = () => {
           mb="xl"
         >
           {soundboardSounds.map((sound) => {
+            const soundVolume = (sound as any)?.soundVolume ?? 100;
+            const currentDisplayVolume =
+              tempSoundVolumes[sound.id] ?? soundVolume;
+
             return (
               <Card
                 style={{ overflow: "visible" }}
@@ -300,6 +313,7 @@ const DashboardPage: NextPage = () => {
                     mt="sm"
                     onClick={() => {
                       const audio = new Audio(sound.url);
+                      audio.volume = soundVolume / 100;
                       audio.play().catch((e) => {
                         console.error("Error playing sound:", e);
                       });
@@ -366,6 +380,71 @@ const DashboardPage: NextPage = () => {
                         width={320}
                         height={380}
                       />
+                    </Popover.Dropdown>
+                  </Popover>
+                  <Popover
+                    opened={volumePopoverOpen === sound.id}
+                    onClose={() => setVolumePopoverOpen(null)}
+                    position="bottom"
+                    withArrow
+                    width={200}
+                  >
+                    <Popover.Target>
+                      <Button
+                        mr="sm"
+                        mt="sm"
+                        variant="outline"
+                        onClick={() =>
+                          setVolumePopoverOpen(
+                            volumePopoverOpen === sound.id ? null : sound.id
+                          )
+                        }
+                        style={{ minWidth: "auto", padding: "8px 12px" }}
+                      >
+                        🔊
+                      </Button>
+                    </Popover.Target>
+                    <Popover.Dropdown>
+                      <div style={{ padding: "8px" }}>
+                        <Text size="sm" mb="xs" color="gray.0">
+                          Sound Volume: {currentDisplayVolume}%
+                        </Text>
+                        <Slider
+                          value={currentDisplayVolume}
+                          onChange={(newVolume) => {
+                            setTempSoundVolumes((prev) => ({
+                              ...prev,
+                              [sound.id]: newVolume,
+                            }));
+                          }}
+                          onChangeEnd={(newVolume) => {
+                            updateSoundVolumeMutation
+                              .mutateAsync({
+                                id: sound.id,
+                                soundVolume: newVolume,
+                              })
+                              .then(() => {
+                                return refetchSoundboardSounds();
+                              })
+                              .then(() => {
+                                setTempSoundVolumes((prev) => {
+                                  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                                  const { [sound.id]: _, ...rest } = prev;
+                                  return rest;
+                                });
+                              })
+                              .catch((e: unknown) => {
+                                throw e;
+                              });
+                          }}
+                          min={0}
+                          max={100}
+                          step={1}
+                          style={{ width: "100%" }}
+                          size="sm"
+                          color="blue"
+                        />
+                      </div>
                     </Popover.Dropdown>
                   </Popover>
                   <Button
