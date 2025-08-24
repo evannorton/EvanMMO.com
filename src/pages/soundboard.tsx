@@ -84,6 +84,7 @@ const SoundboardPage: NextPage = () => {
   // Admin/Mod/Contributor default to broadcast mode (false)
   // Regular users are forced to local-only mode (true)
   const [playLocalOnly, setPlayLocalOnly] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const [showDisconnectModal, setShowDisconnectModal] = useState(false);
 
   // Use ref to track current mute state for socket handlers
@@ -478,198 +479,238 @@ const SoundboardPage: NextPage = () => {
         )}
       </div>
 
+      {/* Search Bar */}
+      <TextInput
+        placeholder="Search sounds..."
+        value={searchTerm}
+        onChange={(event) => setSearchTerm(event.currentTarget.value)}
+        size="md"
+        mb="md"
+        style={{ maxWidth: "400px" }}
+      />
+
       {isLoadingSoundboardSounds && <Loader />}
       {soundboardSounds && (
-        <SimpleGrid
-          cols={5}
-          spacing="sm"
-          breakpoints={[
-            { maxWidth: "lg", cols: 4 },
-            { maxWidth: "md", cols: 3 },
-            { maxWidth: "sm", cols: 2 },
-            { maxWidth: "xs", cols: 1 },
-          ]}
-        >
-          {soundboardSounds.map((sound) => {
-            // Check if this sound has isPinned property (authenticated user)
-            const soundWithPin = sound as typeof sound & {
-              isPinned?: boolean;
-              emoji?: string | null;
-            };
-            const isPinned = soundWithPin.isPinned || false;
-            const emoji = soundWithPin.emoji;
+        <>
+          {(() => {
+            // Filter sounds based on search term
+            const filteredSounds = soundboardSounds.filter((sound) =>
+              sound.name.toLowerCase().includes(searchTerm.toLowerCase())
+            );
 
             return (
-              <Card
-                style={{ overflow: "visible" }}
-                sx={{ flexDirection: "column", borderRadius: "0.5rem" }}
-                display="flex"
-                key={sound.id}
+              <SimpleGrid
+                cols={5}
+                spacing="sm"
+                breakpoints={[
+                  { maxWidth: "lg", cols: 4 },
+                  { maxWidth: "md", cols: 3 },
+                  { maxWidth: "sm", cols: 2 },
+                  { maxWidth: "xs", cols: 1 },
+                ]}
               >
-                <Text size="lg" mb="sm">
-                  {isPinned && "📌 "}
-                  {emoji && `${emoji} `}
-                  {sound.name}
-                </Text>
-                {/* Row 1: Play button (+ Pin in compact mode) */}
-                <div
-                  style={{
-                    display: "flex",
-                    gap: "8px",
-                  }}
-                >
-                  <Button
-                    style={{ flex: 1 }}
-                    size="md"
-                    onClick={() => {
-                      if (
-                        isCollaborativeUser &&
-                        socket &&
-                        session?.sessionToken &&
-                        !playLocalOnly
-                      ) {
-                        // Collaborative users with local-only disabled: Send websocket event
-                        socket.emit("play_sound", sound.id);
-                      } else if (
-                        isCollaborativeUser &&
-                        !socket &&
-                        !playLocalOnly
-                      ) {
-                        console.warn(
-                          "Socket not connected for collaborative user"
-                        );
-                      } else if (!isMutedRef.current) {
-                        // Local playback: Play sound locally using cached audio (unless muted)
-                        const audio = getCachedAudio(sound.url);
-                        audio.currentTime = 0; // Reset to beginning
-                        audio.play().catch((e) => {
-                          console.error("Error playing sound:", e);
-                        });
-                      }
-                    }}
-                  >
-                    Play
-                  </Button>
+                {filteredSounds.map((sound) => {
+                  // Check if this sound has isPinned property (authenticated user)
+                  const soundWithPin = sound as typeof sound & {
+                    isPinned?: boolean;
+                    emoji?: string | null;
+                  };
+                  const isPinned = soundWithPin.isPinned || false;
+                  const emoji = soundWithPin.emoji;
 
-                  {/* Pin button in compact mode for all authenticated users */}
-                  {session?.user && effectiveCompactMode && (
-                    <Button
-                      style={{ flex: 1 }}
-                      variant={isPinned ? "filled" : "outline"}
-                      size="md"
-                      onClick={() => {
-                        toggleSoundPinMutation
-                          .mutateAsync({
-                            soundId: sound.id,
-                            isPinned: isPinned,
-                          })
-                          .then(() => {
-                            refetchSoundboardSounds().catch((e) => {
-                              throw e;
-                            });
-                          })
-                          .catch((e) => {
-                            throw e;
-                          });
-                      }}
+                  return (
+                    <Card
+                      style={{ overflow: "visible" }}
+                      sx={{ flexDirection: "column", borderRadius: "0.5rem" }}
+                      display="flex"
+                      key={sound.id}
                     >
-                      {isPinned ? "Unpin" : "Pin"}
-                    </Button>
-                  )}
-                </div>
-
-                {/* Row 2: Pin, Emoji and Rename buttons */}
-                {session?.user && !effectiveCompactMode && (
-                  <div
-                    style={{ display: "flex", gap: "8px", marginTop: "8px" }}
-                  >
-                    <Button
-                      style={{ flex: 1 }}
-                      variant={isPinned ? "filled" : "outline"}
-                      onClick={() => {
-                        toggleSoundPinMutation
-                          .mutateAsync({
-                            soundId: sound.id,
-                            isPinned: isPinned,
-                          })
-                          .then(() => {
-                            refetchSoundboardSounds().catch((e) => {
-                              throw e;
-                            });
-                          })
-                          .catch((e) => {
-                            throw e;
-                          });
-                      }}
-                    >
-                      {isPinned ? "Unpin" : "Pin"}
-                    </Button>
-                    {isPrivilegedUser && (
-                      <Button
-                        style={{ flex: 1 }}
-                        variant="outline"
-                        onClick={() => {
-                          setRenamingSoundId(sound.id);
-                          setRenameValue(sound.name);
+                      <Text size="lg" mb="sm">
+                        {isPinned && "📌 "}
+                        {emoji && `${emoji} `}
+                        {sound.name}
+                      </Text>
+                      {/* Row 1: Play button (+ Pin in compact mode) */}
+                      <div
+                        style={{
+                          display: "flex",
+                          gap: "8px",
                         }}
                       >
-                        Name
-                      </Button>
-                    )}
-                    {isPrivilegedUser && (
-                      <Popover
-                        opened={emojiPickerOpen === sound.id}
-                        onClose={() => setEmojiPickerOpen(null)}
-                        position="bottom"
-                        withArrow
-                        width={350}
-                      >
-                        <Popover.Target>
+                        <Button
+                          style={{ flex: 1 }}
+                          size="md"
+                          onClick={() => {
+                            if (
+                              isCollaborativeUser &&
+                              socket &&
+                              session?.sessionToken &&
+                              !playLocalOnly
+                            ) {
+                              // Collaborative users with local-only disabled: Send websocket event
+                              socket.emit("play_sound", sound.id);
+                            } else if (
+                              isCollaborativeUser &&
+                              !socket &&
+                              !playLocalOnly
+                            ) {
+                              console.warn(
+                                "Socket not connected for collaborative user"
+                              );
+                            } else if (!isMutedRef.current) {
+                              // Local playback: Play sound locally using cached audio (unless muted)
+                              const audio = getCachedAudio(sound.url);
+                              audio.currentTime = 0; // Reset to beginning
+                              audio.play().catch((e) => {
+                                console.error("Error playing sound:", e);
+                              });
+                            }
+                          }}
+                        >
+                          Play
+                        </Button>
+
+                        {/* Pin button in compact mode for all authenticated users */}
+                        {session?.user && effectiveCompactMode && (
                           <Button
                             style={{ flex: 1 }}
-                            variant="outline"
-                            onClick={() =>
-                              setEmojiPickerOpen(
-                                emojiPickerOpen === sound.id ? null : sound.id
-                              )
-                            }
-                          >
-                            {emoji || "😀"}
-                          </Button>
-                        </Popover.Target>
-                        <Popover.Dropdown
-                          style={{ height: "400px", overflow: "hidden" }}
-                        >
-                          <EmojiPicker
-                            theme={Theme.DARK}
-                            onEmojiClick={(emojiData: EmojiClickData) => {
-                              updateSoundEmojiMutation
+                            variant={isPinned ? "filled" : "outline"}
+                            size="md"
+                            onClick={() => {
+                              toggleSoundPinMutation
                                 .mutateAsync({
-                                  id: sound.id,
-                                  emoji: emojiData.emoji,
+                                  soundId: sound.id,
+                                  isPinned: isPinned,
                                 })
                                 .then(() => {
                                   refetchSoundboardSounds().catch((e) => {
                                     throw e;
                                   });
-                                  setEmojiPickerOpen(null);
                                 })
                                 .catch((e) => {
                                   throw e;
                                 });
                             }}
-                            width={320}
-                            height={380}
-                          />
-                        </Popover.Dropdown>
-                      </Popover>
-                    )}
-                  </div>
-                )}
-              </Card>
+                          >
+                            {isPinned ? "Unpin" : "Pin"}
+                          </Button>
+                        )}
+                      </div>
+
+                      {/* Row 2: Pin, Emoji and Rename buttons */}
+                      {session?.user && !effectiveCompactMode && (
+                        <div
+                          style={{
+                            display: "flex",
+                            gap: "8px",
+                            marginTop: "8px",
+                          }}
+                        >
+                          <Button
+                            style={{ flex: 1 }}
+                            variant={isPinned ? "filled" : "outline"}
+                            onClick={() => {
+                              toggleSoundPinMutation
+                                .mutateAsync({
+                                  soundId: sound.id,
+                                  isPinned: isPinned,
+                                })
+                                .then(() => {
+                                  refetchSoundboardSounds().catch((e) => {
+                                    throw e;
+                                  });
+                                })
+                                .catch((e) => {
+                                  throw e;
+                                });
+                            }}
+                          >
+                            {isPinned ? "Unpin" : "Pin"}
+                          </Button>
+                          {isPrivilegedUser && (
+                            <Button
+                              style={{ flex: 1 }}
+                              variant="outline"
+                              onClick={() => {
+                                setRenamingSoundId(sound.id);
+                                setRenameValue(sound.name);
+                              }}
+                            >
+                              Name
+                            </Button>
+                          )}
+                          {isPrivilegedUser && (
+                            <Popover
+                              opened={emojiPickerOpen === sound.id}
+                              onClose={() => setEmojiPickerOpen(null)}
+                              position="bottom"
+                              withArrow
+                              width={350}
+                            >
+                              <Popover.Target>
+                                <Button
+                                  style={{ flex: 1 }}
+                                  variant="outline"
+                                  onClick={() =>
+                                    setEmojiPickerOpen(
+                                      emojiPickerOpen === sound.id
+                                        ? null
+                                        : sound.id
+                                    )
+                                  }
+                                >
+                                  {emoji || "😀"}
+                                </Button>
+                              </Popover.Target>
+                              <Popover.Dropdown
+                                style={{ height: "400px", overflow: "hidden" }}
+                              >
+                                <EmojiPicker
+                                  theme={Theme.DARK}
+                                  onEmojiClick={(emojiData: EmojiClickData) => {
+                                    updateSoundEmojiMutation
+                                      .mutateAsync({
+                                        id: sound.id,
+                                        emoji: emojiData.emoji,
+                                      })
+                                      .then(() => {
+                                        refetchSoundboardSounds().catch((e) => {
+                                          throw e;
+                                        });
+                                        setEmojiPickerOpen(null);
+                                      })
+                                      .catch((e) => {
+                                        throw e;
+                                      });
+                                  }}
+                                  width={320}
+                                  height={380}
+                                />
+                              </Popover.Dropdown>
+                            </Popover>
+                          )}
+                        </div>
+                      )}
+                    </Card>
+                  );
+                })}
+              </SimpleGrid>
             );
-          })}
-        </SimpleGrid>
+          })()}
+
+          {/* Show message when no sounds match search */}
+          {soundboardSounds.filter((sound) =>
+            sound.name.toLowerCase().includes(searchTerm.toLowerCase())
+          ).length === 0 &&
+            searchTerm && (
+              <Text
+                color="gray.5"
+                style={{ textAlign: "center", marginTop: "2rem" }}
+              >
+                {`No sounds found matching "${searchTerm}"`}
+              </Text>
+            )}
+        </>
       )}
       {soundboardSounds?.length === 0 && (
         <Text color="gray.5">No sounds available yet.</Text>
