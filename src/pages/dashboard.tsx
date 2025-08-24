@@ -292,7 +292,7 @@ const DashboardPage: NextPage = () => {
           mb="xl"
         >
           {soundboardSounds.map((sound) => {
-            const soundVolume = (sound as any)?.soundVolume ?? 100;
+            const soundVolume = sound?.soundVolume ?? 100;
             const currentDisplayVolume =
               tempSoundVolumes[sound.id] ?? soundVolume;
 
