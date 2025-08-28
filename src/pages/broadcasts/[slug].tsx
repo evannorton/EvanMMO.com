@@ -14,6 +14,20 @@ const BroadcastPage: NextPage = () => {
   const { data: vod } = api.vod.getVOD.useQuery({
     id: router.query.slug,
   });
+
+  const parseTimestamp = (timeParam: string): number => {
+    const match = timeParam.match(/(\d+)m(\d+)s/);
+    if (match) {
+      const minutes = parseInt(match[1] ?? "0", 10);
+      const seconds = parseInt(match[2] ?? "0", 10);
+      return minutes * 60 + seconds;
+    }
+    return 0;
+  };
+
+  const initialTimestamp =
+    typeof router.query.t === "string" ? parseTimestamp(router.query.t) : 0;
+
   return (
     <>
       <Head title="Broadcast" description="Watch EvanMMO's broadcast" />
@@ -25,7 +39,10 @@ const BroadcastPage: NextPage = () => {
         <Text>Invalid broadcast link.</Text>
       )}
       {typeof router.query.slug === "string" && (
-        <Broadcast vodID={router.query.slug} />
+        <Broadcast
+          vodID={router.query.slug}
+          initialTimestamp={initialTimestamp}
+        />
       )}
     </>
   );

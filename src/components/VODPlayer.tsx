@@ -9,16 +9,44 @@ interface Props {
     readonly mp4URL: string;
     readonly jsonURL: string | null;
   }[];
+  readonly onTimeUpdate?: (currentTime: number) => void;
+  readonly initialTimestamp?: number;
 }
 
-const VODPlayer: React.FC<Props> = ({ pieces, vodID }) => {
+const VODPlayer: React.FC<Props> = ({
+  pieces,
+  vodID,
+  onTimeUpdate,
+  initialTimestamp = 0,
+}) => {
   const [pieceID, setPieceID] = useState<string | null>(pieces[0]?.id ?? null);
   const piece = pieces.find((piece) => piece.id === pieceID);
   const [currentTime, setCurrentTime] = useState<number>(0);
+  const [videoElement, setVideoElement] = useState<HTMLVideoElement | null>(
+    null
+  );
+
   useEffect(() => {
     setPieceID(pieces[0]?.id ?? null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vodID]);
+
+  useEffect(() => {
+    if (videoElement && initialTimestamp > 0) {
+      videoElement.currentTime = initialTimestamp;
+      setCurrentTime(initialTimestamp);
+    }
+  }, [videoElement, initialTimestamp]);
+
+  const handleTimeUpdate = (event: Event): void => {
+    const videoElement = event.target as HTMLVideoElement;
+    const newCurrentTime = videoElement.currentTime;
+    setCurrentTime(newCurrentTime);
+    if (typeof onTimeUpdate === "function") {
+      onTimeUpdate(newCurrentTime);
+    }
+  };
+
   return (
     <>
       <Flex pos="relative" wrap="wrap">
@@ -34,6 +62,7 @@ const VODPlayer: React.FC<Props> = ({ pieces, vodID }) => {
             }}
           >
             <video
+              ref={setVideoElement}
               style={{ display: "block", aspectRatio: 16 / 9, width: "100%" }}
               width="100%"
               src={piece?.mp4URL}
@@ -46,9 +75,7 @@ const VODPlayer: React.FC<Props> = ({ pieces, vodID }) => {
                   setPieceID(nextPiece.id);
                 }
               }}
-              onTimeUpdate={({ target }) => {
-                setCurrentTime((target as HTMLVideoElement).currentTime);
-              }}
+              onTimeUpdate={handleTimeUpdate}
             />
           </Box>
         </MediaQuery>
