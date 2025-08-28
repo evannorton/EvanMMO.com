@@ -1,6 +1,7 @@
 import { Box, Button, Flex, MediaQuery, Text } from "@mantine/core";
 import { useEffect, useState } from "react";
 import VODChat from "./VODChat";
+import type { SyntheticEvent } from "react";
 
 interface Props {
   readonly vodID: string;
@@ -38,7 +39,9 @@ const VODPlayer: React.FC<Props> = ({
     }
   }, [videoElement, initialTimestamp]);
 
-  const handleTimeUpdate = (event: Event): void => {
+  const handleTimeUpdate = (
+    event: SyntheticEvent<HTMLVideoElement, Event>
+  ): void => {
     const videoElement = event.target as HTMLVideoElement;
     const newCurrentTime = videoElement.currentTime;
     setCurrentTime(newCurrentTime);
