@@ -16,11 +16,13 @@ const BroadcastPage: NextPage = () => {
   });
 
   const parseTimestamp = (timeParam: string): number => {
-    const match = timeParam.match(/(\d+)m(\d+)s/);
+    // Support formats like: 1h5m30s, 1h30s, 5m30s, 2h, 1h5m, etc.
+    const match = timeParam.match(/(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?/);
     if (match) {
-      const minutes = parseInt(match[1] ?? "0", 10);
-      const seconds = parseInt(match[2] ?? "0", 10);
-      return minutes * 60 + seconds;
+      const hours = parseInt(match[1] ?? "0", 10);
+      const minutes = parseInt(match[2] ?? "0", 10);
+      const seconds = parseInt(match[3] ?? "0", 10);
+      return hours * 3600 + minutes * 60 + seconds;
     }
     return 0;
   };

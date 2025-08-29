@@ -33,9 +33,27 @@ const Broadcast: React.FC<Props> = ({ vodID, initialTimestamp = 0 }) => {
   const generateShareLink = (): string => {
     const baseUrl = `${window.location.origin}/broadcasts/${vodID}`;
     if (includeTimestamp && currentTime > 0) {
-      const minutes = Math.floor(currentTime / 60);
+      const hours = Math.floor(currentTime / 3600);
+      const minutes = Math.floor((currentTime % 3600) / 60);
       const seconds = Math.floor(currentTime % 60);
-      return `${baseUrl}?t=${minutes}m${seconds}s`;
+
+      let timestamp = "";
+      if (hours > 0) {
+        timestamp += `${hours}h`;
+      }
+      if (minutes > 0) {
+        timestamp += `${minutes}m`;
+      }
+      if (seconds > 0) {
+        timestamp += `${seconds}s`;
+      }
+
+      // If timestamp is empty (shouldn't happen since currentTime > 0, but just in case)
+      if (timestamp === "") {
+        timestamp = "0s";
+      }
+
+      return `${baseUrl}?t=${timestamp}`;
     }
     return baseUrl;
   };
