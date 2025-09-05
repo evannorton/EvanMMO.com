@@ -1,5 +1,5 @@
+import { Anchor, Button, Flex, Title } from "@mantine/core";
 import { type NextPage } from "next";
-import { Title } from "@mantine/core";
 import { api } from "../../utils/api";
 import { getFormattedDateString } from "../../utils/date";
 import Broadcast from "../../components/Broadcast";
@@ -17,10 +17,28 @@ const RandomBroadcastPage: NextPage = () => {
         title="Random Broadcast"
         description="Watch a random EvanMMO broadcast"
       />
-      <Title order={1} color="gray.0" mb="md">
-        {vod && `Random Broadcast (${getFormattedDateString(vod.streamDate)})`}
-        {!vod && "Random Broadcast"}
-      </Title>
+      <Flex justify="space-between" align="center" mb="md">
+        <Title order={1} color="gray.0">
+          {vod &&
+            `Random Broadcast (${getFormattedDateString(vod.streamDate)})`}
+          {!vod && "Random Broadcast"}
+        </Title>
+        <Anchor href="/broadcasts/random" style={{ textDecoration: "none" }}>
+          <Button
+            variant="outline"
+            size="md"
+            sx={{
+              fontWeight: "bold",
+              "&:hover": {
+                transform: "translateY(-1px)",
+              },
+              transition: "transform 0.1s ease",
+            }}
+          >
+            🎲 Random Broadcast
+          </Button>
+        </Anchor>
+      </Flex>
       {vod && <Broadcast vodID={vod.id} />}
     </>
   );

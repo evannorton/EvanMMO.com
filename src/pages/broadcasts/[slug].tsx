@@ -1,5 +1,5 @@
+import { Anchor, Button, Flex, Text, Title } from "@mantine/core";
 import { type NextPage } from "next";
-import { Text, Title } from "@mantine/core";
 import { api } from "../../utils/api";
 import { getFormattedDateString } from "../../utils/date";
 import { useRouter } from "next/router";
@@ -33,10 +33,27 @@ const BroadcastPage: NextPage = () => {
   return (
     <>
       <Head title="Broadcast" description="Watch EvanMMO's broadcast" />
-      <Title order={1} color="gray.0" mb="md">
-        {vod && `Broadcast ${getFormattedDateString(vod.streamDate)}`}
-        {!vod && "Broadcast"}
-      </Title>
+      <Flex justify="space-between" align="center" mb="md">
+        <Title order={1} color="gray.0">
+          {vod && `Broadcast ${getFormattedDateString(vod.streamDate)}`}
+          {!vod && "Broadcast"}
+        </Title>
+        <Anchor href="/broadcasts/random" style={{ textDecoration: "none" }}>
+          <Button
+            variant="outline"
+            size="md"
+            sx={{
+              fontWeight: "bold",
+              "&:hover": {
+                transform: "translateY(-1px)",
+              },
+              transition: "transform 0.1s ease",
+            }}
+          >
+            🎲 Random Broadcast
+          </Button>
+        </Anchor>
+      </Flex>
       {typeof router.query.slug !== "string" && (
         <Text>Invalid broadcast link.</Text>
       )}
