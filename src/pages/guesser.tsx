@@ -269,7 +269,7 @@ const GuesserPage: NextPage = () => {
         <Title order={1}>Livestream Guesser</Title>
         <Stack align="center" justify="center" style={{ minHeight: "50vh" }}>
           <Loader size="xl" />
-          <Text>Loading random broadcast...</Text>
+          <Text>Loading random livestream...</Text>
         </Stack>
         {/* Hidden video and canvas for screenshot generation */}
         <video
