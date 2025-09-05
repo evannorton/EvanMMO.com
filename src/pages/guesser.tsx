@@ -41,7 +41,7 @@ const GuesserPage: NextPage = () => {
     screenshots: [],
     actualDate: null,
     guessedMonth: today.getMonth() + 1, // JavaScript months are 0-based
-    guessedDay: today.getDate(),
+    guessedDay: 1,
     guessedYear: today.getFullYear(),
     daysDifference: null,
   });
@@ -186,7 +186,7 @@ const GuesserPage: NextPage = () => {
       screenshots: [],
       actualDate: null,
       guessedMonth: today.getMonth() + 1,
-      guessedDay: today.getDate(),
+      guessedDay: 1,
       guessedYear: today.getFullYear(),
       daysDifference: null,
     });
@@ -234,7 +234,7 @@ const GuesserPage: NextPage = () => {
       screenshots: [],
       actualDate: null,
       guessedMonth: today.getMonth() + 1,
-      guessedDay: today.getDate(),
+      guessedDay: 1,
       guessedYear: today.getFullYear(),
       daysDifference: null,
     });
