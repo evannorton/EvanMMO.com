@@ -86,6 +86,31 @@ export const vodRouter = createTRPCRouter({
     });
   }),
   getVODsCount: publicProcedure.query(({ ctx }) => ctx.prisma.vod.count()),
+  getRandomVODForGuesser: publicProcedure.query(async ({ ctx }) => {
+    const totalVODs = await ctx.prisma.vod.count();
+    if (totalVODs === 0) {
+      return null;
+    }
+
+    const randomSkip = Math.floor(Math.random() * totalVODs);
+
+    return ctx.prisma.vod.findFirst({
+      select: {
+        id: true,
+        streamDate: true,
+        pieces: {
+          select: {
+            mp4URL: true,
+          },
+          orderBy: {
+            createdAt: Prisma.SortOrder.asc,
+          },
+          take: 1, // Only get the first piece for screenshot generation
+        },
+      },
+      skip: randomSkip,
+    });
+  }),
   insertVOD: adminProcedure
     .input(
       z.object({
