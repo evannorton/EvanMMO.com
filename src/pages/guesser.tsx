@@ -402,8 +402,8 @@ const GuesserPage: NextPage = () => {
                   alt={`Screenshot ${index + 1}`}
                   style={{
                     width: "100%",
-                    aspectRatio: "16/9",
                     objectFit: "cover",
+                    clipPath: "inset(0 0 5% 0)", // Crop bottom 5%
                   }}
                 />
               ))}
