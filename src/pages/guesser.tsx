@@ -263,10 +263,10 @@ const GuesserPage: NextPage = () => {
     return (
       <>
         <Head
-          title="VOD Guesser"
-          description="Guess the date of VOD screenshots!"
+          title="Livestream Guesser"
+          description="Guess the date of EvanMMO livestream screenshots!"
         />
-        <Title order={1}>EvanMMO Guesser</Title>
+        <Title order={1}>Livestream Guesser</Title>
         <Stack align="center" justify="center" style={{ minHeight: "50vh" }}>
           <Loader size="xl" />
           <Text>Loading random broadcast...</Text>
@@ -310,7 +310,7 @@ const GuesserPage: NextPage = () => {
         title="VOD Guesser"
         description="Guess the date of VOD screenshots!"
       />
-      <Title order={1}>EvanMMO Guesser</Title>
+      <Title order={1}>Livestream Guesser</Title>
       <Stack>
         <Group>
           <Group>
