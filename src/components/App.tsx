@@ -189,7 +189,13 @@ const App: React.FC<Props> = ({ children }) => {
           </Header>
         }
         footer={
-          <Footer fixed={false} height="auto" p="md">
+          <Footer
+            fixed={false}
+            height="auto"
+            p="md"
+            display="flex"
+            style={{ flexDirection: "column", alignItems: "center" }}
+          >
             <Box
               sx={{ alignItems: "center", justifyContent: "center" }}
               display="flex"
@@ -216,6 +222,22 @@ const App: React.FC<Props> = ({ children }) => {
                 </Anchor>
               ))}
             </Box>
+            <Anchor
+              href="/fun"
+              color="gray.4"
+              size={16}
+              weight="bold"
+              underline={false}
+              mt="xs"
+              sx={{
+                textAlign: "center",
+                "&:hover": {
+                  opacity: "0.75",
+                },
+              }}
+            >
+              Fun Stuff
+            </Anchor>
             <Link
               href="https://www.paypal.com/donate/?hosted_button_id=4GETT9FKF4WWY"
               target="_blank"
