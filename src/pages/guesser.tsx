@@ -418,7 +418,9 @@ const GuesserPage: NextPage = () => {
       {/* Results Modal */}
       <Modal
         opened={gameState.status === "results"}
-        onClose={() => setGameState((prev) => ({ ...prev, status: "playing" }))}
+        onClose={() => {
+          void playNext();
+        }}
         title="Results"
         centered
       >
