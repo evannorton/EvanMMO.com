@@ -455,7 +455,8 @@ const GuesserPage: NextPage = () => {
             size="lg"
             weight={700}
           >
-            {gameState.daysDifference} days off
+            {gameState.daysDifference}{" "}
+            {gameState.daysDifference === 1 ? "day" : "days"} off
           </Text>
           <Button
             onClick={() => {
