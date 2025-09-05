@@ -1,4 +1,5 @@
 import {
+  Anchor,
   Button,
   Group,
   Image,
@@ -437,7 +438,12 @@ const GuesserPage: NextPage = () => {
               month: "long",
               day: "numeric",
               year: "numeric",
-            })}
+            })}{" "}
+            {randomVOD && (
+              <Anchor href={`/broadcasts/${randomVOD.id}`} target="_blank">
+                (link)
+              </Anchor>
+            )}
           </Text>
           <Text
             color={getDaysDifferenceColor(gameState.daysDifference || 0)}
