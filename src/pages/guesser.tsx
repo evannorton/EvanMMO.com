@@ -214,7 +214,7 @@ const GuesserPage: NextPage = () => {
     const timeDifference = Math.abs(
       gameState.actualDate.getTime() - guessedDate.getTime()
     );
-    const daysDifference = Math.ceil(timeDifference / (1000 * 3600 * 24));
+    const daysDifference = Math.round(timeDifference / (1000 * 3600 * 24));
 
     setGameState((prev) => ({
       ...prev,
@@ -317,7 +317,10 @@ const GuesserPage: NextPage = () => {
           <Group>
             <Text>Round {roundCount + 1}</Text>
             {getAverageDaysOff() !== null && (
-              <Text color="dimmed">Avg: {getAverageDaysOff()} days off</Text>
+              <Text color="dimmed">
+                Avg: {getAverageDaysOff()}{" "}
+                {getAverageDaysOff() === 1 ? "day" : "days"} off
+              </Text>
             )}
             <Button onClick={openSettingsModal} variant="outline">
               New Game
