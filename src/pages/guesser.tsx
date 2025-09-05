@@ -52,6 +52,7 @@ const GuesserPage: NextPage = () => {
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [settingsImageCount, setSettingsImageCount] =
     useState(DEFAULT_IMAGE_COUNT);
+  const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -407,7 +408,9 @@ const GuesserPage: NextPage = () => {
                     width: "100%",
                     objectFit: "cover",
                     clipPath: "inset(0 0 5% 0)", // Crop bottom 5%
+                    cursor: "pointer",
                   }}
+                  onClick={() => setFullscreenImage(screenshot.dataURL)}
                 />
               ))}
             </SimpleGrid>
@@ -504,6 +507,58 @@ const GuesserPage: NextPage = () => {
             </Button>
           </Group>
         </Stack>
+      </Modal>
+
+      {/* Fullscreen Image Modal */}
+      <Modal
+        opened={fullscreenImage !== null}
+        onClose={() => setFullscreenImage(null)}
+        fullScreen
+        padding={0}
+        withCloseButton={false}
+        styles={{
+          content: {
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            overflow: "hidden",
+            backgroundColor: "rgba(0, 0, 0, .75)",
+          },
+          body: {
+            padding: 0,
+            overflow: "hidden",
+          },
+        }}
+      >
+        {fullscreenImage && (
+          <div
+            style={{
+              width: "100vw",
+              height: "100vh",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            onClick={() => setFullscreenImage(null)}
+          >
+            <Image
+              src={fullscreenImage}
+              alt="Fullscreen screenshot"
+              style={{
+                maxWidth: "80vw",
+                maxHeight: "80vh",
+                width: "auto",
+                height: "auto",
+                objectFit: "contain",
+                clipPath: "inset(0 0 5% 0)", // Crop bottom 5%
+              }}
+              onClick={(e) => {
+                e.stopPropagation();
+                setFullscreenImage(null);
+              }}
+            />
+          </div>
+        )}
       </Modal>
 
       {/* Hidden video and canvas for screenshot generation */}
