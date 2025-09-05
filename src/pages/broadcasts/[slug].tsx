@@ -44,10 +44,6 @@ const BroadcastPage: NextPage = () => {
             size="md"
             sx={{
               fontWeight: "bold",
-              "&:hover": {
-                transform: "translateY(-1px)",
-              },
-              transition: "transform 0.1s ease",
             }}
           >
             🎲 Random Broadcast

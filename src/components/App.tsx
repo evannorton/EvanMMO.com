@@ -8,11 +8,13 @@ import {
   Header,
   Image,
   MediaQuery,
+  Text,
 } from "@mantine/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { UserRole } from "@prisma/client";
 import {
   faDiscord,
+  faInstagram,
   faTwitch,
   faTwitter,
   faYoutube,
@@ -66,6 +68,10 @@ const App: React.FC<Props> = ({ children }) => {
     {
       icon: faTwitter,
       href: "https://twitter.com/evan_mmo",
+    },
+    {
+      icon: faInstagram,
+      href: "https://instagram.com/evan_mmo",
     },
     {
       icon: faDiscord,
@@ -196,68 +202,203 @@ const App: React.FC<Props> = ({ children }) => {
             display="flex"
             style={{ flexDirection: "column", alignItems: "center" }}
           >
-            <Box
-              sx={{ alignItems: "center", justifyContent: "center" }}
-              display="flex"
-            >
-              {footerSocialMediaLinks.map((link, key) => (
-                <Anchor
-                  display="block"
-                  sx={{
-                    height: "100%",
-                    "&:hover": {
-                      opacity: "0.75",
-                    },
-                  }}
-                  target="_blank"
-                  color="gray.4"
-                  ml={key > 0 ? "lg" : undefined}
-                  href={link.href}
-                  key={link.href}
-                >
-                  <FontAwesomeIcon
-                    style={{ display: "block", height: "2em" }}
-                    icon={link.icon}
-                  />
-                </Anchor>
-              ))}
-            </Box>
-            <Anchor
-              href="/fun"
-              color="gray.4"
-              size={16}
-              weight="bold"
-              underline={false}
-              mt="xs"
+            <Flex
               sx={{
-                textAlign: "center",
-                "&:hover": {
-                  opacity: "0.75",
+                width: "100%",
+                "@media (max-width: 1080px)": {
+                  flexDirection: "column",
+                  gap: "lg",
                 },
               }}
             >
-              Fun Stuff
-            </Anchor>
-            <Link
-              href="https://www.paypal.com/donate/?hosted_button_id=4GETT9FKF4WWY"
-              target="_blank"
-              style={{
-                width: "10em",
-                display: "block",
-                margin: "0 auto",
-                marginTop: ".75em",
-              }}
-            >
-              <Image
+              {/* Misc Fun Section - 33.33% width */}
+              <Box
                 sx={{
-                  "&:hover": {
-                    opacity: "0.75",
+                  flex: "1",
+                  textAlign: "center",
+                  "@media (max-width: 1080px)": {
+                    width: "100%",
                   },
                 }}
-                src="/paypal.png"
-                alt="Donate"
-              />
-            </Link>
+                mb="xs"
+              >
+                <Text
+                  size="sm"
+                  color="gray.5"
+                  weight="bold"
+                  mb="xs"
+                  sx={{
+                    textAlign: "center",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.5px",
+                  }}
+                >
+                  Misc Fun
+                </Text>
+                <Flex gap="sm" justify="center">
+                  <Anchor href="/soundboard" style={{ textDecoration: "none" }}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      sx={{
+                        fontWeight: "bold",
+                        fontSize: "14px",
+                        height: "40px",
+                      }}
+                    >
+                      🎵 Soundboard
+                    </Button>
+                  </Anchor>
+                  <Anchor href="/guesser" style={{ textDecoration: "none" }}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      sx={{
+                        fontWeight: "bold",
+                        fontSize: "14px",
+                        height: "40px",
+                      }}
+                    >
+                      🎯 Livestream Guesser
+                    </Button>
+                  </Anchor>
+                </Flex>
+              </Box>
+
+              {/* Socials Section - 33.33% width */}
+              <Box
+                sx={{
+                  flex: "1",
+                  textAlign: "center",
+                  "@media (max-width: 900px)": {
+                    width: "100%",
+                  },
+                }}
+                mb="xs"
+              >
+                <Text
+                  size="sm"
+                  color="gray.5"
+                  weight="bold"
+                  mb="xs"
+                  sx={{
+                    textAlign: "center",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.5px",
+                  }}
+                >
+                  Socials
+                </Text>
+                <Flex gap="lg" justify="center" align="center">
+                  {footerSocialMediaLinks.map((link) => (
+                    <Anchor
+                      display="block"
+                      sx={{
+                        height: "32px",
+                        "@media (min-width: 1081px)": {
+                          marginTop: "4px",
+                        },
+                        "&:hover": {
+                          opacity: "0.75",
+                        },
+                      }}
+                      target="_blank"
+                      color="gray.4"
+                      href={link.href}
+                      key={link.href}
+                    >
+                      <FontAwesomeIcon
+                        style={{
+                          height: "100%",
+                          display: "block",
+                        }}
+                        icon={link.icon}
+                      />
+                    </Anchor>
+                  ))}
+                </Flex>
+              </Box>
+
+              {/* Donate Section - 33.33% width */}
+              <Box
+                sx={{
+                  flex: "1",
+                  textAlign: "center",
+                  "@media (max-width: 1080px)": {
+                    width: "100%",
+                  },
+                }}
+                mb="xs"
+              >
+                <Text
+                  size="sm"
+                  color="gray.5"
+                  weight="bold"
+                  mb="xs"
+                  sx={{
+                    textAlign: "center",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.5px",
+                  }}
+                >
+                  Support
+                </Text>
+                <Flex gap="sm" justify="center" align="center" wrap="wrap">
+                  <Link
+                    href="https://www.paypal.com/donate/?hosted_button_id=4GETT9FKF4WWY"
+                    target="_blank"
+                    style={{
+                      textDecoration: "none",
+                    }}
+                  >
+                    <Image
+                      sx={{
+                        "&:hover": {
+                          opacity: "0.75",
+                        },
+                      }}
+                      src="/paypal.png"
+                      alt="Donate via PayPal"
+                      height={40}
+                    />
+                  </Link>
+                  <Anchor
+                    href="https://www.patreon.com/bePatron?u=41577481"
+                    target="_blank"
+                    style={{ textDecoration: "none" }}
+                  >
+                    <Button
+                      size="sm"
+                      sx={{
+                        fontWeight: "bold",
+                        fontSize: "14px",
+                        height: "40px",
+                        backgroundColor: "black",
+                        color: "white",
+                        border: "1px solid #A7A7A7",
+                        "&:hover": {
+                          backgroundColor: "black",
+                          opacity: "0.75",
+                        },
+                      }}
+                      leftIcon={
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="white"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path d="M20.25 8.416c0-.943-.366-2.297-1.498-3.415C17.62 3.883 15.722 3 12.656 3c-3.733 0-5.96 1.19-7.253 2.91C4.11 7.627 3.75 9.875 3.75 11.991c0 3.113.42 5.365 1.141 6.84C5.612 20.304 6.634 21 7.836 21c1.4 0 2.205-.903 2.824-2.024.619-1.12 1.051-2.46 1.704-3.332.467-.623 1-1.023 1.602-1.312.602-.29 1.273-.469 2.012-.651 1.27-.313 2.338-.969 3.089-1.876.75-.908 1.183-2.067 1.183-3.389" />
+                        </svg>
+                      }
+                    >
+                      Become a Patron
+                    </Button>
+                  </Anchor>
+                </Flex>
+              </Box>
+            </Flex>
           </Footer>
         }
       >
