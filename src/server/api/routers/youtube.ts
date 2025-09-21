@@ -35,7 +35,6 @@ export const youtubeRouter = createTRPCRouter({
           title: video?.snippet?.title || null,
           thumbnailURL: video?.snippet?.thumbnails?.maxres?.url || null,
         }));
-      console.log(videos);
       if (videos) {
         youtubeVideos.push(videos);
       }
