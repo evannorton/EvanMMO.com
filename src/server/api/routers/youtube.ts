@@ -7,8 +7,7 @@ export const youtubeRouter = createTRPCRouter({
     // YouTube videos
     const youtubeVideos: YouTubeVideo[][] = [];
     for (const playlistID of [
-      "UULF3yvezJgR4p42q7XxKCY5SA",
-      "UULFqxh53Dp_hb-Pxlc5ge1kCg",
+      "UULF3yvezJgR4p42q7XxKCY5SA", // EvanMMO
     ]) {
       const playlistItems =
         (
@@ -36,6 +35,7 @@ export const youtubeRouter = createTRPCRouter({
           title: video?.snippet?.title || null,
           thumbnailURL: video?.snippet?.thumbnails?.maxres?.url || null,
         }));
+      console.log(videos);
       if (videos) {
         youtubeVideos.push(videos);
       }
