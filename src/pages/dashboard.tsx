@@ -15,12 +15,15 @@ import {
   Title,
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { UserRole } from "@prisma/client";
 import { api } from "../utils/api";
 import { authOptions } from "../server/auth";
+import { faLink } from "@fortawesome/free-solid-svg-icons";
 import { getDescriptionPreview } from "../utils/description";
 import { getFormattedDateString } from "../utils/date";
 import { getServerSession } from "next-auth";
+import { notifications } from "@mantine/notifications";
 import { useForm } from "@mantine/form";
 import { useState } from "react";
 import EmojiPicker, { Theme } from "emoji-picker-react";
@@ -219,9 +222,46 @@ const DashboardPage: NextPage = () => {
                 display="flex"
                 key={vod.id}
               >
-                <Text size="lg" mb="sm">
-                  {getFormattedDateString(vod.streamDate)}
-                </Text>
+                <Box
+                  sx={{
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                  display="flex"
+                  mb="sm"
+                >
+                  <Text size="lg" mr="sm">
+                    {getFormattedDateString(vod.streamDate)}
+                  </Text>
+                  <Box
+                    sx={{
+                      cursor: "pointer",
+                      "&:hover": {
+                        opacity: "0.75",
+                      },
+                    }}
+                    onClick={() => {
+                      navigator.clipboard
+                        .writeText(
+                          `${window.location.origin}/broadcasts/${vod.id}`
+                        )
+                        .then(() => {
+                          notifications.show({
+                            message: "Copied broadcast link to clipboard",
+                          });
+                        })
+                        .catch(() => {
+                          notifications.show({
+                            color: "red",
+                            message:
+                              "Failed to copy broadcast link to clipboard",
+                          });
+                        });
+                    }}
+                  >
+                    <FontAwesomeIcon icon={faLink} />
+                  </Box>
+                </Box>
                 {getDescriptionPreview(vod.description)
                   .split("\n")
                   .map((line, key) => (
