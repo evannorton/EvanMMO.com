@@ -32,6 +32,9 @@ const Broadcasts: React.FC<Props> = () => {
     setVODsPage(page);
     setSelectedVODID(null);
   };
+  if (includeContent === false) {
+    return null;
+  }
   return (
     <>
       {selectedVODID && <Broadcast vodID={selectedVODID} />}
