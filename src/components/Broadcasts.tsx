@@ -12,6 +12,7 @@ import { api } from "../utils/api";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
 import { getDescriptionPreview } from "../utils/description";
 import { getFormattedDateString } from "../utils/date";
+import { includeContent } from "../config";
 import { notifications } from "@mantine/notifications";
 import { useContext, useState } from "react";
 import Broadcast from "./Broadcast";
